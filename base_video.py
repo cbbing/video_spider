@@ -6,19 +6,18 @@ import time
 import requests
 from pandas import Series, DataFrame
 
-from base_video import BaseVideo
-
 reload(sys)
 sys.setdefaultencoding("utf-8")
-
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 
-class YoukuVideo(BaseVideo):
+class BaseVideo:
     def __init__(self):
         self.dfs = []
         self.items = []
+        self.pagecout = 10
+
 
     def run(self, keys):
         for key in keys:
@@ -29,12 +28,7 @@ class YoukuVideo(BaseVideo):
             self.search(key)
             #创建dataframe
             self.create_data(key)
-
-            print '\n'*2
-            print '*'*20, '暂停10s', '*'*20
-            print '\n'*2
-            time.sleep(10)
-
+            break
 
         #存入excel
         print len(self.dfs)
@@ -43,35 +37,18 @@ class YoukuVideo(BaseVideo):
     def search(self, key):
 
         for i in range(1,10):
-            youku_url = "http://www.soku.com/search_video/q_key_orderby_1?site=14&page=%d" % i
-            youku_url = youku_url.replace('key',key)
+            iqiyi_url = "http://so.iqiyi.com/so/q_key_ctg__t_0_page_%d_p_1_qc_0_rd__site__m_1_bitrate_" % i
+            iqiyi_url = iqiyi_url.replace('key',key)
 
-            r = requests.get(youku_url)
+            r = requests.get(iqiyi_url)
             self.parse_data(r.text)
 
 
     def parse_data(self, text):
         soup = bs(text)
 
-        # 视频概略
-        # dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
-        # dramaItems = []
-        #
-        # if(dramaList):
-        #     titleAndImg = dramaList[0].findAll('img')
-        #
-        #     if titleAndImg:
-        #         print type(titleAndImg[0])
-        #         print '标题:',titleAndImg[0]['alt']
-        #         print '图片链接:',titleAndImg[0]['src']
-        #
-        #     vTime = dramaList[0].findAll('div')
-        #     if len(vTime) > 3:
-        #         print len(vTime)
-        #         print '时长:',vTime[3].text
-
         #视频链接
-        dramaList = soup.findAll('div', attrs={'class':'v-link'})
+        dramaList = soup.findAll('div', attrs={'class':'result_info result_info-180101'})
 
 
         for drama in dramaList:
@@ -89,29 +66,29 @@ class YoukuVideo(BaseVideo):
                 # self.hrefs.append(titleAndLink['href'])
 
         # 视频概略
-        dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
-        for drama in dramaList:
-            titleAndImg = drama.findAll('img')
-
-            if titleAndImg:
-                print type(titleAndImg[0])
-                print '标题:',titleAndImg[0]['alt']
-                print '图片链接:',titleAndImg[0]['src']
-
-                for item in self.items:
-                    if item.title == titleAndImg[0]['alt']:
-                        vTime = dramaList[0].findAll('div')
-                        if len(vTime) > 3:
-                            print len(vTime)
-                            print '时长:',vTime[3].text
-                            item.duration = vTime[3].text
-                            break
+        # dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
+        # for drama in dramaList:
+        #     titleAndImg = drama.findAll('img')
+        #
+        #     if titleAndImg:
+        #         print type(titleAndImg[0])
+        #         print '标题:',titleAndImg[0]['alt']
+        #         print '图片链接:',titleAndImg[0]['src']
+        #
+        #         for item in self.items:
+        #             if item.title == titleAndImg[0]['alt']:
+        #                 vTime = dramaList[0].findAll('div')
+        #                 if len(vTime) > 3:
+        #                     print len(vTime)
+        #                     print '时长:',vTime[3].text
+        #                     item.duration = vTime[3].text
+        #                     break
 
     def create_data(self, key):
         df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
         df['Time'] = self.getNowTime()
-        df['engine'] = '搜库'
-        df['Source'] = '优酷'
+        df['engine'] = '爱奇艺'
+        df['Source'] = '爱奇艺'
         print df[:10]
         self.dfs.append((key, df))
 
@@ -120,7 +97,7 @@ class YoukuVideo(BaseVideo):
         #df.to_excel('youku_video.xlsx', sheet_name= key, engine='xlsxwriter')
 
     def data_to_excel(self):
-        with pd.ExcelWriter('./data/youku_video.xlsx') as writer:
+        with pd.ExcelWriter('./data/iqiyi_video.xlsx') as writer:
             for key, df in self.dfs:
                 df.to_excel(writer, sheet_name=key)
 
@@ -139,7 +116,7 @@ if __name__=='__main__':
     data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data.columns
 
-    youkuVideo = YoukuVideo()
+    youkuVideo = IQiYiVideo()
     youkuVideo.run(data['key'].get_values())
 
     #key = '快乐大本营'

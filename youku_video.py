@@ -34,6 +34,7 @@ class YoukuVideo(BaseVideo):
             print '*'*20, '暂停10s', '*'*20
             print '\n'*2
             time.sleep(10)
+            break
 
 
         #存入excel
@@ -43,8 +44,8 @@ class YoukuVideo(BaseVideo):
     def search(self, key):
 
         for i in range(1,10):
-            youku_url = "http://www.soku.com/search_video/q_key_orderby_1?site=14&page=%d" % i
-            youku_url = youku_url.replace('key',key)
+            youku_url = "http://www.soku.com/v/?keyword=keys&orderby=1&site=0&page=%d" % i
+            youku_url = youku_url.replace('keys',key)
 
             r = requests.get(youku_url)
             self.parse_data(r.text)
@@ -53,27 +54,22 @@ class YoukuVideo(BaseVideo):
     def parse_data(self, text):
         soup = bs(text)
 
-        # 视频概略
-        # dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
-        # dramaItems = []
-        #
-        # if(dramaList):
-        #     titleAndImg = dramaList[0].findAll('img')
-        #
-        #     if titleAndImg:
-        #         print type(titleAndImg[0])
-        #         print '标题:',titleAndImg[0]['alt']
-        #         print '图片链接:',titleAndImg[0]['src']
-        #
-        #     vTime = dramaList[0].findAll('div')
-        #     if len(vTime) > 3:
-        #         print len(vTime)
-        #         print '时长:',vTime[3].text
+        #视频链接-专辑
+        dramaList = soup.findAll('a', attrs={'class':'accordion-toggle collapsed'})
+        for drama in dramaList:
+
+            item = DataItem()
+
+            print '标题:',drama['title']
+            print '链接:',drama['href']
+            item.title = drama['title']
+            item.href = drama['href']
+
+            self.items.append(item)
+
 
         #视频链接
         dramaList = soup.findAll('div', attrs={'class':'v-link'})
-
-
         for drama in dramaList:
             titleAndLink = drama.find('a')
 
@@ -88,7 +84,7 @@ class YoukuVideo(BaseVideo):
                 # self.titles.append(titleAndLink['title'])
                 # self.hrefs.append(titleAndLink['href'])
 
-        # 视频概略
+        # 视频时长
         dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
         for drama in dramaList:
             titleAndImg = drama.findAll('img')

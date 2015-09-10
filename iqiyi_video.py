@@ -16,20 +16,18 @@ from pandas import Series, DataFrame
 class IQiYiVideo():
     def __init__(self):
         self.dfs = []
-        self.titles = []
-        self.hrefs = []
         self.items = []
 
     def run(self, keys):
         for key in keys:
             # 初始化
-            self.titles = []
-            self.hrefs = []
+            self.items = []
 
             #搜索
             self.search(key)
             #创建dataframe
             self.create_data(key)
+            break
 
 
         #存入excel
@@ -49,10 +47,21 @@ class IQiYiVideo():
     def parse_data(self, text):
         soup = bs(text)
 
-        #视频链接
+        #视频链接-专辑
+        dramaList = soup.findAll('a', attrs={'class':'album_link'})
+        for drama in dramaList:
+
+            item = DataItem()
+
+            print '标题:',drama['title']
+            print '链接:',drama['href']
+            item.title = drama['title']
+            item.href = drama['href']
+
+            self.items.append(item)
+
+        #视频链接-全部结果
         dramaList = soup.findAll('a', attrs={'class':'figure  figure-180101 '})
-
-
         for drama in dramaList:
 
             item = DataItem()

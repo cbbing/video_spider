@@ -17,87 +17,41 @@ class BaseVideo:
         self.dfs = []
         self.items = []
         self.pagecout = 10
+        self.filePath = ''
+        self.engine = ''
 
-
-    def run(self, keys):
-        for key in keys:
-            # 初始化
-            self.items = []
-
-            #搜索
-            self.search(key)
-            #创建dataframe
-            self.create_data(key)
-            break
-
-        #存入excel
-        print len(self.dfs)
-        self.data_to_excel()
-
-    def search(self, key):
-
-        for i in range(1,10):
-            iqiyi_url = "http://so.iqiyi.com/so/q_key_ctg__t_0_page_%d_p_1_qc_0_rd__site__m_1_bitrate_" % i
-            iqiyi_url = iqiyi_url.replace('key',key)
-
-            r = requests.get(iqiyi_url)
-            self.parse_data(r.text)
-
-
-    def parse_data(self, text):
-        soup = bs(text)
-
-        #视频链接
-        dramaList = soup.findAll('div', attrs={'class':'result_info result_info-180101'})
-
-
-        for drama in dramaList:
-            titleAndLink = drama.find('a')
-
-            if titleAndLink:
-                print '标题:',titleAndLink['title']
-                print '链接:',titleAndLink['href']
-
-                item = DataItem()
-                item.title = titleAndLink['title']
-                item.href = titleAndLink['href']
-                self.items.append(item)
-                # self.titles.append(titleAndLink['title'])
-                # self.hrefs.append(titleAndLink['href'])
-
-        # 视频概略
-        # dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
-        # for drama in dramaList:
-        #     titleAndImg = drama.findAll('img')
-        #
-        #     if titleAndImg:
-        #         print type(titleAndImg[0])
-        #         print '标题:',titleAndImg[0]['alt']
-        #         print '图片链接:',titleAndImg[0]['src']
-        #
-        #         for item in self.items:
-        #             if item.title == titleAndImg[0]['alt']:
-        #                 vTime = dramaList[0].findAll('div')
-        #                 if len(vTime) > 3:
-        #                     print len(vTime)
-        #                     print '时长:',vTime[3].text
-        #                     item.duration = vTime[3].text
-        #                     break
 
     def create_data(self, key):
         df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
         df['Time'] = self.getNowTime()
-        df['engine'] = '爱奇艺'
-        df['Source'] = '爱奇艺'
+        df['Engine'] = self.engine
         print df[:10]
         self.dfs.append((key, df))
 
 
-        #df.to_csv('./data/youku_video_%s.csv' % key, encoding='utf-8', index=False)
-        #df.to_excel('youku_video.xlsx', sheet_name= key, engine='xlsxwriter')
+    def filter_short_video(self):
+        items_temp = []
+        for item in self.items:
+            if len(str(item.duration)) > 0:
+
+                mustFilter = True
+                splits = str(item.duration).split(':')
+                if len(splits) == 2:
+                    minute = int(splits[0])
+                    if minute >= 10:
+                        mustFilter = False
+                elif len(splits) == 3:
+                    mustFilter = False
+
+                if not mustFilter:
+                    items_temp.append(item)
+            else:
+                items_temp.append(item)
+
+        self.items = items_temp
 
     def data_to_excel(self):
-        with pd.ExcelWriter('./data/iqiyi_video.xlsx') as writer:
+        with pd.ExcelWriter(self.filePath) as writer:
             for key, df in self.dfs:
                 df.to_excel(writer, sheet_name=key)
 
@@ -116,7 +70,7 @@ if __name__=='__main__':
     data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data.columns
 
-    youkuVideo = IQiYiVideo()
+    youkuVideo = BaseVideo()
     youkuVideo.run(data['key'].get_values())
 
     #key = '快乐大本营'

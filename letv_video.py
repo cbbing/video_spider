@@ -12,8 +12,10 @@ sys.setdefaultencoding("utf-8")
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from pandas import Series, DataFrame
+from selenium import webdriver
 
-class IQiYiVideo():
+
+class LetvVideo():
     def __init__(self):
         self.dfs = []
         self.titles = []
@@ -30,6 +32,7 @@ class IQiYiVideo():
             self.search(key)
             #创建dataframe
             self.create_data(key)
+            break
 
 
         #存入excel
@@ -38,12 +41,19 @@ class IQiYiVideo():
 
     def search(self, key):
 
-        for i in range(1,11):
-            iqiyi_url = "http://so.iqiyi.com/so/q_key_ctg__t_0_page_%d_p_1_qc_0_rd__site__m_1_bitrate_" % i
-            iqiyi_url = iqiyi_url.replace('key',key)
+        print 'start phantomjs'
+        driver = webdriver.PhantomJS()
+        driver.get('http://so.letv.com/s?wd=key&from=pc&index=0&ref=click')
+        self.parse_data(driver.page_source)
 
-            r = requests.get(iqiyi_url)
-            self.parse_data(r.text)
+        print 'parse phantomjs success'
+
+        # for i in range(1,11):
+        #     iqiyi_url = "http://so.letv.com/s?wd=key&from=pc&index=0&ref=click"
+        #     iqiyi_url = iqiyi_url.replace('key',key)
+        #
+        #     r = requests.get(iqiyi_url)
+        #     self.parse_data(r.text)
 
 
     def parse_data(self, text):
@@ -101,10 +111,13 @@ if __name__=='__main__':
     data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data.columns
 
-    youkuVideo = IQiYiVideo()
-    youkuVideo.run(data['key'].get_values())
+    video = LetvVideo()
+    video.run(data['key'].get_values())
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 
-
+    # driver = webdriver.PhantomJS()
+    # driver.get('http://www.baidu.com')
+    # data = driver.find_element_by_id('cp').text
+    # print driver.page_source

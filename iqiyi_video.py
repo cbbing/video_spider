@@ -12,19 +12,26 @@ sys.setdefaultencoding("utf-8")
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from pandas import Series, DataFrame
+from base_video import *
 
-class IQiYiVideo():
+class IQiYiVideo(BaseVideo):
     def __init__(self):
-        self.dfs = []
-        self.items = []
+        BaseVideo.__init__(self)
+        self.engine = '爱奇艺'
+        self.filePath = './data/iqiyi_video.xlsx'
 
     def run(self, keys):
+
         for key in keys:
             # 初始化
             self.items = []
 
             #搜索
             self.search(key)
+
+            #过滤
+            self.filter_short_video()
+
             #创建dataframe
             self.create_data(key)
             break
@@ -78,31 +85,14 @@ class IQiYiVideo():
 
             self.items.append(item)
 
-    def create_data(self, key):
-        df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
-        df['Time'] = self.getNowTime()
-        df['engine'] = '爱奇艺'
-        df['Source'] = '爱奇艺'
-        print df[:10]
-        self.dfs.append((key, df))
+    # def create_data(self, key):
+    #     df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
+    #     df['Time'] = self.getNowTime()
+    #     df['engine'] = '爱奇艺'
+    #
+    #     print df[:10]
+    #     self.dfs.append((key, df))
 
-
-        #df.to_csv('./data/youku_video_%s.csv' % key, encoding='utf-8', index=False)
-        #df.to_excel('youku_video.xlsx', sheet_name= key, engine='xlsxwriter')
-
-    def data_to_excel(self):
-        with pd.ExcelWriter('./data/iqiyi_video.xlsx') as writer:
-            for key, df in self.dfs:
-                df.to_excel(writer, sheet_name=key)
-
-    def getNowTime(self):
-        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-
-class DataItem:
-    def __init__(self):
-        self.title = ''
-        self.href = ''
-        self.duration = ''
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

@@ -6,7 +6,7 @@ import time
 import requests
 from pandas import Series, DataFrame
 
-from base_video import BaseVideo
+from video_base import BaseVideo
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -14,7 +14,7 @@ sys.setdefaultencoding("utf-8")
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-from base_video import *
+from video_base import *
 
 class YoukuVideo(BaseVideo):
     def __init__(self):
@@ -47,8 +47,8 @@ class YoukuVideo(BaseVideo):
 
     def search(self, key):
 
-        for i in range(1,10):
-            youku_url = "http://www.soku.com/v/?keyword=keys&orderby=1&site=0&page=%d" % i
+        for i in range(self.pagecount):
+            youku_url = "http://www.soku.com/v/?keyword=keys&orderby=1&site=0&page=%d" % (i+1)
             youku_url = youku_url.replace('keys',key)
 
             r = requests.get(youku_url)
@@ -116,7 +116,7 @@ if __name__=='__main__':
 
     youkuVideo = YoukuVideo()
     youkuVideo.run(data['key'].get_values())
-
+    #youkuVideo.run(['偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 

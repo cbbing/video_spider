@@ -12,7 +12,7 @@ sys.setdefaultencoding("utf-8")
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from pandas import Series, DataFrame
-from base_video import *
+from video_base import *
 
 class IQiYiVideo(BaseVideo):
     def __init__(self):
@@ -43,8 +43,8 @@ class IQiYiVideo(BaseVideo):
 
     def search(self, key):
 
-        for i in range(1,11):
-            iqiyi_url = "http://so.iqiyi.com/so/q_key_ctg__t_0_page_%d_p_1_qc_0_rd__site__m_1_bitrate_" % i
+        for i in range(self.pagecount):
+            iqiyi_url = "http://so.iqiyi.com/so/q_key_ctg__t_0_page_%d_p_1_qc_0_rd__site__m_1_bitrate_" % (i+1)
             iqiyi_url = iqiyi_url.replace('key',key)
 
             r = requests.get(iqiyi_url)

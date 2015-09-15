@@ -4,6 +4,8 @@
 import sys
 import time
 import requests
+import ConfigParser
+
 from pandas import Series, DataFrame
 
 from video_base import BaseVideo
@@ -47,12 +49,19 @@ class YoukuVideo(BaseVideo):
 
     def search(self, key):
 
-        for i in range(self.pagecount):
-            youku_url = "http://www.soku.com/v/?keyword=keys&orderby=1&site=0&page=%d" % (i+1)
-            youku_url = youku_url.replace('keys',key)
+        cf = ConfigParser.ConfigParser()
+        cf.read("config.ini")
 
-            r = requests.get(youku_url)
-            self.parse_data(r.text)
+        lengthtypes = cf.get("youku","lengthtype")
+        lengthtypes = lengthtypes.strip('[').strip(']').split(',')
+        for lengthtype in lengthtypes:
+
+            for i in range(self.pagecount):
+                youku_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_%d?site=14&page=%d' % (lengthtype, i+1)
+                youku_url = youku_url.replace('key',key)
+
+                r = requests.get(youku_url)
+                self.parse_data(r.text)
 
 
     def parse_data(self, text):

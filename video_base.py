@@ -4,6 +4,7 @@
 import sys
 import time
 import requests
+import ConfigParser
 from pandas import Series, DataFrame
 
 reload(sys)
@@ -14,9 +15,13 @@ import pandas as pd
 
 class BaseVideo:
     def __init__(self):
+
+        cf = ConfigParser.ConfigParser()
+        cf.read("config.ini")
+
         self.dfs = []
         self.items = []
-        self.pagecount = 10
+        self.pagecount = int(cf.get("general","page_count"))
         self.filePath = ''
         self.engine = ''
 
@@ -57,7 +62,7 @@ class BaseVideo:
 
         with pd.ExcelWriter(self.filePath) as writer:
             for key, df in self.dfs:
-                df.to_excel(writer, sheet_name=key, columns=['Href','Duration','Engine','Time'])
+                df.to_excel(writer, sheet_name=key)
                 df.to_csv("./data/letv_video.csv")
                 break
 

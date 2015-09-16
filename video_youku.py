@@ -32,7 +32,7 @@ class YoukuVideo(BaseVideo):
             #搜索
             self.search(key)
             #过滤
-            self.filter_short_video()
+            #self.filter_short_video()
             #创建dataframe
             self.create_data(key)
 
@@ -40,7 +40,7 @@ class YoukuVideo(BaseVideo):
             print '*'*20, '暂停10s', '*'*20
             print '\n'*2
             time.sleep(10)
-            break
+            #break
 
 
         #存入excel
@@ -52,19 +52,35 @@ class YoukuVideo(BaseVideo):
         cf = ConfigParser.ConfigParser()
         cf.read("config.ini")
 
+        # 专辑
+        youku_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_0?site=14'
+        youku_url = youku_url.replace('key',key)
+        r = requests.get(youku_url)
+        self.parse_data_album(r.text)
+
+        print '\n'*2
+        print '*'*20, '暂停10s', '*'*20
+        print '\n'*2
+        time.sleep(10)
+
         lengthtypes = cf.get("youku","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
             for i in range(self.pagecount):
-                youku_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_%d?site=14&page=%d' % (lengthtype, i+1)
+                youku_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_%s?site=14&page=%d' % (lengthtype, i+1)
                 youku_url = youku_url.replace('key',key)
 
                 r = requests.get(youku_url)
                 self.parse_data(r.text)
 
+                print '\n'*2
+                print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
+                print '\n'*2
+                time.sleep(10)
 
-    def parse_data(self, text):
+    # 专辑
+    def parse_data_album(self, text):
         soup = bs(text)
 
         #视频链接-专辑
@@ -80,6 +96,10 @@ class YoukuVideo(BaseVideo):
 
             self.items.append(item)
 
+
+
+    def parse_data(self, text):
+        soup = bs(text)
 
         #视频链接
         dramaList = soup.findAll('div', attrs={'class':'v-link'})
@@ -120,12 +140,12 @@ class YoukuVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
     print data.columns
 
     youkuVideo = YoukuVideo()
     youkuVideo.run(data['key'].get_values())
-    #youkuVideo.run(['偶像来了'])
+    #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 

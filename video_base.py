@@ -31,9 +31,12 @@ class BaseVideo:
         df['Time'] = self.getNowTime()
         df['Engine'] = self.engine
 
-        df['Title'] = df['Title'].apply(lambda x : str(x).replace('【', '[').replace('】',']').replace('《','<').replace('》','>')) #([u'【',u'】',u'《',u'》'],['[',']','<','>'])
+        #df['Title'] = df['Title'].apply(lambda x : str(x).replace('【', '[').replace('】',']').replace('《','<').replace('》','>')) #([u'【',u'】',u'《',u'》'],['[',']','<','>'])
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
         print df[:10]
+        print '去重前，总个数:', len(df)
+        df = df.drop_duplicates(['Href'])
+        print '去重后，总个数:', len(df)
         self.dfs.append((key, df))
 
 
@@ -63,8 +66,8 @@ class BaseVideo:
         with pd.ExcelWriter(self.filePath) as writer:
             for key, df in self.dfs:
                 df.to_excel(writer, sheet_name=key)
-                df.to_csv("./data/letv_video.csv")
-                break
+                #df.to_csv("./data/letv_video.csv")
+                #break
 
     def getNowTime(self):
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))

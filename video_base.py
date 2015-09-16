@@ -3,7 +3,7 @@
 #抓取优酷搜索结果
 import sys
 import time
-import requests
+import re
 import ConfigParser
 from pandas import Series, DataFrame
 
@@ -30,6 +30,7 @@ class BaseVideo:
         df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
         df['Time'] = self.getNowTime()
         df['Engine'] = self.engine
+        df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
 
         #df['Title'] = df['Title'].apply(lambda x : str(x).replace('【', '[').replace('】',']').replace('《','<').replace('》','>')) #([u'【',u'】',u'《',u'》'],['[',']','<','>'])
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
@@ -71,6 +72,18 @@ class BaseVideo:
 
     def getNowTime(self):
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+
+    # 判断视频来源
+    def get_video_source(self, url):
+        dictSource = {'hunantv':'芒果TV', 'youku':'优酷', 'tudou':'土豆', 'iqiyi':'爱奇艺','sina':'新浪视频', 'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数'}
+
+        m = re.search(r"\.(.*?)\.[com|cn]", url)
+        key = m.group(1) #如hunantv
+        try:
+            return dictSource[key]
+        except Exception, e:
+            return ''
+
 
 class DataItem:
     def __init__(self):

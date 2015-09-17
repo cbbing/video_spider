@@ -40,7 +40,7 @@ class SokuVideo(BaseVideo):
             print '*'*20, '暂停10s', '*'*20
             print '\n'*2
             time.sleep(10)
-            break
+
 
 
         #存入excel
@@ -76,7 +76,7 @@ class SokuVideo(BaseVideo):
                 print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
                 print '\n'
                 time.sleep(10)
-                break
+
 
     # 专辑
     def parse_data_album(self, text):
@@ -89,8 +89,7 @@ class SokuVideo(BaseVideo):
             item = DataItem()
 
             try:
-                print '标题:',drama['title']
-                print '链接:',drama['href']
+
 
                 # 2015-09-16， 搜库专辑链接变动了！
                 m = re.search(r"url=(.*?)&", drama['href'])
@@ -99,6 +98,8 @@ class SokuVideo(BaseVideo):
                 item.title = drama['title']
                 item.href = href
 
+                print '标题:',drama['title']
+                print '链接:',href
                 self.items.append(item)
 
             except Exception, e:
@@ -131,7 +132,6 @@ class SokuVideo(BaseVideo):
             titleAndImg = drama.findAll('img')
 
             if titleAndImg:
-                print type(titleAndImg[0])
                 print '标题:',titleAndImg[0]['alt']
                 #print '图片链接:',titleAndImg[0]['src']
 
@@ -139,7 +139,6 @@ class SokuVideo(BaseVideo):
                     if item.title == titleAndImg[0]['alt']:
                         vTime = dramaList[0].findAll('div')
                         if len(vTime) > 3:
-                            print len(vTime)
                             print '时长:',vTime[3].text
                             item.duration = vTime[3].text
                             break

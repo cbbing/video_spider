@@ -75,9 +75,12 @@ class BaseVideo:
 
     # 判断视频来源
     def get_video_source(self, url):
-        dictSource = {'hunantv':'芒果TV', 'youku':'优酷', 'tudou':'土豆', 'iqiyi':'爱奇艺','sina':'新浪视频', 'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数'}
+        dictSource = {'hunantv':'芒果TV', 'youku':'优酷', 'tudou':'土豆',
+                      'iqiyi':'爱奇艺','letv':'乐视','sina':'新浪视频',
+                      'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数',
+                      'ifeng':'凤凰视频', '56':'56'}
 
-        m = re.search(r"\.(.*?)\.[com|cn]", url)
+        m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]
         key = m.group(1) #如hunantv
         try:
             return dictSource[key]
@@ -94,7 +97,7 @@ class DataItem:
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data.columns
 
     youkuVideo = BaseVideo()

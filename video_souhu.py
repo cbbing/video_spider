@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-#抓取爱奇艺搜索结果
+#抓取souhu搜索结果
 import sys
 import time
 import requests
@@ -14,13 +14,13 @@ import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
 
-class IQiYiVideo(BaseVideo):
+class SouhuVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
-        self.engine = '爱奇艺'
-        self.album_url = 'http://so.iqiyi.com/so/q_key' #专辑的url
-        self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site__m_1_bitrate_' #普通搜索的url
-        self.filePath = './data/iqiyi_video.xlsx'
+        self.engine = '搜狐'
+        self.album_url = 'http://so.tv.sohu.com/mts?box=1&wd=key' #专辑的url
+        self.general_url = 'http://so.tv.sohu.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
+        self.filePath = './data/souhu_video.xlsx'
 
     def run(self, keys):
 
@@ -53,11 +53,9 @@ class IQiYiVideo(BaseVideo):
         print '\n'
         time.sleep(10)
 
-
-        # 普通
         cf = ConfigParser.ConfigParser()
         cf.read("config.ini")
-        lengthtypes = cf.get("iqiyi","lengthtype")
+        lengthtypes = cf.get("sohu","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
@@ -81,17 +79,20 @@ class IQiYiVideo(BaseVideo):
             soup = bs(text)
 
             #视频链接-专辑
-            dramaList = soup.findAll('a', attrs={'class':'album_link'})
+            dramaList = soup.findAll('div', attrs={'class':'seriesList'})
             for drama in dramaList:
 
-                item = DataItem()
+                titleAndLinkList = drama.findAll('a')
+                for titleAndLink in titleAndLinkList:
 
-                print '标题:',drama['title']
-                print '链接:',drama['href']
-                item.title = drama['title']
-                item.href = drama['href']
+                    item = DataItem()
 
-                self.items.append(item)
+                    print '标题:',titleAndLink['title']
+                    print '链接:',titleAndLink['href']
+                    item.title = titleAndLink['title']
+                    item.href = titleAndLink['href']
+
+                    self.items.append(item)
         except Exception, e:
                 print str(e)
 
@@ -101,20 +102,21 @@ class IQiYiVideo(BaseVideo):
         soup = bs(text)
 
         #视频链接-全部结果
-        dramaList = soup.findAll('a', attrs={'class':'figure  figure-180101 '})
+        dramaList = soup.findAll('div', attrs={'class':'pic170'})
         for drama in dramaList:
 
             item = DataItem()
 
-            titleAndLink = drama.find('img')
+            titleAndLink = drama.find('a')
             if titleAndLink:
                 print '标题:',titleAndLink['title']
-                print '链接:',drama['href']#titleAndLink['href']
+                print '链接:',titleAndLink['href']
                 item.title = titleAndLink['title']
-                item.href = drama['href']
-            durationTag = drama.find('span', attrs={'class':'v_name'})
-            if durationTag:
-                item.duration = durationTag.text
+                item.href = titleAndLink['href']
+
+                durationTag = drama.find('span', attrs={'class':'maskTx'})
+                if durationTag:
+                    item.duration = durationTag.text
 
             self.items.append(item)
 
@@ -123,10 +125,10 @@ class IQiYiVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
     print data
 
-    youkuVideo = IQiYiVideo()
+    youkuVideo = SouhuVideo()
     youkuVideo.run(data['key'].get_values())
 
     #key = '快乐大本营'

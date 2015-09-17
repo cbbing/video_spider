@@ -44,13 +44,9 @@ class SokuVideo(BaseVideo):
 
 
         #存入excel
-        print len(self.dfs)
         self.data_to_excel()
 
     def search(self, key):
-
-        cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
 
         # 专辑
         album_url = self.album_url.replace('key',key)
@@ -61,13 +57,16 @@ class SokuVideo(BaseVideo):
         print '\n'
         time.sleep(10)
 
+        # 普通
+        cf = ConfigParser.ConfigParser()
+        cf.read("config.ini")
         lengthtypes = cf.get("youku","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
             for i in range(self.pagecount):
                 soku_url = self.general_url.replace('tid', lengthtype)
-                soku_url = self.general_url.replace('pid', str(i+1))
+                soku_url = soku_url.replace('pid', str(i+1))
                 soku_url = soku_url.replace('key',key)
 
                 r = requests.get(soku_url)

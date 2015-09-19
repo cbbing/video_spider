@@ -126,7 +126,7 @@ if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
     data = pd.read_excel('快乐阳光-监测片单.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-
+    print data
 
     video = LetvVideo()
     video.run(data['key'].get_values())

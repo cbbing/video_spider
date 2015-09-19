@@ -28,6 +28,7 @@ class BaseVideo:
 
     def create_data(self, key):
         df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
+        print df[:10]
         df['Time'] = self.getNowTime()
         df['Engine'] = self.engine
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
@@ -80,9 +81,9 @@ class BaseVideo:
                       'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数',
                       'ifeng':'凤凰视频', '56':'56'}
 
-        m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]
-        key = m.group(1) #如hunantv
         try:
+            m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]
+            key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:
             return ''

@@ -19,7 +19,7 @@ class YoukuVideo(SokuVideo):
 if __name__=='__main__':
 
     data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
-    print data.columns
+    print data
 
     youkuVideo = YoukuVideo()
     youkuVideo.run(data['key'].get_values())

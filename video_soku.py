@@ -9,7 +9,7 @@ import re
 from video_base import *
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-
+from util.MyLogger import InfoLogger, ErrorLogger
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -37,7 +37,8 @@ class SokuVideo(BaseVideo):
             self.create_data(key)
 
             print '\n'*2
-            print '*'*20, '暂停10s'.decode('utf8'), '*'*20
+            #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
+            InfoLogger.addLog('暂停10s')
             print '\n'*2
             time.sleep(10)
 
@@ -53,7 +54,8 @@ class SokuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        print '*'*20, '暂停10s'.decode('utf8'), '*'*20
+        InfoLogger.addLog('暂停10s')
+        #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
         print '\n'
         time.sleep(10)
 
@@ -72,7 +74,8 @@ class SokuVideo(BaseVideo):
                 r = requests.get(soku_url)
                 self.parse_data(r.text)
 
-                print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
+                InfoLogger.addLog('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype))
+                #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 print '\n'
                 time.sleep(10)
 
@@ -97,12 +100,16 @@ class SokuVideo(BaseVideo):
                 item.title = drama['title']
                 item.href = href
 
-                print '标题:'.decode('utf8'),drama['title'].decode('utf8')
-                print '链接:'.decode('utf8'),href
+                InfoLogger.addLog('标题:%s' % drama['title'])
+                InfoLogger.addLog('链接:%s' % href)
+                # print '标题:'.decode('utf8'),drama['title'].decode('utf8')
+                # print '链接:'.decode('utf8'),href
                 self.items.append(item)
 
             except Exception, e:
-                print str(e)
+                #print str(e)
+                ErrorLogger.addLog(str(e))
+
 
 
     # 普通
@@ -117,8 +124,10 @@ class SokuVideo(BaseVideo):
             titleAndLink = drama.find('a')
 
             if titleAndLink:
+                InfoLogger.addLog('标题:%s' % titleAndLink['title'])
+                InfoLogger.addLog('链接:%s' % titleAndLink['href'])
                 #print '标题:'.decode('utf8'),titleAndLink['title'].decode('gb18030')
-                print '链接:'.decode('utf8'),titleAndLink['href']
+                #print '链接:'.decode('utf8'),titleAndLink['href']
 
                 item = DataItem()
                 item.title = titleAndLink['title']
@@ -133,14 +142,16 @@ class SokuVideo(BaseVideo):
             titleAndImg = drama.findAll('img')
 
             if titleAndImg:
-                print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
+                InfoLogger.addLog('标题:%s' % titleAndImg[0]['alt'])
+                #print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
                 #print '图片链接:',titleAndImg[0]['src']
 
                 for item in self.items:
                     if item.title == titleAndImg[0]['alt']:
                         vTime = dramaList[0].findAll('div')
                         if len(vTime) > 3:
-                            print '时长:'.decode('utf8'),vTime[3].text
+                            InfoLogger.addLog('时长:%s' % vTime[3].text)
+                            #print '时长:'.decode('utf8'),vTime[3].text
                             item.duration = vTime[3].text
                             break
 

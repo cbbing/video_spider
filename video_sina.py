@@ -14,7 +14,7 @@ from pandas import Series, DataFrame
 from selenium import webdriver
 from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
-
+from util.MyLogger import InfoLogger, ErrorLogger
 
 class SinaVideo(BaseVideo):
     def __init__(self):
@@ -37,7 +37,9 @@ class SinaVideo(BaseVideo):
             self.create_data(key)
 
             print '\n'
-            print '*'*20, '暂停10s', '*'*20
+
+            InfoLogger.addLog('暂停10s')
+            #print '*'*20, '暂停10s', '*'*20
             print '\n'
             time.sleep(10)
             break
@@ -51,8 +53,10 @@ class SinaVideo(BaseVideo):
         qq_url = self.general_url
         qq_url = qq_url.replace('key',key)
 
-        print 'start phantomjs'
-        print qq_url
+        InfoLogger.addLog('start phantomjs')
+        InfoLogger.addLog(qq_url)
+        #print 'start phantomjs'
+        #print qq_url
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
         driver.get(qq_url)
@@ -84,7 +88,8 @@ class SinaVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                print '*'*20, '%s, 第一页,暂停3s' % buttonText, '*'*20
+                InfoLogger.addLog('%s, 第一页,暂停3s' % buttonText)
+                #print '*'*20, '%s, 第一页,暂停3s' % buttonText, '*'*20
                 print '\n'
                 time.sleep(3)
 
@@ -96,7 +101,8 @@ class SinaVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页>').click()
 
-                        print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        InfoLogger.addLog('%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)))
+                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
                         print '\n'
                         time.sleep(3)
 
@@ -104,11 +110,13 @@ class SinaVideo(BaseVideo):
                         self.parse_data(driver.page_source)
 
                 except Exception,e:
-                    print '未达到%d页，提前结束' % self.pagecount
+                    ErrorLogger.addLog('未达到%d页，提前结束' % self.pagecount)
+                    #print '未达到%d页，提前结束' % self.pagecount
 
 
             except Exception,e:
-                print str(e)
+                ErrorLogger.addLog(str(e))
+                #print str(e)
 
         print 'parse phantomjs success'
 
@@ -131,20 +139,24 @@ class SinaVideo(BaseVideo):
 
                     item = DataItem()
 
-                    print '标题:',titleAndLink.get_text()
-                    print '链接:',titleAndLink['href']
+                    InfoLogger.addLog('标题:%s' % titleAndLink.get_text())
+                    InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                    #print '标题:',titleAndLink.get_text()
+                    #print '链接:',titleAndLink['href']
                     item.title = titleAndLink.get_text()
                     item.href = titleAndLink['href']
 
                     durationTag = source.find('span', attrs={'class':'card_time'})
                     if durationTag:
-                        print '时长:',durationTag.text
+                        InfoLogger.addLog('时长:',durationTag.text)
+                        #print '时长:',durationTag.text
                         item.duration = durationTag.text
 
                     self.items.append(item)
 
                 except Exception,e:
-                    print str(e)
+                    ErrorLogger.addLog(str(e))
+                    #print str(e)
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

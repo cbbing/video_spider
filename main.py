@@ -12,11 +12,13 @@ import pandas as pd
 from video_youku import YoukuVideo
 from video_tudou import TudouVideo
 
+import platform
+
 
 if __name__ == "__main__":
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet3', index_col=None, na_values=['NA'])
     print data
 
 
@@ -29,13 +31,19 @@ if __name__ == "__main__":
 
         keys = data['key'].get_values()
 
+        systemName = platform.system()
+        if systemName == 'Windows':
+            dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
+        else:
+            dir_path = ''
+
         video = YoukuVideo()
-        video.filePath = 'C:/Users/Administrator/Desktop/Data/Result/youku_video.xlsx'
+        video.filePath = dir_path + 'youku_video.xlsx'
         video.run(keys)
 
-        video = TudouVideo()
-        video.filePath = 'C:/Users/Administrator/Desktop/Data/Result/tudou_video.xlsx'
-        video.run(keys)
+        # video = TudouVideo()
+        # video.filePath = dir_path + 'tudou_video.xlsx'
+        # video.run(keys)
 
         #复制目录
         #shutil.copytree(r'C:\Code\video_spider\data', r'C:\Users\Administrator\Desktop\Data')

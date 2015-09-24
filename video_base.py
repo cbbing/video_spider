@@ -12,6 +12,7 @@ sys.setdefaultencoding("utf-8")
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+from util.MyLogger import InfoLogger, ErrorLogger
 
 class BaseVideo:
     def __init__(self):
@@ -36,9 +37,10 @@ class BaseVideo:
         #df['Title'] = df['Title'].apply(lambda x : str(x).replace('【', '[').replace('】',']').replace('《','<').replace('》','>')) #([u'【',u'】',u'《',u'》'],['[',']','<','>'])
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
         print df[:10]
-        print '去重前，总个数:', len(df)
+
+        InfoLogger.addLog('去重前，总个数:%d' % len(df))
         df = df.drop_duplicates(['Href'])
-        print '去重后，总个数:', len(df)
+        InfoLogger.addLog('去重后，总个数:%d' % len(df))
         self.dfs.append((key, df))
 
 
@@ -86,6 +88,7 @@ class BaseVideo:
             key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:
+            ErrorLogger.addLog(str(e))
             return ''
 
 

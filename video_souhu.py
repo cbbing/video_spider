@@ -14,6 +14,7 @@ import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
 from util.codeConvert import *
+from util.MyLogger import InfoLogger, ErrorLogger
 
 class SouhuVideo(BaseVideo):
     def __init__(self):
@@ -50,7 +51,8 @@ class SouhuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        print '*'*20, encode_wrap('暂停10s'), '*'*20
+        InfoLogger.addLog('暂停10s')
+        #print '*'*20, encode_wrap('暂停10s'), '*'*20
         print '\n'
         time.sleep(10)
 
@@ -69,7 +71,8 @@ class SouhuVideo(BaseVideo):
                 self.parse_data(r.text)
 
                 print '\n'
-                print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
+                InfoLogger.addLog('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype))
+                #print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
                 print '\n'
                 time.sleep(10)
 
@@ -88,14 +91,17 @@ class SouhuVideo(BaseVideo):
 
                     item = DataItem()
 
-                    print encode_wrap('标题:%s' % titleAndLink['title'])
-                    print encode_wrap('链接:%s' % titleAndLink['href'])
+                    InfoLogger.addLog('标题:%s' % titleAndLink['title'])
+                    InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                    #print encode_wrap('标题:%s' % titleAndLink['title'])
+                    #print encode_wrap('链接:%s' % titleAndLink['href'])
                     item.title = titleAndLink['title']
                     item.href = titleAndLink['href']
 
                     self.items.append(item)
         except Exception, e:
-                print str(e)
+            ErrorLogger.addLog(str(e))
+            print str(e)
 
 
     # 普通
@@ -110,8 +116,10 @@ class SouhuVideo(BaseVideo):
 
             titleAndLink = drama.find('a')
             if titleAndLink:
-                print '标题:',titleAndLink['title']
-                print '链接:',titleAndLink['href']
+                InfoLogger.addLog('标题:%s' % titleAndLink['title'])
+                InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                # print '标题:',titleAndLink['title']
+                # print '链接:',titleAndLink['href']
                 item.title = titleAndLink['title']
                 item.href = titleAndLink['href']
 

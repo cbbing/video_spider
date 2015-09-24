@@ -6,9 +6,9 @@ __author__ = 'cbb'
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-sse = sys.stdout.encoding
 
 import logging
+import logging.handlers
 
 #用字典保存日志级别
 format_dict = {
@@ -32,7 +32,9 @@ class Logger():
         self.logger.setLevel(logging.DEBUG)
 
         # 创建一个handler，用于写入日志文件
-        fh = logging.FileHandler(logname)
+        fh = logging.handlers.TimedRotatingFileHandler(logname, 'D')
+        fh.suffix = "%Y%m%d.log"
+        #fh = logging.FileHandler(logname)
         fh.setLevel(logging.DEBUG)
 
         # 再创建一个handler，用于输出到控制台
@@ -55,5 +57,8 @@ class Logger():
 
 
 if __name__ == "__main__":
-    logger = Logger(logname='log.txt').getlog()
-    logger.debug('中文测试')
+
+    from codeConvert import *
+
+    logger = Logger(logname='main').getlog()
+    logger.debug(encode_wrap('dad'))

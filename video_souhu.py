@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
+from util.codeConvert import *
 
 class SouhuVideo(BaseVideo):
     def __init__(self):
@@ -49,7 +50,7 @@ class SouhuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        print '*'*20, '暂停10s', '*'*20
+        print '*'*20, encode_wrap('暂停10s'), '*'*20
         print '\n'
         time.sleep(10)
 
@@ -68,7 +69,7 @@ class SouhuVideo(BaseVideo):
                 self.parse_data(r.text)
 
                 print '\n'
-                print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
+                print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
                 print '\n'
                 time.sleep(10)
 
@@ -87,8 +88,8 @@ class SouhuVideo(BaseVideo):
 
                     item = DataItem()
 
-                    print '标题:',titleAndLink['title']
-                    print '链接:',titleAndLink['href']
+                    print encode_wrap('标题:%s' % titleAndLink['title'])
+                    print encode_wrap('链接:%s' % titleAndLink['href'])
                     item.title = titleAndLink['title']
                     item.href = titleAndLink['href']
 

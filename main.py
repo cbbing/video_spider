@@ -4,6 +4,7 @@
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
+sse = sys.stdout.encoding
 
 import time
 import shutil
@@ -14,10 +15,13 @@ from video_tudou import TudouVideo
 
 if __name__ == "__main__":
 
-    data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
-    t = raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode('gbk'))
+
+    print sse
+    t = raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode(sse))
 
     t = t.strip().lower()
 

@@ -1,26 +1,34 @@
-# -*- coding: cp936 -*-
+# -*- coding: utf8 -*-
+
+import sys
+
+#æŒ‰ç³»ç»Ÿå­—ç¬¦é›†è¾“å‡º(console stdoutï¼‰
+def encode_wrap(str):
+    sse = sys.stdout.encoding
+    return str.encode(sse)
+
 
 def strQ2B(ustring):
-    """È«½Ç×ª°ë½Ç"""
+    """å…¨è§’è½¬åŠè§’"""
     rstring = ""
     for uchar in ustring:
         inside_code=ord(uchar)
-        if inside_code == 12288:                              #È«½Ç¿Õ¸ñÖ±½Ó×ª»»
+        if inside_code == 12288:                              #å…¨è§’ç©ºæ ¼ç›´æ¥è½¬æ¢
             inside_code = 32
-        elif (inside_code >= 65281 and inside_code <= 65374): #È«½Ç×Ö·û£¨³ı¿Õ¸ñ£©¸ù¾İ¹ØÏµ×ª»¯
+        elif (inside_code >= 65281 and inside_code <= 65374): #å…¨è§’å­—ç¬¦ï¼ˆé™¤ç©ºæ ¼ï¼‰æ ¹æ®å…³ç³»è½¬åŒ–
             inside_code -= 65248
 
         rstring += unichr(inside_code)
     return rstring
 
 def strB2Q(ustring):
-    """°ë½Ç×ªÈ«½Ç"""
+    """åŠè§’è½¬å…¨è§’"""
     rstring = ""
     for uchar in ustring:
         inside_code=ord(uchar)
-        if inside_code == 32:                                 #°ë½Ç¿Õ¸ñÖ±½Ó×ª»¯
+        if inside_code == 32:                                 #åŠè§’ç©ºæ ¼ç›´æ¥è½¬åŒ–
             inside_code = 12288
-        elif inside_code >= 32 and inside_code <= 126:        #°ë½Ç×Ö·û£¨³ı¿Õ¸ñ£©¸ù¾İ¹ØÏµ×ª»¯
+        elif inside_code >= 32 and inside_code <= 126:        #åŠè§’å­—ç¬¦ï¼ˆé™¤ç©ºæ ¼ï¼‰æ ¹æ®å…³ç³»è½¬åŒ–
             inside_code += 65248
 
         rstring += unichr(inside_code)
@@ -28,8 +36,8 @@ def strB2Q(ustring):
 
 
 if __name__ == '__main__':
-    b = strQ2B("£í£î[<123abc²©¿ÍÔ°".decode('cp936'))
+    b = strQ2B("ï½ï½[<123abcåšå®¢å›­".decode('cp936'))
     print b
 
-    c = strB2Q("£í£î123abc²©¿ÍÔ°".decode('cp936'))
+    c = strB2Q("ï½ï½123abcåšå®¢å›­".decode('cp936'))
     print c

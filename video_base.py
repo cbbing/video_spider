@@ -28,11 +28,20 @@ class BaseVideo:
 
 
     def create_data(self, key):
-        df = DataFrame({'Title':[item.title for item in self.items], 'Href':[item.href for item in self.items], 'Duration':[item.duration for item in self.items]}, columns=['Title', 'Href', 'Duration'])
+        df = DataFrame({'Title':[item.title for item in self.items],
+                        'Href':[item.href for item in self.items],
+                        'Duration':[item.duration for item in self.items],
+                        'Page':[item.page for item in self.items],
+                        'DurationType':[item.durationType for item in self.items]
+                        },
+                       columns=['Title', 'Href', 'Duration', 'DurationType', 'Page'])
         print df[:10]
         df['Time'] = self.getNowTime()
         df['Engine'] = self.engine
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
+
+        # if df['Duration'].any() == '':
+        #     df = df.drop('Duration', axis=1)
 
         #df['Title'] = df['Title'].apply(lambda x : str(x).replace('【', '[').replace('】',']').replace('《','<').replace('》','>')) #([u'【',u'】',u'《',u'》'],['[',']','<','>'])
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
@@ -72,6 +81,7 @@ class BaseVideo:
                 df.to_excel(writer, sheet_name=key)
                 #df.to_csv("./data/letv_video.csv")
                 #break
+        InfoLogger.addLog('写入excel完成')
 
     def getNowTime(self):
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -81,7 +91,8 @@ class BaseVideo:
         dictSource = {'hunantv':'芒果TV', 'youku':'优酷', 'tudou':'土豆',
                       'iqiyi':'爱奇艺','letv':'乐视','sina':'新浪视频',
                       'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数',
-                      'ifeng':'凤凰视频', '56':'56'}
+                      'ifeng':'凤凰视频', '56':'56', '1905':'1905电影网',
+                      'kankan':'响巢看看', 'cntv':'CNTV','ku6':'酷6'}
 
         try:
             m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]
@@ -97,6 +108,8 @@ class DataItem:
         self.title = ''
         self.href = ''
         self.duration = ''
+        self.page = 0 #页码
+        self.durationType = '' #时长类型
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

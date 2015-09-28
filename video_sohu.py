@@ -24,6 +24,10 @@ class SouhuVideo(BaseVideo):
         self.general_url = 'http://so.tv.sohu.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
         self.filePath = './data/souhu_video.xlsx'
 
+        self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+
+
+
     def run(self, keys):
 
         for key in keys:
@@ -51,10 +55,10 @@ class SouhuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        InfoLogger.addLog('暂停10s')
+        InfoLogger.addLog('暂停%ds' % self.stop)
         #print '*'*20, encode_wrap('暂停10s'), '*'*20
         print '\n'
-        time.sleep(10)
+        time.sleep(self.stop)
 
         cf = ConfigParser.ConfigParser()
         cf.read("config.ini")
@@ -68,13 +72,13 @@ class SouhuVideo(BaseVideo):
                 url = url.replace('key',key)
 
                 r = requests.get(url)
-                self.parse_data(r.text)
+                self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
-                InfoLogger.addLog('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype))
+                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
                 #print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
                 print '\n'
-                time.sleep(10)
+                time.sleep(self.stop)
 
 
     # 专辑
@@ -97,6 +101,8 @@ class SouhuVideo(BaseVideo):
                     #print encode_wrap('链接:%s' % titleAndLink['href'])
                     item.title = titleAndLink['title']
                     item.href = titleAndLink['href']
+                    item.page = 1
+                    item.durationType = '专辑'
 
                     self.items.append(item)
         except Exception, e:
@@ -105,7 +111,7 @@ class SouhuVideo(BaseVideo):
 
 
     # 普通
-    def parse_data(self, text):
+    def parse_data(self, text, page, lengthType):
         soup = bs(text)
 
         #视频链接-全部结果
@@ -126,6 +132,13 @@ class SouhuVideo(BaseVideo):
                 durationTag = drama.find('span', attrs={'class':'maskTx'})
                 if durationTag:
                     item.duration = durationTag.text
+
+                item.page = page
+                try:
+                    item.durationType = self.timelengthDict[int(lengthType)]
+                except Exception,e:
+                    ErrorLogger.addLog('未找到对应的时长类型!')
+
 
             self.items.append(item)
 

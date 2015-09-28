@@ -38,10 +38,10 @@ class SinaVideo(BaseVideo):
 
             print '\n'
 
-            InfoLogger.addLog('暂停10s')
+            InfoLogger.addLog('暂停%ds' % self.stop)
             #print '*'*20, '暂停10s', '*'*20
             print '\n'
-            time.sleep(10)
+            time.sleep(self.stop)
             break
 
         #存入excel
@@ -88,26 +88,26 @@ class SinaVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                InfoLogger.addLog('%s, 第一页,暂停3s' % buttonText)
+                InfoLogger.addLog('%s, 第一页,暂停%ds' % (buttonText, self.stop))
                 #print '*'*20, '%s, 第一页,暂停3s' % buttonText, '*'*20
                 print '\n'
-                time.sleep(3)
+                time.sleep(self.stop)
 
                 #第一页
-                self.parse_data(driver.page_source)
+                self.parse_data(driver.page_source, 1, lengthtype)
 
                 #获取下一页
                 try:
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页>').click()
 
-                        InfoLogger.addLog('%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)))
+                        InfoLogger.addLog('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop)
                         #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
                         print '\n'
-                        time.sleep(3)
+                        time.sleep(self.stop)
 
                         driver.get_screenshot_as_file("show.png")
-                        self.parse_data(driver.page_source)
+                        self.parse_data(driver.page_source, i+2, lengthtype)
 
                 except Exception,e:
                     ErrorLogger.addLog('未达到%d页，提前结束' % self.pagecount)
@@ -118,11 +118,12 @@ class SinaVideo(BaseVideo):
                 ErrorLogger.addLog(str(e))
                 #print str(e)
 
+        driver.quit()
         print 'parse phantomjs success'
 
 
     # 普通搜索
-    def parse_data(self, text):
+    def parse_data(self, text, page, lengthType):
 
         soup = bs(text)
 
@@ -151,6 +152,12 @@ class SinaVideo(BaseVideo):
                         InfoLogger.addLog('时长:',durationTag.text)
                         #print '时长:',durationTag.text
                         item.duration = durationTag.text
+
+                    item.page = page
+                    try:
+                        item.durationType = self.timelengthDict[int(lengthType)]
+                    except Exception,e:
+                        ErrorLogger.addLog('未找到对应的时长类型!')
 
                     self.items.append(item)
 

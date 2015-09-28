@@ -24,6 +24,9 @@ class SokuVideo(BaseVideo):
         self.album_url = '' #专辑的url
         self.general_url = '' #普通搜索的url
 
+        self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.web = '' # youku or tudou
+
     def run(self, keys):
         for key in keys:
             # 初始化
@@ -38,9 +41,9 @@ class SokuVideo(BaseVideo):
 
             print '\n'*2
             #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
-            InfoLogger.addLog('暂停10s')
+            InfoLogger.addLog('暂停%ds' % self.stop)
             print '\n'*2
-            time.sleep(10)
+            time.sleep(self.stop)
 
 
 
@@ -54,15 +57,15 @@ class SokuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        InfoLogger.addLog('暂停10s')
+        InfoLogger.addLog('暂停%ds' % self.stop)
         #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
         print '\n'
-        time.sleep(10)
+        time.sleep(self.stop)
 
         # 普通
         cf = ConfigParser.ConfigParser()
         cf.read("config.ini")
-        lengthtypes = cf.get("youku","lengthtype")
+        lengthtypes = cf.get(self.web,"lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
@@ -72,12 +75,12 @@ class SokuVideo(BaseVideo):
                 soku_url = soku_url.replace('key',key)
 
                 r = requests.get(soku_url)
-                self.parse_data(r.text)
+                self.parse_data(r.text, i+1, lengthtype)
 
-                InfoLogger.addLog('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype))
+                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 print '\n'
-                time.sleep(10)
+                time.sleep(self.stop)
 
 
     # 专辑
@@ -99,6 +102,8 @@ class SokuVideo(BaseVideo):
 
                 item.title = drama['title']
                 item.href = href
+                item.page = 1
+                item.durationType = '专辑'
 
                 InfoLogger.addLog('标题:%s' % drama['title'])
                 InfoLogger.addLog('链接:%s' % href)
@@ -113,7 +118,7 @@ class SokuVideo(BaseVideo):
 
 
     # 普通
-    def parse_data(self, text):
+    def parse_data(self, text, page, lengthType):
         soup = bs(text)
 
         sse = sys.stdout.encoding
@@ -132,6 +137,12 @@ class SokuVideo(BaseVideo):
                 item = DataItem()
                 item.title = titleAndLink['title']
                 item.href = titleAndLink['href']
+                item.page = page
+                try:
+                    item.durationType = self.timelengthDict[int(lengthType)]
+                except Exception,e:
+                    ErrorLogger.addLog('未找到对应的时长类型!')
+
                 self.items.append(item)
                 # self.titles.append(titleAndLink['title'])
                 # self.hrefs.append(titleAndLink['href'])

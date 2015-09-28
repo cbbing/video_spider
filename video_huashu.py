@@ -23,6 +23,9 @@ class HuashuVideo(BaseVideo):
         self.general_url = 'http://www.wasu.cn/Search/show/k/key/duration/tid?&p=pid#Top05' #普通搜索的url
         self.filePath = './data/huashu_video.xlsx'
 
+        self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+
+
     def run(self, keys):
 
         for key in keys:
@@ -50,9 +53,10 @@ class HuashuVideo(BaseVideo):
         r = requests.get(album_url)
         #self.parse_data_album(r.text)
 
-        print '*'*20, '暂停5s', '*'*20
+        InfoLogger.addLog('暂停%ds' % self.stop)
+        #print '*'*20, '暂停5s', '*'*20
         print '\n'
-        time.sleep(5)
+        time.sleep(self.stop)
 
 
         # 普通
@@ -68,12 +72,13 @@ class HuashuVideo(BaseVideo):
                 url = url.replace('key',key)
 
                 r = requests.get(url)
-                self.parse_data(r.text)
+                self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
-                print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
+                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
+                #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
                 print '\n'
-                time.sleep(10)
+                time.sleep(self.stop)
 
 
     # 专辑
@@ -91,13 +96,16 @@ class HuashuVideo(BaseVideo):
 
                         item = DataItem()
 
-                        print '标题:',drama['title']
-                        print '链接:', drama['href']
+                        InfoLogger.addLog('标题:' + drama['title'])
+                        InfoLogger.addLog('链接:' + drama['href'])
                         item.title = drama['title']
                         item.href = drama['href']
 
                         if not "www" in item.href:
                             item.href = self.pre_url + item.href
+
+                        item.page = 1
+                        item.durationType = '专辑'
 
                         self.items.append(item)
                 except Exception,e:
@@ -108,7 +116,7 @@ class HuashuVideo(BaseVideo):
 
 
     # 普通
-    def parse_data(self, text):
+    def parse_data(self, text, page, lengthType):
         soup = bs(text)
 
         #视频链接-全部结果
@@ -119,8 +127,8 @@ class HuashuVideo(BaseVideo):
 
             titleAndLink = drama.find('a')
             if titleAndLink:
-                print '标题:',titleAndLink['title']
-                print '链接:',titleAndLink['href']
+                InfoLogger.addLog('标题:' + titleAndLink['title'])
+                InfoLogger.addLog('链接:' + titleAndLink['href'])
                 item.title = titleAndLink['title']
                 item.href = titleAndLink['href']
 
@@ -130,6 +138,12 @@ class HuashuVideo(BaseVideo):
                 durationTag = drama.find('div', attrs={'class':'meta_tr'})
                 if durationTag:
                     item.duration = durationTag.text
+
+                item.page = page
+                try:
+                    item.durationType = self.timelengthDict[int(lengthType)]
+                except Exception,e:
+                    ErrorLogger.addLog('未找到对应的时长类型!')
 
                 self.items.append(item)
 

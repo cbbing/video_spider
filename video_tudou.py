@@ -16,6 +16,9 @@ class TudouVideo(SokuVideo):
         self.general_url = 'http://www.soku.com/t/nisearch/key/_cid__time_tid_sort_score_display_album?site=1&page=pid' #普通搜索的url
         self.filePath = './data/tudou_video.xlsx'
 
+        self.timelengthDict = {0:'不限', 100:'0-10分钟', 110:'10-30分钟', 130:'30-60分钟', 160:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.web = 'tudou'
+
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

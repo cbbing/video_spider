@@ -22,6 +22,9 @@ class IQiYiVideo(BaseVideo):
         self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site__m_1_bitrate_' #普通搜索的url
         self.filePath = './data/iqiyi_video.xlsx'
 
+        self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
+
+
     def run(self, keys):
 
         for key in keys:
@@ -49,9 +52,10 @@ class IQiYiVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        print '*'*20, '暂停10s', '*'*20
+        InfoLogger.addLog('暂停%ds' % self.stop)
+        #print '*'*20, '暂停10s', '*'*20
         print '\n'
-        time.sleep(10)
+        time.sleep(self.stop)
 
 
         # 普通
@@ -67,12 +71,13 @@ class IQiYiVideo(BaseVideo):
                 url = url.replace('key',key)
 
                 r = requests.get(url)
-                self.parse_data(r.text)
+                self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
-                print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
+                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
+                #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
                 print '\n'
-                time.sleep(10)
+                time.sleep(self.stop)
 
 
     # 专辑
@@ -86,10 +91,13 @@ class IQiYiVideo(BaseVideo):
 
                 item = DataItem()
 
-                print '标题:',drama['title']
-                print '链接:',drama['href']
+                InfoLogger.addLog('标题:' + drama['title'])
+                InfoLogger.addLog('链接:' + drama['href'])
                 item.title = drama['title']
                 item.href = drama['href']
+
+                item.page = 1
+                item.durationType = '专辑'
 
                 self.items.append(item)
         except Exception, e:
@@ -97,7 +105,7 @@ class IQiYiVideo(BaseVideo):
 
 
     # 普通
-    def parse_data(self, text):
+    def parse_data(self, text, page, lengthType):
         soup = bs(text)
 
         #视频链接-全部结果
@@ -108,13 +116,19 @@ class IQiYiVideo(BaseVideo):
 
             titleAndLink = drama.find('img')
             if titleAndLink:
-                print '标题:',titleAndLink['title']
-                print '链接:',drama['href']#titleAndLink['href']
+                InfoLogger.addLog('标题:' + titleAndLink['title'])
+                InfoLogger.addLog('链接:' + drama['href'])#titleAndLink['href']
                 item.title = titleAndLink['title']
                 item.href = drama['href']
             durationTag = drama.find('span', attrs={'class':'v_name'})
             if durationTag:
                 item.duration = durationTag.text
+
+            item.page = page
+            try:
+                item.durationType = self.timelengthDict[int(lengthType)]
+            except Exception,e:
+                ErrorLogger.addLog('未找到对应的时长类型!')
 
             self.items.append(item)
 

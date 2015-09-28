@@ -26,6 +26,8 @@ class BaseVideo:
         self.filePath = ''
         self.engine = ''
 
+        self.stop = 3 # 暂停3s
+
 
     def create_data(self, key):
         df = DataFrame({'Title':[item.title for item in self.items],

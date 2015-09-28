@@ -16,6 +16,9 @@ class YoukuVideo(SokuVideo):
         self.general_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_tid?site=14&page=pid' #普通搜索的url
         self.filePath = './data/youku_video.xlsx'
 
+        self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.web = 'youku'
+
 if __name__=='__main__':
 
     data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])

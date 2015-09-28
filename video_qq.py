@@ -41,7 +41,7 @@ class QQVideo(BaseVideo):
             InfoLogger.addLog('暂停%ds' % self.stop)
             print '\n'
             time.sleep(self.stop)
-            break
+
 
         #存入excel
         print len(self.dfs)

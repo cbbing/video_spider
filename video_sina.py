@@ -42,7 +42,7 @@ class SinaVideo(BaseVideo):
             #print '*'*20, '暂停10s', '*'*20
             print '\n'
             time.sleep(self.stop)
-            break
+
 
         #存入excel
         print len(self.dfs)

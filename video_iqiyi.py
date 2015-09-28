@@ -39,7 +39,7 @@ class IQiYiVideo(BaseVideo):
 
             #创建dataframe
             self.create_data(key)
-            break
+
 
 
         #存入excel

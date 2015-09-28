@@ -15,6 +15,7 @@ from selenium import webdriver
 from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
 from util.MyLogger import InfoLogger
+import platform
 
 
 class BaiduVideo(BaseVideo):
@@ -41,7 +42,7 @@ class BaiduVideo(BaseVideo):
             print '*'*20, '暂停1s', '*'*20
             print '\n'
             time.sleep(1)
-            break
+
 
         #存入excel
         print len(self.dfs)
@@ -72,7 +73,7 @@ class BaiduVideo(BaseVideo):
         #普通
         self.parse_data(driver.page_source, 1)
 
-        for i in range(2, self.pagecount):
+        for i in range(2, self.pagecount+1):
             # 模拟点击
             driver.find_element_by_link_text('下一页>').click()
 
@@ -132,10 +133,18 @@ class BaiduVideo(BaseVideo):
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
+    systemName = platform.system()
+    if systemName == 'Windows':
+        key_path = 'C:\Users\Administrator\Desktop\Data\keys-baidu.xlsx'
+        dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
+    else:
+        key_path = 'keys-baidu.xlsx'
+        dir_path = './data/'
 
-    data = pd.read_excel('keys.xlsx', 'Sheet3', index_col=None, na_values=['NA'])
+    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     video = BaiduVideo()
+    video.filePath = dir_path + 'baidu_video.xlsx'
     video.run(data['key'].get_values())
 

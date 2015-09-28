@@ -2,33 +2,36 @@
 
 import sys
 
-#按系统字符集输出(console stdout）
+#鎸夌郴缁熷瓧绗﹂泦杈撳嚭(console stdout锛�
 def encode_wrap(str):
-    sse = sys.stdout.encoding
-    return str.encode(sse)
+    try:
+        sse = sys.stdout.encoding
+        return str.encode(sse)
+    except Exception, e:
+        return str
 
 
 def strQ2B(ustring):
-    """全角转半角"""
+    """鍏ㄨ杞崐瑙�"""
     rstring = ""
     for uchar in ustring:
         inside_code=ord(uchar)
-        if inside_code == 12288:                              #全角空格直接转换
+        if inside_code == 12288:                              #鍏ㄨ绌烘牸鐩存帴杞崲
             inside_code = 32
-        elif (inside_code >= 65281 and inside_code <= 65374): #全角字符（除空格）根据关系转化
+        elif (inside_code >= 65281 and inside_code <= 65374): #鍏ㄨ瀛楃锛堥櫎绌烘牸锛夋牴鎹叧绯昏浆鍖�
             inside_code -= 65248
 
         rstring += unichr(inside_code)
     return rstring
 
 def strB2Q(ustring):
-    """半角转全角"""
+    """鍗婅杞叏瑙�"""
     rstring = ""
     for uchar in ustring:
         inside_code=ord(uchar)
-        if inside_code == 32:                                 #半角空格直接转化
+        if inside_code == 32:                                 #鍗婅绌烘牸鐩存帴杞寲
             inside_code = 12288
-        elif inside_code >= 32 and inside_code <= 126:        #半角字符（除空格）根据关系转化
+        elif inside_code >= 32 and inside_code <= 126:        #鍗婅瀛楃锛堥櫎绌烘牸锛夋牴鎹叧绯昏浆鍖�
             inside_code += 65248
 
         rstring += unichr(inside_code)
@@ -36,8 +39,8 @@ def strB2Q(ustring):
 
 
 if __name__ == '__main__':
-    b = strQ2B("ｍｎ[<123abc博客园".decode('cp936'))
+    b = strQ2B("锝嶏綆[<123abc鍗氬鍥�".decode('cp936'))
     print b
 
-    c = strB2Q("ｍｎ123abc博客园".decode('cp936'))
+    c = strB2Q("锝嶏綆123abc鍗氬鍥�".decode('cp936'))
     print c

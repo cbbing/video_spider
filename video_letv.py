@@ -20,7 +20,7 @@ class LetvVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '乐视'
-        self.general_url = 'http://so.letv.com/s?wd==key' #普通搜索的url
+        self.general_url = 'http://so.letv.com/s?wd=key' #普通搜索的url
         self.filePath = './data/letv_video.xlsx'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
@@ -41,7 +41,7 @@ class LetvVideo(BaseVideo):
             InfoLogger.addLog('暂停%ds' % self.stop)
             print '\n'
             time.sleep(self.stop)
-            break
+
 
         #存入excel
         print len(self.dfs)
@@ -68,7 +68,7 @@ class LetvVideo(BaseVideo):
         f.close()
 
         #专辑
-        #self.parse_data_album(driver.page_source)
+        self.parse_data_album(driver.page_source)
 
         # 模拟点击
         driver.find_element_by_link_text('播放时长').click()

@@ -25,12 +25,15 @@ import platform
 
 if __name__ == "__main__":
 
+    systemName = platform.system()
+    key_path = 'keys.xlsx'
+    if systemName == 'Windows':
+        key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
+
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
-
-    print sse
     t = raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode(sse))
 
     t = t.strip().lower()

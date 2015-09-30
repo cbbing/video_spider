@@ -17,6 +17,9 @@ from video_sohu import SouhuVideo
 from video_iqiyi import IQiYiVideo
 from video_letv import LetvVideo
 from video_huashu import HuashuVideo
+from video_fun import FunVideo
+from video_kankan import KankanVideo
+from video_baofeng import BaofengVideo
 from video_baidu import BaiduVideo
 from util.MyLogger import InfoLogger
 
@@ -94,6 +97,24 @@ if __name__ == "__main__":
         InfoLogger.addLog('begin huashu')
         video = HuashuVideo()
         video.filePath = dir_path + 'huashu_video.xlsx'
+        video.run(keys)
+
+        #9
+        InfoLogger.addLog('begin fun')
+        video = FunVideo()
+        video.filePath = dir_path + 'fun_video.xlsx'
+        video.run(keys)
+
+        #10
+        InfoLogger.addLog('begin kankan')
+        video = KankanVideo()
+        video.filePath = dir_path + 'kankan_video.xlsx'
+        video.run(keys)
+
+        #11
+        InfoLogger.addLog('begin baofeng')
+        video = BaofengVideo()
+        video.filePath = dir_path + 'baofeng_video.xlsx'
         video.run(keys)
 
 

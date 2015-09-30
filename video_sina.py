@@ -63,7 +63,7 @@ class SinaVideo(BaseVideo):
 
         driver.get_screenshot_as_file("show.png")
 
-        f = open('./data/sina.html','w')
+        f = open('./data/data.html','w')
         f.write(driver.page_source)
         f.close()
 

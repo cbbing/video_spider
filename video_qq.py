@@ -63,7 +63,7 @@ class QQVideo(BaseVideo):
 
         driver.get_screenshot_as_file("show.png")
 
-        f = open('./data/qq.html','w')
+        f = open('./data/data.html','w')
         f.write(driver.page_source)
         f.close()
 

@@ -94,7 +94,8 @@ class BaseVideo:
                       'iqiyi':'爱奇艺','letv':'乐视','sina':'新浪视频',
                       'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数',
                       'ifeng':'凤凰视频', '56':'56', '1905':'1905电影网',
-                      'kankan':'响巢看看', 'cntv':'CNTV','ku6':'酷6'}
+                      'kankan':'响巢看看', 'cntv':'CNTV','ku6':'酷6',
+                      'fun':'风行网', 'kankan':'响巢看看','baofeng':'暴风影音'}
 
         try:
             m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]

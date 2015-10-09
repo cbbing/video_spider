@@ -41,7 +41,7 @@ class SokuVideo(BaseVideo):
 
             print '\n'*2
             #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
-            InfoLogger.addLog('暂停%ds' % self.stop)
+            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
             print '\n'*2
             time.sleep(self.stop)
 
@@ -57,7 +57,7 @@ class SokuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        InfoLogger.addLog('暂停%ds' % self.stop)
+        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
         print '\n'
         time.sleep(self.stop)
@@ -77,7 +77,7 @@ class SokuVideo(BaseVideo):
                 r = requests.get(soku_url)
                 self.parse_data(r.text, i+1, lengthtype)
 
-                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
+                self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 print '\n'
                 time.sleep(self.stop)
@@ -105,15 +105,15 @@ class SokuVideo(BaseVideo):
                 item.page = 1
                 item.durationType = '专辑'
 
-                InfoLogger.addLog('标题:%s' % drama['title'])
-                InfoLogger.addLog('链接:%s' % href)
+                self.infoLogger.logger.info(encode_wrap('标题:%s' % drama['title']))
+                self.infoLogger.logger.info(encode_wrap('链接:%s' % href))
                 # print '标题:'.decode('utf8'),drama['title'].decode('utf8')
                 # print '链接:'.decode('utf8'),href
                 self.items.append(item)
 
             except Exception, e:
                 #print str(e)
-                ErrorLogger.addLog(str(e))
+                self.errorLogger.logger.info(encode_wrap(str(e)))
 
 
 
@@ -129,8 +129,8 @@ class SokuVideo(BaseVideo):
             titleAndLink = drama.find('a')
 
             if titleAndLink:
-                InfoLogger.addLog('标题:%s' % titleAndLink['title'])
-                InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
+                self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 #print '标题:'.decode('utf8'),titleAndLink['title'].decode('gb18030')
                 #print '链接:'.decode('utf8'),titleAndLink['href']
 
@@ -141,7 +141,7 @@ class SokuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    ErrorLogger.addLog('未找到对应的时长类型!')
+                    self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
                 self.items.append(item)
                 # self.titles.append(titleAndLink['title'])
@@ -153,7 +153,7 @@ class SokuVideo(BaseVideo):
             titleAndImg = drama.findAll('img')
 
             if titleAndImg:
-                InfoLogger.addLog('标题:%s' % titleAndImg[0]['alt'])
+                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndImg[0]['alt']))
                 #print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
                 #print '图片链接:',titleAndImg[0]['src']
 
@@ -161,7 +161,7 @@ class SokuVideo(BaseVideo):
                     if item.title == titleAndImg[0]['alt']:
                         vTime = dramaList[0].findAll('div')
                         if len(vTime) > 3:
-                            InfoLogger.addLog('时长:%s' % vTime[3].text)
+                            self.infoLogger.logger.info(encode_wrap('时长:%s' % vTime[3].text))
                             #print '时长:'.decode('utf8'),vTime[3].text
                             item.duration = vTime[3].text
                             break

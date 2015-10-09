@@ -14,8 +14,9 @@ from pandas import Series, DataFrame
 from selenium import webdriver
 from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
-from util.MyLogger import InfoLogger
+from util.MyLogger import Logger
 import platform
+
 
 
 class BaiduVideo(BaseVideo):
@@ -55,8 +56,8 @@ class BaiduVideo(BaseVideo):
         baidu_url = self.general_url
         baidu_url = baidu_url.replace('key',key)
 
-        InfoLogger.addLog('start phantomjs')
-        InfoLogger.addLog(baidu_url)
+        self.infoLogger.logger.info('start phantomjs')
+        self.infoLogger.logger.info(baidu_url)
         #print 'start phantomjs'
         #print baidu_url
 
@@ -77,13 +78,13 @@ class BaiduVideo(BaseVideo):
             # 模拟点击
             driver.find_element_by_link_text('下一页>').click()
 
-            InfoLogger.addLog('%s, 第%d页' % (key, i))
+            self.infoLogger.logger.info(encode_wrap('%s, 第%d页' % (key, i)))
             print '\n'
             #time.sleep(3)
 
             self.parse_data(driver.page_source, i)
 
-        InfoLogger.addLog('stop phantomjs')
+        self.infoLogger.logger.info('stop phantomjs')
 
         driver.quit()
 
@@ -114,21 +115,21 @@ class BaiduVideo(BaseVideo):
 
                         #百度链接转真实url
                         driver_each.get(item.href)
-                        InfoLogger.addLog(driver_each.current_url)
+                        self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
                         item.href = driver_each.current_url
 
-                        InfoLogger.addLog('标题:%s' % item.title)
-                        InfoLogger.addLog('链接:%s' % item.href)
+                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
+                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
                         self.items.append(item)
 
                 except Exception,e:
-                    ErrorLogger.addLog(str(e))
+                    self.errorLogger.logger.info(encode_wrap(str(e)))
 
             driver_each.quit()
 
         except Exception, e:
-            ErrorLogger.addLog(str(e))
+            self.errorLogger.logger.info(encode_wrap(str(e)))
 
 
 if __name__=='__main__':

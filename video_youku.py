@@ -21,7 +21,7 @@ class YoukuVideo(SokuVideo):
 
 if __name__=='__main__':
 
-    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = YoukuVideo()

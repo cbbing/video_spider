@@ -38,7 +38,7 @@ class LetvVideo(BaseVideo):
             self.create_data(key)
 
             print '\n'
-            InfoLogger.addLog('暂停%ds' % self.stop)
+            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
             print '\n'
             time.sleep(self.stop)
 
@@ -54,8 +54,8 @@ class LetvVideo(BaseVideo):
         letv_url = self.general_url
         letv_url = letv_url.replace('key',key)
 
-        InfoLogger.addLog('start phantomjs')
-        InfoLogger.addLog(letv_url)
+        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        self.infoLogger.logger.info(encode_wrap(letv_url))
 
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -87,7 +87,7 @@ class LetvVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                InfoLogger.addLog('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -99,7 +99,7 @@ class LetvVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页').click()
 
-                        InfoLogger.addLog('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
+                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
                         #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
                         print '\n'
                         time.sleep(self.stop)
@@ -109,15 +109,15 @@ class LetvVideo(BaseVideo):
                         self.parse_data(driver.page_source, i+2, lengthtype)
 
                 except Exception,e:
-                    InfoLogger.addLog('未达到%d页，提前结束' % self.pagecount)
+                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
 
 
             except Exception,e:
-                ErrorLogger.addLog(str(e))
+                self.errorLogger.logger.info(encode_wrap(str(e)))
 
 
         driver.quit()
-        InfoLogger.addLog('parse phantomjs success ')
+        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
 
     # 专辑搜索
@@ -146,18 +146,18 @@ class LetvVideo(BaseVideo):
                         #链接转真实url
                         driver_each.get(item.href)
                         time.sleep(3)
-                        InfoLogger.addLog(driver_each.current_url)
+                        self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
                         item.href = driver_each.current_url
 
-                        InfoLogger.addLog('标题:%s' % item.title)
-                        InfoLogger.addLog('链接:%s' % item.href)
+                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
+                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
                         item.page = 1
                         item.durationType = '专辑'
 
                         self.items.append(item)
                 except Exception,e:
-                    ErrorLogger.addLog( "专辑解析出错:%s" % str(e))
+                    self.errorLogger.logger.info(encode_wrap( "专辑解析出错:%s" % str(e)))
 
                 driver_each.quit()
 
@@ -172,8 +172,8 @@ class LetvVideo(BaseVideo):
                         titleAndLink = drama.find('a')
                         item = DataItem()
 
-                        InfoLogger.addLog('标题:' + titleAndLink['title'])
-                        InfoLogger.addLog('链接:' + titleAndLink['href'])
+                        self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+                        self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
                         item.title = titleAndLink['title']
                         item.href = titleAndLink['href']
 
@@ -183,7 +183,7 @@ class LetvVideo(BaseVideo):
                         self.items.append(item)
 
                 except Exception, e:
-                    ErrorLogger.addLog("片花解析出错" + str(e))
+                    self.errorLogger.logger.info(encode_wrap("片花解析出错" + str(e)))
                     #print "片花解析出错", str(e)
 
         except Exception, e:
@@ -209,32 +209,32 @@ class LetvVideo(BaseVideo):
 
                             item = DataItem()
 
-                            InfoLogger.addLog('标题:' + titleAndLink['title'])
-                            InfoLogger.addLog('链接:' + titleAndLink['href'])
+                            self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+                            self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
 
                             item.title = titleAndLink['title']
                             item.href = titleAndLink['href']
 
                             durationTag = titleAndLink.find('b', attrs={'class':'tmbg'})
                             if durationTag:
-                                InfoLogger.addLog('时长:' + durationTag.text)
+                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
                                 item.duration = durationTag.text
 
                             item.page = page
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                ErrorLogger.addLog('未找到对应的时长类型!')
+                                self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
                             self.items.append(item)
 
                     except Exception,e:
-                        ErrorLogger.addLog(str(e))
-                        #print str(e)
+                        self.errorLogger.logger.info(encode_wrap(str(e)))
+
 
         except Exception, e:
-            ErrorLogger.addLog(str(e))
-            print str(e)
+            self.errorLogger.logger.info(encode_wrap(str(e)))
+
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

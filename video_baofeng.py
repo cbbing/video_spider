@@ -37,7 +37,7 @@ class BaofengVideo(BaseVideo):
             self.create_data(key)
 
             print '\n'
-            InfoLogger.addLog('暂停%ds' % self.stop)
+            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
             print '\n'
             time.sleep(self.stop)
 
@@ -51,8 +51,8 @@ class BaofengVideo(BaseVideo):
         fun_url = self.general_url
         fun_url = fun_url.replace('key',key)
 
-        InfoLogger.addLog('start phantomjs')
-        InfoLogger.addLog(fun_url)
+        self.infoLogger.logger.info('start phantomjs')
+        self.infoLogger.logger.info(fun_url)
 
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -74,7 +74,7 @@ class BaofengVideo(BaseVideo):
                 driver.find_element_by_link_text('下一页').click()
 
                 print '\n'
-                InfoLogger.addLog('下一页:%d, 暂停%ds' % ((i+2), self.stop))
+                self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -83,11 +83,11 @@ class BaofengVideo(BaseVideo):
                 self.parse_data(driver.page_source, i+2, 0)
 
         except Exception,e:
-            InfoLogger.addLog('未达到%d页，提前结束' % self.pagecount)
+            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
 
 
         driver.quit()
-        InfoLogger.addLog('parse phantomjs success ')
+        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
 
     # 普通搜索
@@ -114,12 +114,12 @@ class BaofengVideo(BaseVideo):
                             if not 'baofeng' in item.href:
                                 item.href = 'http://www.baofeng.com' + item.href
 
-                            InfoLogger.addLog('标题:' + item.title)
-                            InfoLogger.addLog('链接:' + item.href)
+                            self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                            self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                             durationTag = titleAndLink.find('span', attrs={'class':'search-video-time'})
                             if durationTag:
-                                InfoLogger.addLog('时长:' + durationTag.text)
+                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
                                 #print '时长:',durationTag.text
                                 item.duration = durationTag.text
 
@@ -127,16 +127,16 @@ class BaofengVideo(BaseVideo):
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                ErrorLogger.addLog('未找到对应的时长类型!')
+                                self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
                             self.items.append(item)
 
                         except Exception,e:
-                            ErrorLogger.addLog(str(e))
+                            self.errorLogger.logger.info(encode_wrap(str(e)))
 
 
         except Exception, e:
-            ErrorLogger.addLog(str(e))
+            self.errorLogger.logger.info(encode_wrap(str(e)))
             print str(e)
 
 if __name__=='__main__':

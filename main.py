@@ -6,6 +6,8 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 sse = sys.stdout.encoding
 
+from multiprocessing.dummy import Pool as ThreadPool
+
 import time
 import shutil
 import pandas as pd
@@ -25,6 +27,87 @@ from util.MyLogger import InfoLogger
 
 import platform
 
+def run(index):
+
+    try:
+        if index == 1:
+            #1
+            print 'begin youku'
+            video = YoukuVideo()
+            video.filePath = dir_path + 'youku_video.xlsx'
+            video.run(keys)
+
+        elif index == 2:
+            #2
+            print 'begin tudou'
+            video = TudouVideo()
+            video.filePath = dir_path + 'tudou_video.xlsx'
+            video.run(keys)
+
+        elif index == 3:
+            #3
+            print 'begin sina'
+            video = SinaVideo()
+            video.filePath = dir_path + 'sina_video.xlsx'
+            video.run(keys)
+
+        elif index == 4:
+            #4
+            print 'begin sohu'
+            video = SouhuVideo()
+            video.filePath = dir_path + 'sohu_video.xlsx'
+            video.run(keys)
+
+        elif index == 5:
+            #5
+            print 'begin qq'
+            video = QQVideo()
+            video.filePath = dir_path + 'qq_video.xlsx'
+            video.run(keys)
+
+        elif index == 6:
+            #6
+            print 'begin iqiyi'
+            video = IQiYiVideo()
+            video.filePath = dir_path + 'iqiyi_video.xlsx'
+            video.run(keys)
+
+        elif index == 7:
+            #7
+            print 'begin letv'
+            video = LetvVideo()
+            video.filePath = dir_path + 'letv_video.xlsx'
+            video.run(keys)
+
+        elif index == 8:
+            #8
+            print 'begin huashu'
+            video = HuashuVideo()
+            video.filePath = dir_path + 'huashu_video.xlsx'
+            video.run(keys)
+
+        elif index == 9:
+            #9
+            print 'begin fun'
+            video = FunVideo()
+            video.filePath = dir_path + 'fun_video.xlsx'
+            video.run(keys)
+
+        elif index == 10:
+            #10
+            print 'begin kankan'
+            video = KankanVideo()
+            video.filePath = dir_path + 'kankan_video.xlsx'
+            video.run(keys)
+
+        elif index == 11:
+            #11
+            print 'begin baofeng'
+            video = BaofengVideo()
+            video.filePath = dir_path + 'baofeng_video.xlsx'
+            video.run(keys)
+    except Exception, e:
+        print '编号:%d, 运行出错' % index
 
 if __name__ == "__main__":
 
@@ -51,72 +134,12 @@ if __name__ == "__main__":
         else:
             dir_path = './data/'
 
-        #1
-        InfoLogger.addLog('begin youku')
-        video = YoukuVideo()
-        video.filePath = dir_path + 'youku_video.xlsx'
-        video.run(keys)
 
-        #2
-        InfoLogger.addLog('begin tudou')
-        video = TudouVideo()
-        video.filePath = dir_path + 'tudou_video.xlsx'
-        video.run(keys)
-
-        #3
-        InfoLogger.addLog('begin sina')
-        video = SinaVideo()
-        video.filePath = dir_path + 'sina_video.xlsx'
-        video.run(keys)
-
-        #4
-        InfoLogger.addLog('begin sohu')
-        video = SouhuVideo()
-        video.filePath = dir_path + 'sohu_video.xlsx'
-        video.run(keys)
-
-        #5
-        InfoLogger.addLog('begin qq')
-        video = QQVideo()
-        video.filePath = dir_path + 'qq_video.xlsx'
-        video.run(keys)
-
-        #6
-        InfoLogger.addLog('begin iqiyi')
-        video = IQiYiVideo()
-        video.filePath = dir_path + 'iqiyi_video.xlsx'
-        video.run(keys)
-
-        #7
-        InfoLogger.addLog('begin letv')
-        video = LetvVideo()
-        video.filePath = dir_path + 'letv_video.xlsx'
-        video.run(keys)
-
-        #8
-        InfoLogger.addLog('begin huashu')
-        video = HuashuVideo()
-        video.filePath = dir_path + 'huashu_video.xlsx'
-        video.run(keys)
-
-        #9
-        InfoLogger.addLog('begin fun')
-        video = FunVideo()
-        video.filePath = dir_path + 'fun_video.xlsx'
-        video.run(keys)
-
-        #10
-        InfoLogger.addLog('begin kankan')
-        video = KankanVideo()
-        video.filePath = dir_path + 'kankan_video.xlsx'
-        video.run(keys)
-
-        #11
-        InfoLogger.addLog('begin baofeng')
-        video = BaofengVideo()
-        video.filePath = dir_path + 'baofeng_video.xlsx'
-        video.run(keys)
-
+        indexs = range(1, 12)
+        pool = ThreadPool(processes=20)
+        pool.map(run, indexs)
+        pool.close()
+        pool.join()
 
     else:
         print '>>>  exit  >>>'

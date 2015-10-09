@@ -53,7 +53,7 @@ class HuashuVideo(BaseVideo):
         r = requests.get(album_url)
         #self.parse_data_album(r.text)
 
-        InfoLogger.addLog('暂停%ds' % self.stop)
+        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         #print '*'*20, '暂停5s', '*'*20
         print '\n'
         time.sleep(self.stop)
@@ -75,7 +75,7 @@ class HuashuVideo(BaseVideo):
                 self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
-                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
+                self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
                 print '\n'
                 time.sleep(self.stop)
@@ -96,8 +96,8 @@ class HuashuVideo(BaseVideo):
 
                         item = DataItem()
 
-                        InfoLogger.addLog('标题:' + drama['title'])
-                        InfoLogger.addLog('链接:' + drama['href'])
+                        self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
+                        self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
                         item.title = drama['title']
                         item.href = drama['href']
 
@@ -109,10 +109,10 @@ class HuashuVideo(BaseVideo):
 
                         self.items.append(item)
                 except Exception,e:
-                    print str(e)
+                    self.errorLogger.logger.error(str(e))
 
         except Exception, e:
-                print str(e)
+                self.errorLogger.logger.error(str(e))
 
 
     # 普通
@@ -127,8 +127,8 @@ class HuashuVideo(BaseVideo):
 
             titleAndLink = drama.find('a')
             if titleAndLink:
-                InfoLogger.addLog('标题:' + titleAndLink['title'])
-                InfoLogger.addLog('链接:' + titleAndLink['href'])
+                self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+                self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
                 item.title = titleAndLink['title']
                 item.href = titleAndLink['href']
 
@@ -143,7 +143,7 @@ class HuashuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    ErrorLogger.addLog('未找到对应的时长类型!')
+                    self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
                 self.items.append(item)
 

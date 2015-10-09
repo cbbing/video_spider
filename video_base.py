@@ -12,7 +12,8 @@ sys.setdefaultencoding("utf-8")
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-from util.MyLogger import InfoLogger, ErrorLogger
+from util.MyLogger import Logger
+from util.codeConvert import encode_wrap
 
 class BaseVideo:
     def __init__(self):
@@ -27,6 +28,10 @@ class BaseVideo:
         self.engine = ''
 
         self.stop = 3 # 暂停3s
+
+        self.infoLogger = Logger(logname='./data/log/info.log', logger='I')
+        self.errorLogger = Logger(logname='./data/log/error.log', logger='E')
+
 
 
     def create_data(self, key):
@@ -49,9 +54,9 @@ class BaseVideo:
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
         print df[:10]
 
-        InfoLogger.addLog('去重前，总个数:%d' % len(df))
+        self.infoLogger.logger.info(encode_wrap('去重前，总个数:%d' % len(df)))
         df = df.drop_duplicates(['Href'])
-        InfoLogger.addLog('去重后，总个数:%d' % len(df))
+        self.infoLogger.logger.info(encode_wrap('去重后，总个数:%d' % len(df)))
         self.dfs.append((key, df))
 
 
@@ -83,7 +88,7 @@ class BaseVideo:
                 df.to_excel(writer, sheet_name=key)
                 #df.to_csv("./data/letv_video.csv")
                 #break
-        InfoLogger.addLog('写入excel完成')
+        self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 
     def getNowTime(self):
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -102,7 +107,7 @@ class BaseVideo:
             key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:
-            ErrorLogger.addLog(str(e))
+            self.errorLogger.logger.info(encode_wrap(str(e)))
             return ''
 
 

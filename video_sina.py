@@ -38,7 +38,7 @@ class SinaVideo(BaseVideo):
 
             print '\n'
 
-            InfoLogger.addLog('暂停%ds' % self.stop)
+            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
             #print '*'*20, '暂停10s', '*'*20
             print '\n'
             time.sleep(self.stop)
@@ -53,8 +53,8 @@ class SinaVideo(BaseVideo):
         qq_url = self.general_url
         qq_url = qq_url.replace('key',key)
 
-        InfoLogger.addLog('start phantomjs')
-        InfoLogger.addLog(qq_url)
+        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        self.infoLogger.logger.info(encode_wrap(qq_url))
         #print 'start phantomjs'
         #print qq_url
         #driver = webdriver.PhantomJS()
@@ -88,7 +88,7 @@ class SinaVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                InfoLogger.addLog('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
                 #print '*'*20, '%s, 第一页,暂停3s' % buttonText, '*'*20
                 print '\n'
                 time.sleep(self.stop)
@@ -101,7 +101,7 @@ class SinaVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页>').click()
 
-                        InfoLogger.addLog('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop)
+                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop))
                         #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
                         print '\n'
                         time.sleep(self.stop)
@@ -110,12 +110,12 @@ class SinaVideo(BaseVideo):
                         self.parse_data(driver.page_source, i+2, lengthtype)
 
                 except Exception,e:
-                    ErrorLogger.addLog('未达到%d页，提前结束' % self.pagecount)
+                    self.errorLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
                     #print '未达到%d页，提前结束' % self.pagecount
 
 
             except Exception,e:
-                ErrorLogger.addLog(str(e))
+                self.errorLogger.logger.info(encode_wrap(str(e)))
                 #print str(e)
 
         driver.quit()
@@ -140,8 +140,8 @@ class SinaVideo(BaseVideo):
 
                     item = DataItem()
 
-                    InfoLogger.addLog('标题:%s' % titleAndLink.get_text())
-                    InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                    self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink.get_text()))
+                    self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                     #print '标题:',titleAndLink.get_text()
                     #print '链接:',titleAndLink['href']
                     item.title = titleAndLink.get_text()
@@ -149,7 +149,7 @@ class SinaVideo(BaseVideo):
 
                     durationTag = source.find('span', attrs={'class':'card_time'})
                     if durationTag:
-                        InfoLogger.addLog('时长:',durationTag.text)
+                        self.infoLogger.logger.info(encode_wrap('时长:',durationTag.text))
                         #print '时长:',durationTag.text
                         item.duration = durationTag.text
 
@@ -157,12 +157,12 @@ class SinaVideo(BaseVideo):
                     try:
                         item.durationType = self.timelengthDict[int(lengthType)]
                     except Exception,e:
-                        ErrorLogger.addLog('未找到对应的时长类型!')
+                        self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
                     self.items.append(item)
 
                 except Exception,e:
-                    ErrorLogger.addLog(str(e))
+                    self.errorLogger.logger.info(encode_wrap(str(e)))
                     #print str(e)
 
 if __name__=='__main__':

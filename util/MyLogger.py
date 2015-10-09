@@ -24,7 +24,7 @@ format_dict = {
 
 #日志系统， 既把日志输出到控制台， 还要写入日志文件
 class Logger():
-    def __init__(self, logname='', loglevel=3, logger='logger'):
+    def __init__(self, logname='', loglevel=1, logger='logger'):
         '''
            指定保存日志的文件路径，日志级别，以及调用文件
            将日志存入到指定的文件中
@@ -39,6 +39,8 @@ class Logger():
             cf.read('../config.ini')
             logname = cf.get('log','info_log_name')
 
+
+        #hdlr=logging.basicConfig(logname,level=logging.NOTSET,format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
         # 创建一个handler，用于写入日志文件
         #fh = logging.handlers.TimedRotatingFileHandler(logname, 'D')

@@ -54,7 +54,7 @@ class SouhuVideo(BaseVideo):
         r = requests.get(album_url)
         self.parse_data_album(r.text)
 
-        InfoLogger.addLog('暂停%ds' % self.stop)
+        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         #print '*'*20, encode_wrap('暂停10s'), '*'*20
         print '\n'
         time.sleep(self.stop)
@@ -74,7 +74,7 @@ class SouhuVideo(BaseVideo):
                 self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
-                InfoLogger.addLog('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype))
+                self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
                 print '\n'
                 time.sleep(self.stop)
@@ -94,8 +94,8 @@ class SouhuVideo(BaseVideo):
 
                     item = DataItem()
 
-                    InfoLogger.addLog('标题:%s' % titleAndLink['title'])
-                    InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                    self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
+                    self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                     #print encode_wrap('标题:%s' % titleAndLink['title'])
                     #print encode_wrap('链接:%s' % titleAndLink['href'])
                     item.title = titleAndLink['title']
@@ -105,7 +105,7 @@ class SouhuVideo(BaseVideo):
 
                     self.items.append(item)
         except Exception, e:
-            ErrorLogger.addLog(str(e))
+            self.errorLogger.logger.info(encode_wrap(str(e)))
             print str(e)
 
 
@@ -121,8 +121,8 @@ class SouhuVideo(BaseVideo):
 
             titleAndLink = drama.find('a')
             if titleAndLink:
-                InfoLogger.addLog('标题:%s' % titleAndLink['title'])
-                InfoLogger.addLog('链接:%s' % titleAndLink['href'])
+                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
+                self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 # print '标题:',titleAndLink['title']
                 # print '链接:',titleAndLink['href']
                 item.title = titleAndLink['title']
@@ -136,7 +136,7 @@ class SouhuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    ErrorLogger.addLog('未找到对应的时长类型!')
+                    self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
 
 
             self.items.append(item)

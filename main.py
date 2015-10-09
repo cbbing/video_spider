@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
 
         indexs = range(1, 12)
-        pool = ThreadPool(processes=20)
+        pool = ThreadPool(processes=11)
         pool.map(run, indexs)
         pool.close()
         pool.join()

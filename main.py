@@ -24,6 +24,7 @@ from video_kankan import KankanVideo
 from video_baofeng import BaofengVideo
 from video_baidu import BaiduVideo
 from util.MyLogger import InfoLogger
+from util.codeConvert import encode_wrap
 
 import platform
 
@@ -119,7 +120,7 @@ def run(index):
             video.filePath = dir_path + 'baofeng_video.xlsx'
             video.run(keys)
     except Exception, e:
-        print '编号:%d, 运行出错' % index
+        print encode_wrap('编号:%d, 运行出错' % index)
 
 def run_all():
 
@@ -133,10 +134,10 @@ def run_all():
         data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
         print data
     except Exception, e:
-        print 'excel表读取错误，程序退出！'
+        print encode_wrap('excel表读取错误，程序退出！')
         return
 
-    print '请确认以上关键字, 10s后继续...'
+    print encode_wrap('请确认以上关键字, 10s后继续...')
     time.sleep(10)
 
     indexs = range(1, 12)
@@ -158,11 +159,11 @@ def run_each():
              '9：风行\n' \
              '10：响巢看看\n' \
              '11：暴风影音\n(输入数字):'
-    raw = raw_input(prompt)
+    raw = raw_input(encode_wrap(prompt))
     try:
         run(int(raw))
     except Exception, e:
-        print '请输入正确的序号'
+        print encode_wrap('请输入正确的序号')
 
 
 if __name__ == "__main__":

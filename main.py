@@ -120,7 +120,9 @@ if __name__ == "__main__":
     data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
-    t = raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode(sse))
+    print '请确认以上关键字, 10s后继续...'
+    time.sleep(10)
+    t = 'yes' #raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode(sse))
 
     t = t.strip().lower()
 

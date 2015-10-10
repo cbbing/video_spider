@@ -29,6 +29,18 @@ import platform
 
 def run(index):
 
+    systemName = platform.system()
+    if systemName == 'Windows':
+        dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
+    else:
+        dir_path = './data/'
+
+    key_path = 'keys.xlsx'
+    if systemName == 'Windows':
+        key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
+    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+    keys = data['key'].get_values()
+
     try:
         if index == 1:
             #1
@@ -109,7 +121,7 @@ def run(index):
     except Exception, e:
         print '编号:%d, 运行出错' % index
 
-if __name__ == "__main__":
+def run_all():
 
     systemName = platform.system()
     key_path = 'keys.xlsx'
@@ -117,33 +129,50 @@ if __name__ == "__main__":
         key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
-    print data
+    try:
+        data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+        print data
+    except Exception, e:
+        print 'excel表读取错误，程序退出！'
+        return
 
     print '请确认以上关键字, 10s后继续...'
     time.sleep(10)
-    t = 'yes' #raw_input("请确认以上关键字(输入 yes 继续,  其它键退出): ".encode(sse))
 
-    t = t.strip().lower()
+    indexs = range(1, 12)
+    pool = ThreadPool(processes=11)
+    pool.map(run, indexs)
+    pool.close()
+    pool.join()
 
-    if ( t == 'yes'):
+def run_each():
+    prompt = '请选择序号：\n' \
+             '1：优酷\n' \
+             '2：土豆\n' \
+             '3：新浪视频\n' \
+             '4：搜狐视频\n' \
+             '5：腾讯视频\n' \
+             '6：爱奇艺\n' \
+             '7：乐视\n' \
+             '8：华数\n' \
+             '9：风行\n' \
+             '10：响巢看看\n' \
+             '11：暴风影音\n(输入数字):'
+    raw = raw_input(prompt)
+    try:
+        run(int(raw))
+    except Exception, e:
+        print '请输入正确的序号'
 
-        keys = data['key'].get_values()
 
-        systemName = platform.system()
-        if systemName == 'Windows':
-            dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
-        else:
-            dir_path = './data/'
+if __name__ == "__main__":
+    print "arg len:", len(sys.argv)
+    for arg in sys.argv:
+        print arg, type(arg)
+    if len(sys.argv) == 2:
+        type = sys.argv[1]
 
-
-        indexs = range(1, 12)
-        pool = ThreadPool(processes=11)
-        pool.map(run, indexs)
-        pool.close()
-        pool.join()
-
+    if len(sys.argv) > 1:
+        run_each()
     else:
-        print '>>>  exit  >>>'
-        time.sleep(1)
-
+        run_all()

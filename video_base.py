@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 #抓取优酷搜索结果
-import sys
+import sys, os
 import time
 import re
 import ConfigParser
@@ -19,6 +19,7 @@ class BaseVideo:
     def __init__(self):
 
         cf = ConfigParser.ConfigParser()
+        print os.getcwd()
         cf.read("config.ini")
 
         self.dfs = []

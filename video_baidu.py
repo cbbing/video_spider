@@ -115,6 +115,13 @@ class BaiduVideo(BaseVideo):
 
                         #百度链接转真实url
                         driver_each.get(item.href)
+
+                        #过滤无效视频
+                        if 'error' in driver_each.current_url:
+                            continue
+                        if '好像不能看了' in driver_each.page_source:
+                            continue
+
                         self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
                         item.href = driver_each.current_url
 

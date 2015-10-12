@@ -9,7 +9,6 @@ import re
 from video_base import *
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-from util.MyLogger import InfoLogger, ErrorLogger
 
 reload(sys)
 sys.setdefaultencoding("utf-8")

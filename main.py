@@ -8,7 +8,7 @@ sse = sys.stdout.encoding
 
 from multiprocessing.dummy import Pool as ThreadPool
 
-import time
+import time, os
 import shutil
 import pandas as pd
 from video_youku import YoukuVideo
@@ -23,7 +23,6 @@ from video_fun import FunVideo
 from video_kankan import KankanVideo
 from video_baofeng import BaofengVideo
 from video_baidu import BaiduVideo
-from util.MyLogger import InfoLogger
 from util.codeConvert import encode_wrap
 
 import platform
@@ -31,12 +30,14 @@ import platform
 def run(index):
 
     systemName = platform.system()
+
     if systemName == 'Windows':
         dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
     else:
         dir_path = './data/'
 
     key_path = 'keys.xlsx'
+
     if systemName == 'Windows':
         key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
     data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
@@ -120,12 +121,14 @@ def run(index):
             video.filePath = dir_path + 'baofeng_video.xlsx'
             video.run(keys)
     except Exception, e:
-        print encode_wrap('编号:%d, 运行出错' % index)
+        print encode_wrap('编号:%d, 运行出错' % index), str(e)
 
 def run_all():
 
     systemName = platform.system()
+    print os.getcwd()
     key_path = 'keys.xlsx'
+
     if systemName == 'Windows':
         key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
 
@@ -141,7 +144,7 @@ def run_all():
     time.sleep(10)
 
     indexs = range(1, 12)
-    pool = ThreadPool(processes=11)
+    pool = ThreadPool(processes=1)
     pool.map(run, indexs)
     pool.close()
     pool.join()

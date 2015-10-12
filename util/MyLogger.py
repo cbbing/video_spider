@@ -76,8 +76,8 @@ class Logger():
             self.logger.error(encode_wrap(msg))
 
 
-ErrorLogger = Logger(logname='./data/log/error.log', logger='error')
-InfoLogger = Logger(logname='./data/log/info.log', logger='info')
+#ErrorLogger = Logger(logname='./data/log/error.log', logger='error')
+#InfoLogger = Logger(logname='./data/log/info.log', logger='info')
 
 if __name__ == "__main__":
 

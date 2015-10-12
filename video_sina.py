@@ -14,7 +14,7 @@ from pandas import Series, DataFrame
 from selenium import webdriver
 from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
-from util.MyLogger import InfoLogger, ErrorLogger
+
 
 class SinaVideo(BaseVideo):
     def __init__(self):

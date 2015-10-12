@@ -14,7 +14,7 @@ import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
 from util.codeConvert import *
-from util.MyLogger import InfoLogger, ErrorLogger
+
 
 class SouhuVideo(BaseVideo):
     def __init__(self):

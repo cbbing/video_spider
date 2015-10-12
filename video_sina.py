@@ -24,6 +24,9 @@ class SinaVideo(BaseVideo):
         self.filePath = './data/sina_video.xlsx'
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
+        self.infoLogger = Logger(logname='./data/log/info_sina.log', logger='I')
+        self.errorLogger = Logger(logname='./data/log/error_sina.log', logger='E')
+
     def run(self, keys):
         for key in keys:
             # 初始化
@@ -164,6 +167,7 @@ class SinaVideo(BaseVideo):
                 except Exception,e:
                     self.errorLogger.logger.info(encode_wrap(str(e)))
                     #print str(e)
+
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

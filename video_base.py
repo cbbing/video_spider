@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 from util.MyLogger import Logger
 from util.codeConvert import encode_wrap
+from selenium import webdriver
 
 class BaseVideo:
     def __init__(self):
@@ -30,8 +31,8 @@ class BaseVideo:
 
         self.stop = 3 # 暂停3s
 
-        self.infoLogger = Logger(logname='./data/log/info.log', logger='I')
-        self.errorLogger = Logger(logname='./data/log/error.log', logger='E')
+        self.infoLogger = Logger(logname='./data/log/info_baidu.log', logger='I')
+        self.errorLogger = Logger(logname='./data/log/error_baidu.log', logger='E')
 
 
 
@@ -57,6 +58,8 @@ class BaseVideo:
 
         self.infoLogger.logger.info(encode_wrap('去重前，总个数:%d' % len(df)))
         df = df.drop_duplicates(['Href'])
+        #过滤无效的视频
+        self.filter_involt_video(df)
         self.infoLogger.logger.info(encode_wrap('去重后，总个数:%d' % len(df)))
         self.dfs.append((key, df))
 
@@ -81,6 +84,23 @@ class BaseVideo:
                 items_temp.append(item)
 
         self.items = items_temp
+
+    def filter_involt_video(self, df):
+
+        driver = webdriver.PhantomJS()
+
+        for i in range(len(df)):
+            se = df.loc[i]
+            print se
+            driver.get(se['Href'])
+
+            #过滤无效视频
+            if 'error' in driver.current_url or '好像不能看了' in driver.page_source:
+                print se
+                df.drop(se.name)
+
+
+        driver.quit()
 
     def data_to_excel(self):
 

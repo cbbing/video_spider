@@ -116,12 +116,25 @@ class BaseVideo:
 
     # 判断视频来源
     def get_video_source(self, url):
-        dictSource = {'hunantv':'芒果TV', 'youku':'优酷', 'tudou':'土豆',
-                      'iqiyi':'爱奇艺','letv':'乐视','sina':'新浪视频',
-                      'sohu':'搜狐视频', 'qq':'腾讯视频','wasu':'华数',
-                      'ifeng':'凤凰视频', '56':'56', '1905':'1905电影网',
-                      'kankan':'响巢看看', 'cntv':'CNTV','ku6':'酷6',
-                      'fun':'风行网', 'kankan':'响巢看看','baofeng':'暴风影音'}
+        dictSource = {'hunantv':'芒果TV',
+                      'youku':'优酷',
+                      'tudou':'土豆',
+                      'iqiyi':'爱奇艺',
+                      'letv':'乐视',
+                      'sina':'新浪视频',
+                      'sohu':'搜狐视频',
+                      'qq':'腾讯视频',
+                      'wasu':'华数',
+                      'ifeng':'凤凰视频',
+                      '56':'56',
+                      '1905':'1905电影网',
+                      'kankan':'响巢看看',
+                      'cntv':'CNTV',
+                      'ku6':'酷6',
+                      'fun':'风行网',
+                      'kankan':'响巢看看',
+                      'baofeng':'暴风影音',
+                      'baomihua':'爆米花'}
 
         try:
             m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]

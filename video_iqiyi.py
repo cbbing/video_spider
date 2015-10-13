@@ -19,7 +19,7 @@ class IQiYiVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '爱奇艺'
         self.album_url = 'http://so.iqiyi.com/so/q_key' #专辑的url
-        self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site__m_1_bitrate_' #普通搜索的url
+        self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_' #普通搜索的url
         self.filePath = './data/iqiyi_video.xlsx'
 
         self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
@@ -131,7 +131,7 @@ class IQiYiVideo(BaseVideo):
             try:
                 item.durationType = self.timelengthDict[int(lengthType)]
             except Exception,e:
-                self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
+                self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
             self.items.append(item)
 

@@ -113,12 +113,12 @@ class SinaVideo(BaseVideo):
                         self.parse_data(driver.page_source, i+2, lengthtype)
 
                 except Exception,e:
-                    self.errorLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.errorLogger.logger.error(encode_wrap('未达到%d页，提前结束' % self.pagecount))
                     #print '未达到%d页，提前结束' % self.pagecount
 
 
             except Exception,e:
-                self.errorLogger.logger.info(encode_wrap(str(e)))
+                self.errorLogger.logger.error(encode_wrap(str(e)))
                 #print str(e)
 
         driver.quit()
@@ -160,12 +160,12 @@ class SinaVideo(BaseVideo):
                     try:
                         item.durationType = self.timelengthDict[int(lengthType)]
                     except Exception,e:
-                        self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
+                        self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
                     self.items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.info(encode_wrap(str(e)))
+                    self.errorLogger.logger.error(encode_wrap(str(e)))
                     #print str(e)
 
 

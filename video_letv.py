@@ -117,7 +117,7 @@ class LetvVideo(BaseVideo):
 
 
             except Exception,e:
-                self.errorLogger.logger.info(encode_wrap(str(e)))
+                self.errorLogger.logger.error(encode_wrap(str(e)))
 
 
         driver.quit()
@@ -161,7 +161,7 @@ class LetvVideo(BaseVideo):
 
                         self.items.append(item)
                 except Exception,e:
-                    self.errorLogger.logger.info(encode_wrap( "专辑解析出错:%s" % str(e)))
+                    self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
 
                 driver_each.quit()
 
@@ -187,7 +187,7 @@ class LetvVideo(BaseVideo):
                         self.items.append(item)
 
                 except Exception, e:
-                    self.errorLogger.logger.info(encode_wrap("片花解析出错" + str(e)))
+                    self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
                     #print "片花解析出错", str(e)
 
         except Exception, e:
@@ -228,16 +228,16 @@ class LetvVideo(BaseVideo):
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
+                                self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
                             self.items.append(item)
 
                     except Exception,e:
-                        self.errorLogger.logger.info(encode_wrap(str(e)))
+                        self.errorLogger.logger.error(encode_wrap(str(e)))
 
 
         except Exception, e:
-            self.errorLogger.logger.info(encode_wrap(str(e)))
+            self.errorLogger.logger.error(encode_wrap(str(e)))
 
 
 if __name__=='__main__':

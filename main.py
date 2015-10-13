@@ -144,7 +144,7 @@ def run_all():
     time.sleep(10)
 
     indexs = range(1, 12)
-    pool = ThreadPool(processes=1)
+    pool = ThreadPool(processes=6)
     pool.map(run, indexs)
     pool.close()
     pool.join()

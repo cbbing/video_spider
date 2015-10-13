@@ -115,7 +115,7 @@ class SokuVideo(BaseVideo):
 
             except Exception, e:
                 #print str(e)
-                self.errorLogger.logger.info(encode_wrap(str(e)))
+                self.errorLogger.logger.error(encode_wrap(str(e)))
 
 
 
@@ -143,7 +143,7 @@ class SokuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    self.errorLogger.logger.info(encode_wrap('未找到对应的时长类型!'))
+                    self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
                 self.items.append(item)
                 # self.titles.append(titleAndLink['title'])

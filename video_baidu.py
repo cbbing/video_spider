@@ -131,12 +131,12 @@ class BaiduVideo(BaseVideo):
                         self.items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.info(encode_wrap(str(e)))
+                    self.errorLogger.logger.error(encode_wrap(str(e)))
 
             driver_each.quit()
 
         except Exception, e:
-            self.errorLogger.logger.info(encode_wrap(str(e)))
+            self.errorLogger.logger.error(encode_wrap(str(e)))
 
 
 if __name__=='__main__':
@@ -151,6 +151,10 @@ if __name__=='__main__':
 
     data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
     print data
+    if len(data) == 0:
+        print 'no key, program will exit in 3s...'
+        time.sleep(3)
+        sys.exit(1)
 
     video = BaiduVideo()
     video.filePath = dir_path + 'baidu_video.xlsx'

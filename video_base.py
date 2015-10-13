@@ -59,7 +59,7 @@ class BaseVideo:
         self.infoLogger.logger.info(encode_wrap('去重前，总个数:%d' % len(df)))
         df = df.drop_duplicates(['Href'])
         #过滤无效的视频
-        self.filter_involt_video(df)
+        #self.filter_involt_video(df)
         self.infoLogger.logger.info(encode_wrap('去重后，总个数:%d' % len(df)))
         self.dfs.append((key, df))
 
@@ -87,7 +87,7 @@ class BaseVideo:
 
     def filter_involt_video(self, df):
 
-        driver = webdriver.PhantomJS()
+        driver = webdriver.Firefox()
 
         for i in range(len(df)):
             se = df.loc[i]
@@ -128,7 +128,7 @@ class BaseVideo:
             key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:
-            self.errorLogger.logger.info(encode_wrap(str(e)))
+            self.errorLogger.logger.error(encode_wrap(str(e)))
             return ''
 
 

@@ -23,7 +23,8 @@ class BaiduVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '百度'
-        self.general_url = 'http://www.baidu.com/s?wd=key' #普通搜索的url
+        #self.general_url = 'http://www.baidu.com/s?wd=key' #普通搜索的url
+        self.general_url ='https://www.baidu.com/s?wd=key&pn=10&oq=key&tn=baiduhome_pg&ie=utf-8&usm=1&rsv_idx=3&rsv_pq=a15244ab000719f5&rsv_t=0e3d8UvmBPqha2nBnvxnGcRrOKKFbThEAimJjEkxffLDR1TONjuYOYAU7LEf5YAWeJx7'
         self.filePath = './data/baidu_video.xlsx'
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -59,8 +60,6 @@ class BaiduVideo(BaseVideo):
         self.infoLogger.logger.info('start phantomjs')
         self.infoLogger.logger.info(baidu_url)
         #print 'start phantomjs'
-        #print baidu_url
-
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
         driver.get(baidu_url)
@@ -77,7 +76,7 @@ class BaiduVideo(BaseVideo):
         for i in range(2, self.pagecount+1):
             # 模拟点击
             driver.find_element_by_link_text('下一页>').click()
-
+            #driver.get_screenshot_as_file("show.png")
             self.infoLogger.logger.info(encode_wrap('%s, 第%d页' % (key, i)))
             print '\n'
             #time.sleep(3)
@@ -94,11 +93,14 @@ class BaiduVideo(BaseVideo):
 
         try:
 
-            soup = bs(text)
+            soup = bs(text, 'html5lib')
+            #print text
+            sourceList = soup.findAll("h3")
+            #sourceList = soup.findAll("div", attrs={'class':'content_left'})
+            #print 'class="h3"' in text
 
             driver_each = webdriver.Firefox()
 
-            sourceList = soup.findAll("h3", attrs={'class':'t'})
             for source in sourceList:
                 titleAndLink = source.find('a')
 

@@ -21,7 +21,7 @@ class BaofengVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '暴风影音'
         self.general_url = 'http://www.baofeng.com/q_key' #普通搜索的url
-        self.filePath = './data/baofeng_video.xlsx'
+        self.filePath = './data/baofeng_video'
 
         #self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
         self.infoLogger = Logger(logname='./data/log/info_baofeng.log', logger='I')

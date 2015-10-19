@@ -20,7 +20,7 @@ class IQiYiVideo(BaseVideo):
         self.engine = '爱奇艺'
         self.album_url = 'http://so.iqiyi.com/so/q_key' #专辑的url
         self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_' #普通搜索的url
-        self.filePath = './data/iqiyi_video.xlsx'
+        self.filePath = './data/iqiyi_video'
 
         self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -63,7 +63,7 @@ class IQiYiVideo(BaseVideo):
 
         # 普通
         cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
+        cf.read(config_file_path)
         lengthtypes = cf.get("iqiyi","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:

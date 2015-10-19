@@ -22,7 +22,7 @@ class SouhuVideo(BaseVideo):
         self.engine = '搜狐'
         self.album_url = 'http://so.tv.sohu.com/mts?box=1&wd=key' #专辑的url
         self.general_url = 'http://so.tv.sohu.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
-        self.filePath = './data/souhu_video.xlsx'
+        self.filePath = './data/souhu_video'
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -61,7 +61,7 @@ class SouhuVideo(BaseVideo):
         time.sleep(self.stop)
 
         cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
+        cf.read(config_file_path)
         lengthtypes = cf.get("sohu","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:

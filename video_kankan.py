@@ -21,7 +21,7 @@ class KankanVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '响巢看看'
         self.general_url = 'http://search.kankan.com/search.php?keyword=keys' #普通搜索的url
-        self.filePath = './data/kankan_video.xlsx'
+        self.filePath = './data/kankan_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -78,7 +78,7 @@ class KankanVideo(BaseVideo):
 
         #普通
         cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
+        cf.read(config_file_path)
         lengthtypes = cf.get("kankan","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:

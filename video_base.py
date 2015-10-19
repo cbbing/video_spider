@@ -13,15 +13,17 @@ sys.setdefaultencoding("utf-8")
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from util.MyLogger import Logger
-from util.codeConvert import encode_wrap
+from util.codeConvert import *
 from selenium import webdriver
+
+from init import config_file_path
 
 class BaseVideo:
     def __init__(self):
 
         cf = ConfigParser.ConfigParser()
         print os.getcwd()
-        cf.read("config.ini")
+        cf.read(config_file_path)
 
         self.dfs = []
         self.items = []
@@ -48,6 +50,13 @@ class BaseVideo:
         df['Time'] = self.getNowTime()
         df['Engine'] = self.engine
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
+
+        #匹配度
+        f = lambda x : '完全匹配' if key in x else '不匹配'
+        df['Match'] = df['Title'].apply(f)
+        df = df.sort_index(by='Match', ascending=False)
+
+
 
         # if df['Duration'].any() == '':
         #     df = df.drop('Duration', axis=1)
@@ -104,7 +113,10 @@ class BaseVideo:
 
     def data_to_excel(self):
 
-        with pd.ExcelWriter(self.filePath) as writer:
+        now_time = GetNowTime()
+        file_name = self.filePath + '(' + now_time + ').xlsx'
+
+        with pd.ExcelWriter(file_name) as writer:
             for key, df in self.dfs:
                 df.to_excel(writer, sheet_name=key)
                 #df.to_csv("./data/letv_video.csv")

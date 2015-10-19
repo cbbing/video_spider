@@ -21,7 +21,7 @@ class LetvVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '乐视'
         self.general_url = 'http://so.letv.com/s?wd=key' #普通搜索的url
-        self.filePath = './data/letv_video.xlsx'
+        self.filePath = './data/letv_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -79,7 +79,7 @@ class LetvVideo(BaseVideo):
 
         #普通
         cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
+        cf.read(config_file_path)
         lengthtypes = cf.get("letv","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:

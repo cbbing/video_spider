@@ -66,7 +66,7 @@ class SokuVideo(BaseVideo):
 
         # 普通
         cf = ConfigParser.ConfigParser()
-        cf.read("config.ini")
+        cf.read(config_file_path)
         lengthtypes = cf.get(self.web,"lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:

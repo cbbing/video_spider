@@ -161,10 +161,15 @@ def run_each():
              '8：华数\n' \
              '9：风行\n' \
              '10：响巢看看\n' \
-             '11：暴风影音\n(输入数字):'
+             '11：暴风影音\n' \
+             '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:
-        run(int(raw))
+        raw = raw.replace('，', ',')
+        indexs = raw.split(',')
+        for index in indexs:
+            index = index.strip()
+            run(index)
     except Exception, e:
         print encode_wrap('请输入正确的序号')
 
@@ -176,7 +181,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         type = sys.argv[1]
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) == 2:
         run_each()
     else:
         run_all()

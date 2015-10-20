@@ -28,6 +28,7 @@ from util.codeConvert import encode_wrap
 from init import *
 
 def run(index):
+    index = int(index)
 
     systemName = platform.system()
 

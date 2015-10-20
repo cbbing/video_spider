@@ -22,5 +22,8 @@ def GetNowTime():
 def GetNowTime2():
     return time.strftime("%Y-%m-%d 00:00:00",time.localtime(time.time()))
 
+def GetNowTim3():
+    return time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime(time.time()))
+
 def GetNowDate():
     return time.strftime("%Y-%m-%d",time.localtime(time.time()))

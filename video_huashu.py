@@ -21,7 +21,7 @@ class HuashuVideo(BaseVideo):
         self.pre_url = "http://www.wasu.cn"
         self.album_url = 'http://www.wasu.cn/Search/show/k/key' #专辑的url
         self.general_url = 'http://www.wasu.cn/Search/show/k/key/duration/tid?&p=pid#Top05' #普通搜索的url
-        self.filePath = './data/huashu_video'
+        self.filePath = 'huashu_video'
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 

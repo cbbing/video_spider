@@ -48,77 +48,77 @@ def run(index):
             #1
             print 'begin youku'
             video = YoukuVideo()
-            video.filePath = dir_path + 'youku_video'
+            video.filePath = 'youku_video'
             video.run(keys)
 
         elif index == 2:
             #2
             print 'begin tudou'
             video = TudouVideo()
-            video.filePath = dir_path + 'tudou_video'
+            video.filePath = 'tudou_video'
             video.run(keys)
 
         elif index == 3:
             #3
             print 'begin sina'
             video = SinaVideo()
-            video.filePath = dir_path + 'sina_video'
+            video.filePath = 'sina_video'
             video.run(keys)
 
         elif index == 4:
             #4
             print 'begin sohu'
             video = SouhuVideo()
-            video.filePath = dir_path + 'sohu_video'
+            video.filePath = 'sohu_video'
             video.run(keys)
 
         elif index == 5:
             #5
             print 'begin qq'
             video = QQVideo()
-            video.filePath = dir_path + 'qq_video'
+            video.filePath = 'qq_video'
             video.run(keys)
 
         elif index == 6:
             #6
             print 'begin iqiyi'
             video = IQiYiVideo()
-            video.filePath = dir_path + 'iqiyi_video'
+            video.filePath = 'iqiyi_video'
             video.run(keys)
 
         elif index == 7:
             #7
             print 'begin letv'
             video = LetvVideo()
-            video.filePath = dir_path + 'letv_video'
+            video.filePath = 'letv_video'
             video.run(keys)
 
         elif index == 8:
             #8
             print 'begin huashu'
             video = HuashuVideo()
-            video.filePath = dir_path + 'huashu_video'
+            video.filePath = 'huashu_video'
             video.run(keys)
 
         elif index == 9:
             #9
             print 'begin fun'
             video = FunVideo()
-            video.filePath = dir_path + 'fun_video'
+            video.filePath = 'fun_video'
             video.run(keys)
 
         elif index == 10:
             #10
             print 'begin kankan'
             video = KankanVideo()
-            video.filePath = dir_path + 'kankan_video'
+            video.filePath = 'kankan_video'
             video.run(keys)
 
         elif index == 11:
             #11
             print 'begin baofeng'
             video = BaofengVideo()
-            video.filePath = dir_path + 'baofeng_video'
+            video.filePath = 'baofeng_video'
             video.run(keys)
     except Exception, e:
         print encode_wrap('编号:%d, 运行出错' % index), str(e)

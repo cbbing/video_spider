@@ -25,7 +25,7 @@ class BaiduVideo(BaseVideo):
         self.engine = '百度'
         #self.general_url = 'http://www.baidu.com/s?wd=key' #普通搜索的url
         self.general_url ='https://www.baidu.com/s?wd=key&pn=10&oq=key&tn=baiduhome_pg&ie=utf-8&usm=1&rsv_idx=3&rsv_pq=a15244ab000719f5&rsv_t=0e3d8UvmBPqha2nBnvxnGcRrOKKFbThEAimJjEkxffLDR1TONjuYOYAU7LEf5YAWeJx7'
-        self.filePath = './data/baidu_video'
+        self.filePath = 'baidu_video'
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
     def run(self, keys):
@@ -159,6 +159,6 @@ if __name__=='__main__':
         sys.exit(1)
 
     video = BaiduVideo()
-    video.filePath = dir_path + 'baidu_video'
+    video.filePath = 'baidu_video'
     video.run(data['key'].get_values())
 

@@ -21,7 +21,7 @@ class QQVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '腾讯'
         self.general_url = 'http://v.qq.com/search.html?pagetype=3&stj2=search.search&stag=txt.index&ms_key=keys' #普通搜索的url
-        self.filePath = './data/qq_video'
+        self.filePath = 'qq_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 

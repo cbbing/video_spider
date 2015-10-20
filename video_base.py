@@ -16,7 +16,7 @@ from util.MyLogger import Logger
 from util.codeConvert import *
 from selenium import webdriver
 
-from init import config_file_path
+from init import config_file_path, dir_path
 
 class BaseVideo:
     def __init__(self):
@@ -113,8 +113,12 @@ class BaseVideo:
 
     def data_to_excel(self):
 
-        now_time = GetNowTime()
-        file_name = self.filePath + '(' + now_time + ').xlsx'
+        now_data = GetNowDate()
+        if not os.path.exists(dir_path + now_data):
+            os.mkdir(dir_path + now_data)
+
+        now_time = GetNowTim3()
+        file_name = dir_path + now_data + '/' + self.filePath + '(' + now_time + ').xlsx'
 
         with pd.ExcelWriter(file_name) as writer:
             for key, df in self.dfs:

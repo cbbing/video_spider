@@ -21,7 +21,7 @@ class SinaVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '新浪'
         self.general_url = 'http://so.video.sina.com.cn/s?wd=key' #普通搜索的url
-        self.filePath = './data/sina_video'
+        self.filePath = 'sina_video'
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
         self.infoLogger = Logger(logname='./data/log/info_sina.log', logger='I')

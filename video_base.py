@@ -16,7 +16,7 @@ from util.MyLogger import Logger
 from util.codeConvert import *
 from selenium import webdriver
 
-from init import config_file_path, dir_path
+from init import *
 
 class BaseVideo:
     def __init__(self):
@@ -47,7 +47,7 @@ class BaseVideo:
                         },
                        columns=['Title', 'Href', 'Duration', 'DurationType', 'Page'])
         print df[:10]
-        df['Time'] = self.getNowTime()
+        df['Time'] = GetNowTime()
         df['Engine'] = self.engine
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
 
@@ -127,8 +127,13 @@ class BaseVideo:
                 #break
         self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 
-    def getNowTime(self):
-        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    def data_to_sql(self):
+        from sqlalchemy import create_engine
+        engine = create_engine('mysql+mysqldb://shipin:AAaa0924@rdsv13i1p6ol4oxfybcj.mysql.rds.aliyuncs.com:3306/shipinjiankong')
+        for key, df in self.dfs:
+            df.to_sql(name=mysql_result_table, con=engine, if_exists='append')
+
+
 
     # 判断视频来源
     def get_video_source(self, url):

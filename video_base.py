@@ -174,7 +174,29 @@ class DataItem:
         self.page = 0 #页码
         self.durationType = '' #时长类型
 
+def test():
+    engine = ''
+    #sql = "select Href from table where Key='%s'"
+    #df = pd.read_sql_query(sql, engine)
+    data = {'state':['Ohio', 'Cbb', 'Ohio', 'Nevada','Nevada'],
+        'year':[2000, 2001, 2002, 2011, 2002],
+        'pop':[1.5, 1.7, 3.6, 2.4, 2.9]}
+    df_new = DataFrame(data)
+
+    data1 = {'state':['Ohio', 'Ohio', 'Ohio', 'Nevada','Nevada'],
+        'year':[2000, 2001, 2002, 2011, 2002],
+        'pop':[1.5, 1.7, 3.6, 2.4, 2.9]}
+    df = DataFrame(data1)
+
+    for ix, row in df_new.iterrows():
+        if row['state'] in df['state'].get_values():
+            df_new = df_new.drop(ix)
+            print ix
+            print df_new
+
+
 if __name__=='__main__':
+    test()
     #key = raw_input('输入搜索关键字:')
 
     data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
@@ -185,5 +207,6 @@ if __name__=='__main__':
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
+
 
 

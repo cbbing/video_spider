@@ -170,7 +170,8 @@ def run_each():
         indexs = raw.split(',')
         for index in indexs:
             index = index.strip()
-            run(index)
+            if index.isdigit():
+                run(index)
     except Exception, e:
         print encode_wrap('请输入正确的序号')
 

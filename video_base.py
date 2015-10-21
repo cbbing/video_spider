@@ -2,13 +2,13 @@
 #!/usr/bin/env python
 #抓取优酷搜索结果
 import sys, os
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 import time
 import re
 import ConfigParser
 from pandas import Series, DataFrame
-
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
@@ -17,6 +17,12 @@ from util.codeConvert import *
 from selenium import webdriver
 
 from init import *
+
+from sqlalchemy import create_engine
+import MySQLdb
+engine = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
+                       connect_args={'charset':'utf8'})
+conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
 
 class BaseVideo:
     def __init__(self):
@@ -111,6 +117,10 @@ class BaseVideo:
 
         driver.quit()
 
+    def save_data(self):
+        self.data_to_excel()
+        self.data_to_sql()
+
     def data_to_excel(self):
 
         now_data = GetNowDate()
@@ -127,12 +137,39 @@ class BaseVideo:
                 #break
         self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 
-    def data_to_sql(self):
-        from sqlalchemy import create_engine
-        engine = create_engine('mysql+mysqldb://shipin:AAaa0924@rdsv13i1p6ol4oxfybcj.mysql.rds.aliyuncs.com:3306/shipinjiankong')
-        for key, df in self.dfs:
-            df.to_sql(name=mysql_result_table, con=engine, if_exists='append')
 
+    def data_to_sql(self):
+
+        for key, df in self.dfs:
+            df['Key'] = key
+            print df[:10]
+            try:
+                sql = "select Href from %s" % (mysql_result_table)
+                #sql = "select * from %s" % mysql_result_table
+                df_exist = pd.read_sql_query(sql, engine)
+                if len(df_exist) > 0:
+                    hrefs = df_exist['Href'].get_values()
+                    df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
+            except Exception, e:
+                print e
+
+            #self.data_to_sql_helper(df)
+            if len(df)>0:
+                df.to_sql(mysql_result_table, engine, if_exists='append', index=False)
+
+    def data_to_sql_helper(self, df):
+        if len(df) > 0:
+            print df[:10]
+            print ">"*20, mysql_result_table, encode_wrap('写入postgre开始'), '>'*20
+            #df.to_sql(tableName, engine_postgre,if_exists='append')
+            sql = 'insert into %s(%s)' %( mysql_result_table,  ','.join(df.columns))
+            param = ','.join(['%s'] * len(df.columns))
+            print df.get_values()
+            conn.cursor().execute(sql+' VALUES(%s)' % param, )
+            conn.cursor().executemany(sql+' VALUES(%s)' % param, df.get_values())
+            conn.commit()
+            conn.cursor().close()
+            print ">"*20,mysql_result_table, encode_wrap('写入postgre结束'), '>'*20
 
 
     # 判断视频来源
@@ -196,7 +233,6 @@ def test():
 
 
 if __name__=='__main__':
-    test()
     #key = raw_input('输入搜索关键字:')
 
     data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])

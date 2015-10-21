@@ -22,3 +22,6 @@ if systemName == 'Windows':
     dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
 else:
     dir_path = './data/'
+
+#mysql 结果表
+mysql_result_table = 'video_result'

@@ -45,8 +45,8 @@ class IQiYiVideo(BaseVideo):
 
 
 
-        #存入excel
-        self.data_to_excel()
+        #保存数据
+        self.save_data()
 
     def search(self, key):
 

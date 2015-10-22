@@ -59,8 +59,8 @@ class BaseVideo:
 
         #匹配度
         f = lambda x : '完全匹配' if key in x else '不匹配'
-        df['Match'] = df['Title'].apply(f)
-        df = df.sort_index(by='Match', ascending=False)
+        df['KeyMatch'] = df['Title'].apply(f)
+        df = df.sort_index(by='KeyMatch', ascending=False)
 
 
 
@@ -141,7 +141,7 @@ class BaseVideo:
     def data_to_sql(self):
 
         for key, df in self.dfs:
-            df['Key'] = key
+            df['VideoKey'] = key
             print df[:10]
             try:
                 sql = "select Href from %s" % (mysql_result_table)

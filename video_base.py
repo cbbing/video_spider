@@ -39,8 +39,8 @@ class BaseVideo:
 
         self.stop = 3 # 暂停3s
 
-        self.infoLogger = Logger(logname='./data/log/info_baidu.log', logger='I')
-        self.errorLogger = Logger(logname='./data/log/error_baidu.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_base.log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_base.log', logger='E')
 
 
 

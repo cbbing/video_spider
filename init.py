@@ -23,5 +23,8 @@ if systemName == 'Windows':
 else:
     dir_path = './data/'
 
+#日志目录
+dir_log = dir_path + 'log/'
+
 #mysql 结果表
 mysql_result_table = 'video_result'

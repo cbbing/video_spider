@@ -26,8 +26,8 @@ class SouhuVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname='./data/log/info_sohu.log', logger='I')
-        self.errorLogger = Logger(logname='./data/log/error_sohu.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_sohu.log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_sohu.log', logger='E')
 
     def run(self, keys):
 

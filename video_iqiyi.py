@@ -24,8 +24,8 @@ class IQiYiVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname='./data/log/info_iqiyi.log', logger='I')
-        self.errorLogger = Logger(logname='./data/log/error_iqiyi.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_iqiyi.log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_iqiyi.log', logger='E')
 
 
     def run(self, keys):

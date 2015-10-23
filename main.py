@@ -43,6 +43,7 @@ def run(index):
     #     key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
     data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
     keys = data['key'].get_values()
+    print keys
 
     try:
         if index == 1:
@@ -177,11 +178,11 @@ def run_each():
 
 
 if __name__ == "__main__":
-    print "arg len:", len(sys.argv)
-    for arg in sys.argv:
-        print arg, type(arg)
-    if len(sys.argv) == 2:
-        type = sys.argv[1]
+    # print "arg len:", len(sys.argv)
+    # for arg in sys.argv:
+    #     print arg, type(arg)
+    # if len(sys.argv) == 2:
+    #     type = sys.argv[1]
 
     if len(sys.argv) == 2:
         run_each()

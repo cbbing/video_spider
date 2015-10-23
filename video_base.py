@@ -62,7 +62,27 @@ class BaseVideo:
         df['KeyMatch'] = df['Title'].apply(f)
         df = df.sort_index(by='KeyMatch', ascending=False)
 
+        #过滤“排除关键词列表”
+        try:
+            print '排除关键词前：', len(df)
+            data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+            keys = data['excludeKey'].get_values()
+            print keys
+            keys = ','.join(keys)
+            keys = keys.replace('，', ',')
+            keys = keys.split(',')
 
+            def sub_f(x):
+                for key in keys:
+                    if key.strip() in x:
+                        return False
+                return True
+            f1 = lambda x : sub_f(x)
+            df = df[df['Title'].apply(f1)]
+
+            print '排除关键词后：', len(df)
+        except Exception,e:
+            print e
 
         # if df['Duration'].any() == '':
         #     df = df.drop('Duration', axis=1)
@@ -144,8 +164,8 @@ class BaseVideo:
             df['VideoKey'] = key
             print df[:10]
             try:
-                sql = "select Href from %s" % (mysql_result_table)
-                #sql = "select * from %s" % mysql_result_table
+                sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
+                #sql = "select Href from %s" % mysql_result_table
                 df_exist = pd.read_sql_query(sql, engine)
                 if len(df_exist) > 0:
                     hrefs = df_exist['Href'].get_values()
@@ -153,23 +173,10 @@ class BaseVideo:
             except Exception, e:
                 print e
 
-            #self.data_to_sql_helper(df)
             if len(df)>0:
+                self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
                 df.to_sql(mysql_result_table, engine, if_exists='append', index=False)
 
-    def data_to_sql_helper(self, df):
-        if len(df) > 0:
-            print df[:10]
-            print ">"*20, mysql_result_table, encode_wrap('写入postgre开始'), '>'*20
-            #df.to_sql(tableName, engine_postgre,if_exists='append')
-            sql = 'insert into %s(%s)' %( mysql_result_table,  ','.join(df.columns))
-            param = ','.join(['%s'] * len(df.columns))
-            print df.get_values()
-            conn.cursor().execute(sql+' VALUES(%s)' % param, )
-            conn.cursor().executemany(sql+' VALUES(%s)' % param, df.get_values())
-            conn.commit()
-            conn.cursor().close()
-            print ">"*20,mysql_result_table, encode_wrap('写入postgre结束'), '>'*20
 
 
     # 判断视频来源

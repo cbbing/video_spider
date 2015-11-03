@@ -20,7 +20,7 @@ from init import *
 
 from sqlalchemy import create_engine
 import MySQLdb
-engine = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
+engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
 conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
 
@@ -166,7 +166,7 @@ class BaseVideo:
             try:
                 sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
                 #sql = "select Href from %s" % mysql_result_table
-                df_exist = pd.read_sql_query(sql, engine)
+                df_exist = pd.read_sql_query(sql, engine_sql)
                 if len(df_exist) > 0:
                     hrefs = df_exist['Href'].get_values()
                     df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
@@ -175,7 +175,7 @@ class BaseVideo:
 
             if len(df)>0:
                 self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
-                df.to_sql(mysql_result_table, engine, if_exists='append', index=False)
+                df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
 
 
@@ -217,26 +217,6 @@ class DataItem:
         self.duration = ''
         self.page = 0 #页码
         self.durationType = '' #时长类型
-
-def test():
-    engine = ''
-    #sql = "select Href from table where Key='%s'"
-    #df = pd.read_sql_query(sql, engine)
-    data = {'state':['Ohio', 'Cbb', 'Ohio', 'Nevada','Nevada'],
-        'year':[2000, 2001, 2002, 2011, 2002],
-        'pop':[1.5, 1.7, 3.6, 2.4, 2.9]}
-    df_new = DataFrame(data)
-
-    data1 = {'state':['Ohio', 'Ohio', 'Ohio', 'Nevada','Nevada'],
-        'year':[2000, 2001, 2002, 2011, 2002],
-        'pop':[1.5, 1.7, 3.6, 2.4, 2.9]}
-    df = DataFrame(data1)
-
-    for ix, row in df_new.iterrows():
-        if row['state'] in df['state'].get_values():
-            df_new = df_new.drop(ix)
-            print ix
-            print df_new
 
 
 if __name__=='__main__':

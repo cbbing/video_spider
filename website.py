@@ -12,7 +12,7 @@ import web
 import os, time, hashlib
 from main import run_all
 from util.codeConvert import GetTime
-
+from init import *
 
 
 from datetime import datetime; now = datetime.now()
@@ -152,7 +152,19 @@ class Upload:
                 </body></html>"""
 
     def POST(self):
+
         x = web.input(myfile={})
+        print x.myfile
+        filedir = www_path # change this to the directory you want to store the file in.
+        if 'myfile' in x: # to check if the file-object is created
+            filepath=x.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+            filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+            fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+            fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
+            fout.close() # closes the file, upload complete.
+
+        print type(x)
+        print x
         web.debug(x['myfile'].filename)
         web.debug(x['myfile'].value)
         web.debug(x['myfile'].file.read())

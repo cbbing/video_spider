@@ -172,10 +172,24 @@ def run_each():
         for index in indexs:
             index = index.strip()
             if index.isdigit():
-                run(index)
+                try:
+                    run(index)
+                except Exception, e:
+                    print str(e)
     except Exception, e:
         print encode_wrap('请输入正确的序号')
 
+# 批处理
+def run_auto(indexs):
+    try:
+        indexs = indexs.replace('，', ',')
+        indexs = indexs.split(',')
+        for index in indexs:
+            index = index.strip()
+            if index.isdigit():
+                run(index)
+    except Exception, e:
+        print encode_wrap('请输入正确的序号')
 
 if __name__ == "__main__":
     # print "arg len:", len(sys.argv)
@@ -186,5 +200,8 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 2:
         run_each()
+    elif len(sys.argv) == 3:
+        index = sys.argv[2]
+        run_auto(index)
     else:
         run_all()

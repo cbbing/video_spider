@@ -77,8 +77,12 @@ class SinaVideo(BaseVideo):
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
 
         #展开“筛选”按钮
-        driver.find_element_by_link_text("筛选").click()
-        time.sleep(1)
+        try:
+            driver.find_element_by_link_text("筛选").click()
+            time.sleep(1)
+        except Exception,e:
+            self.infoLogger.logger.info(encode_wrap('无筛选按钮（没找到相关视频:%s）' % key))
+            return
 
         for lengthtype in lengthtypes:
 
@@ -151,7 +155,7 @@ class SinaVideo(BaseVideo):
 
                     durationTag = source.find('span', attrs={'class':'card_time'})
                     if durationTag:
-                        self.infoLogger.logger.info(encode_wrap('时长:',durationTag.text))
+                        self.infoLogger.logger.info(encode_wrap('时长:%s' % durationTag.text))
                         #print '时长:',durationTag.text
                         item.duration = durationTag.text
 

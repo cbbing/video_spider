@@ -19,6 +19,8 @@ import urllib, urllib2
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
 
+from qt_result import Ui_Result_Dialog
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -137,14 +139,22 @@ class Ui_Dialog(object):
         response = urllib.urlopen('http://0.0.0.0:8080/run_video_search')
         print response
 
+
     #结果
     def on_show_result(self):
-        from dialog import MyTable
-        myqq=MyTable()
-        myqq.resize(1000, 500)
-        myqq.setWindowTitle("My Table")
-        myqq.show()
-        myqq.exec_()
+
+        Dialog = QtGui.QDialog()
+        ui = Ui_Result_Dialog()
+        ui.setupUi(Dialog)
+        Dialog.show()
+        Dialog.exec_()
+
+        # from dialog import MyTable
+        # myqq=MyTable()
+        # myqq.resize(1000, 500)
+        # myqq.setWindowTitle("My Table")
+        # myqq.show()
+        # myqq.exec_()
 
 if __name__ == "__main__":
     import sys

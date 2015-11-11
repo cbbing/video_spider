@@ -26,7 +26,7 @@ if systemName == 'Windows':
 if systemName == 'Windows':
     dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
 else:
-    dir_path = './data/'
+    dir_path = '/Users/cbb/Documents/pythonspace/video_spider_master/data/'
 
 #日志目录
 dir_log = dir_path + 'log/'

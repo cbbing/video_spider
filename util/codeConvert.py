@@ -10,6 +10,11 @@ def encode_wrap(str):
     except Exception, e:
         return str
 
+def str_qt_to_utf(qt_str):
+    utf_str = unicode(qt_str.toUtf8(), 'utf-8', 'ignore')
+    return utf_str
+
+
 def GetDate(timefrom1970):
     return time.strftime("%Y-%m-%d",time.localtime(timefrom1970))
 

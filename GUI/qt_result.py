@@ -6,6 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -13,10 +17,9 @@ import pandas as pd
 from init import *
 
 QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
+from util.MyLogger import Logger
+from util.codeConvert import *
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -32,7 +35,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_Dialog(object):
+class Ui_Result_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(1015, 687)
@@ -150,7 +153,7 @@ class Ui_Dialog(object):
         QtCore.QObject.connect(self.pushButton_query, QtCore.SIGNAL(_fromUtf8("clicked()")), self.table_query)
         QtCore.QObject.connect(self.pushButton_pre, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.show)
         QtCore.QObject.connect(self.pushButton_next, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.reset)
-        QtCore.QObject.connect(self.pushButton_export, QtCore.SIGNAL(_fromUtf8("clicked()")), Dialog.show)
+        QtCore.QObject.connect(self.pushButton_export, QtCore.SIGNAL(_fromUtf8("clicked()")), self.data_export)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -191,6 +194,11 @@ class Ui_Dialog(object):
         self.dateTimeEdit_end.setDateTime(nowTime)
         self.dateTimeEdit_end.setDisplayFormat("yyyy-MM-dd HH:mm")
         self.dateTimeEdit_end.setCalendarPopup(True)
+
+        self.df = pd.DataFrame()
+
+        self.infoLogger = Logger(logname=dir_log+'info_ui.log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_ui.log', logger='E')
 
 
     def table_query(self):
@@ -243,22 +251,44 @@ class Ui_Dialog(object):
 
         print sql
         from video_base import engine_sql
-        df = pd.read_sql_query(sql, engine_sql)
+        self.df = pd.read_sql_query(sql, engine_sql)
 
-        self.tableWidget.setRowCount(len(df))
+        self.tableWidget.setRowCount(len(self.df))
 
-        for ix, row in df.iterrows():
+        for ix, row in self.df.iterrows():
             try:
                 [self.tableWidget.setItem(ix+1, index_col, QTableWidgetItem(self.tableWidget.tr(str(row[col])))) for index_col, col, _ in columns_zip]
 
             except Exception, e:
                 print ix, row, str(e)
 
+    def data_export(self):
+
+        #按关键词分组
+        dfs = []
+        keys_se = self.df['VideoKey'].drop_duplicates()
+        for video_key in list(keys_se):
+            df_each = self.df[self.df['VideoKey'] == video_key]
+            dfs.append((video_key, df_each))
+
+        file_name = QFileDialog.getSaveFileName(self.pushButton_export,
+                                    self.tableWidget.tr("保存文件"),
+                                    "",
+                                    "Excel Files (*.xlsx)")
+        print file_name
+        if len(file_name) > 0:
+            with pd.ExcelWriter(str_qt_to_utf(file_name)) as writer:
+                for key, df in dfs:
+                    df.to_excel(writer, sheet_name=key)
+
+        self.infoLogger.logger.info(encode_wrap('写入excel完成'))
+
+
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     Dialog = QtGui.QDialog()
-    ui = Ui_Dialog()
+    ui = Ui_Result_Dialog()
     ui.setupUi(Dialog)
     Dialog.show()
     sys.exit(app.exec_())

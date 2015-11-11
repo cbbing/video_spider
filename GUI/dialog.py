@@ -151,5 +151,9 @@ if __name__ == "__main__":
     #
     # app.connect(btn_import, SIGNAL("clicked()"), app, SLOT("quit()"))
 
+    fileName2, ok2 = QFileDialog.getSaveFileName(app,
+                                    "文件保存",
+                                    "C:/",
+                                    "All Files (*);;Text Files (*.txt)")
 
     app.exec_()

@@ -1,0 +1,8 @@
+$def with(rows)
+<h1>视频搜索结果</h1>
+<ul>
+    $for row in rows:
+        <li>
+            <a href="/data/$row.file_name">$row.file_name   &nbsp&nbsp&nbsp&nbsp    $row.modify_time</a>
+        </li>
+</ul>

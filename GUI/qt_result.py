@@ -231,9 +231,9 @@ class Ui_Result_Dialog(object):
 
         if self.comboBox_source.currentIndex() != 0:
             if 'where' in sql:
-                sql = sql +  "and Source='%s' " % self.comboBox_source.currentText()
+                sql = sql +  "and Source='%s' or Engine='%s' " % (self.comboBox_source.currentText(), self.comboBox_source.currentText())
             else:
-                sql = sql +  "where Source='%s' " % self.comboBox_source.currentText()
+                sql = sql +  "where Source='%s' or Engine='%s' " % (self.comboBox_source.currentText(),self.comboBox_source.currentText())
         if self.comboBox_match.currentIndex() != 0:
             if 'where' in sql:
                 sql = sql +  "and KeyMatch='%s' " % self.comboBox_match.currentText()

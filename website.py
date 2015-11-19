@@ -49,6 +49,7 @@ class index:
         try:
 
             cookies = web.cookies().get('videosite')
+            cookies = '1234'
             if not cookies == None:
                 web.seeother('/menu')
                 return

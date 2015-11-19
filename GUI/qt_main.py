@@ -111,6 +111,8 @@ class Ui_Dialog(object):
         self.pushButton_run.setText(_translate("Dialog", "运行", None))
         self.pushButton_result.setText(_translate("Dialog", "结果", None))
 
+        self.ip = "101.200.183.216"
+
     # 上传文件
     def on_openfile_clicked(self):
 
@@ -130,13 +132,13 @@ class Ui_Dialog(object):
             datagen, headers = multipart_encode({"myfile": open(str(filename), "rb")})
 
             # 创建请求对象
-            request = urllib2.Request("http://0.0.0.0:8080/upload", datagen, headers)
+            request = urllib2.Request("http://%s:8080/upload" % self.ip, datagen, headers)
             # 实际执行请求并取得返回
             print urllib2.urlopen(request).read()
 
     #运行
     def on_run_clicked(self):
-        response = urllib.urlopen('http://0.0.0.0:8080/run_video_search')
+        response = urllib.urlopen('http://%s:8080/run_video_search' % self.ip)
         print response
 
 

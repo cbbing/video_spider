@@ -10,15 +10,24 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+import platform
+if platform.system() == 'Windows':
+    sys.path.append('C:/Code/video_spider')
+else:
+    sys.path.append('/Users/cbb/Documents/pythonspace/stock-master/')
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import pandas as pd
-from init import *
+from sqlalchemy import create_engine
+import MySQLdb
+#from init import *
 
 QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
-from util.MyLogger import Logger
-from util.codeConvert import *
+
+from MyLogger import Logger
+#from util.codeConvert import *
 
 
 try:
@@ -137,12 +146,13 @@ class Ui_Result_Dialog(object):
         self.horizontalLayoutWidget.setObjectName(_fromUtf8("horizontalLayoutWidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.pushButton_pre = QtGui.QPushButton(self.horizontalLayoutWidget)
-        self.pushButton_pre.setObjectName(_fromUtf8("pushButton_pre"))
-        self.horizontalLayout.addWidget(self.pushButton_pre)
-        self.pushButton_next = QtGui.QPushButton(self.horizontalLayoutWidget)
-        self.pushButton_next.setObjectName(_fromUtf8("pushButton_next"))
-        self.horizontalLayout.addWidget(self.pushButton_next)
+        #self.pushButton_pre = QtGui.QPushButton(self.horizontalLayoutWidget)
+        #self.pushButton_pre.setObjectName(_fromUtf8("pushButton_pre"))
+
+        #self.horizontalLayout.addWidget(self.pushButton_pre)
+        #self.pushButton_next = QtGui.QPushButton(self.horizontalLayoutWidget)
+        #self.pushButton_next.setObjectName(_fromUtf8("pushButton_next"))
+        #self.horizontalLayout.addWidget(self.pushButton_next)
         self.pushButton_export = QtGui.QPushButton(Dialog)
         self.pushButton_export.setGeometry(QtCore.QRect(10, 640, 114, 32))
         self.pushButton_export.setObjectName(_fromUtf8("pushButton_export"))
@@ -151,8 +161,8 @@ class Ui_Result_Dialog(object):
 
         self.retranslateUi(Dialog)
         QtCore.QObject.connect(self.pushButton_query, QtCore.SIGNAL(_fromUtf8("clicked()")), self.table_query)
-        QtCore.QObject.connect(self.pushButton_pre, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.show)
-        QtCore.QObject.connect(self.pushButton_next, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.reset)
+        #QtCore.QObject.connect(self.pushButton_pre, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.show)
+        #QtCore.QObject.connect(self.pushButton_next, QtCore.SIGNAL(_fromUtf8("clicked()")), self.tableWidget.reset)
         QtCore.QObject.connect(self.pushButton_export, QtCore.SIGNAL(_fromUtf8("clicked()")), self.data_export)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -165,8 +175,8 @@ class Ui_Result_Dialog(object):
         self.label_6.setText(_translate("Dialog", "来源", None))
         self.label_7.setText(_translate("Dialog", "匹配度", None))
         self.label_3.setText(_translate("Dialog", "关键词", None))
-        self.pushButton_pre.setText(_translate("Dialog", "上一页", None))
-        self.pushButton_next.setText(_translate("Dialog", "下一页", None))
+        #self.pushButton_pre.setText(_translate("Dialog", "上一页", None))
+        #self.pushButton_next.setText(_translate("Dialog", "下一页", None))
         self.pushButton_export.setText(_translate("Dialog", "导出", None))
 
     def condition_init(self):
@@ -197,8 +207,8 @@ class Ui_Result_Dialog(object):
 
         self.df = pd.DataFrame()
 
-        self.infoLogger = Logger(logname=dir_log+'info_ui.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_ui.log', logger='E')
+        self.infoLogger = Logger(logname='info_ui.log', logger='I')
+        self.errorLogger = Logger(logname='error_ui.log', logger='E')
 
 
     def table_query(self):
@@ -213,7 +223,8 @@ class Ui_Result_Dialog(object):
 
         columns = ["Title", "Href", "Duration", "DurationType", "Page", "Time", "Engine", "Source", "KeyMatch", "VideoKey"]
 
-        sql = "select %s from %s " % (",".join(columns), mysql_result_table)
+        sql = "select %s from %s " % (",".join(columns), "video_result")
+        #sql = "select * from %s " % ( "video_result")
         #添加条件
 
         if len(self.lineEdit_key.displayText()) > 0:
@@ -231,14 +242,21 @@ class Ui_Result_Dialog(object):
 
         if self.comboBox_source.currentIndex() != 0:
             if 'where' in sql:
-                sql = sql +  "and Source='%s' " % self.comboBox_source.currentText()
+                if self.comboBox_source.currentIndex() == 12:
+                    sql = sql +  "and Engine='%s' " % self.comboBox_source.currentText()
+                else:
+                    sql = sql +  "and Source='%s' " % self.comboBox_source.currentText()
             else:
-                sql = sql +  "where Source='%s' " % self.comboBox_source.currentText()
+                if self.comboBox_source.currentIndex() == 12:
+                    sql = sql +  "where Engine='%s' " % self.comboBox_source.currentText()
+                else:
+                    sql = sql +  "where Source='%s' " % self.comboBox_source.currentText()
+
         if self.comboBox_match.currentIndex() != 0:
             if 'where' in sql:
                 sql = sql +  "and KeyMatch='%s' " % self.comboBox_match.currentText()
             else:
-                sql = sql +  "where Source='%s' " % self.comboBox_match.currentText()
+                sql = sql +  "where KeyMatch='%s' " % self.comboBox_match.currentText()
 
         date_start_str = self.dateTimeEdit_start.text() + ':00'
         date_end_str = self.dateTimeEdit_end.text() + ':59'
@@ -248,10 +266,35 @@ class Ui_Result_Dialog(object):
             sql = sql + " where Time>'%s' and Time <'%s' " %(date_start_str, date_end_str)
 
 
-
+        self.infoLogger.logger.info(encode_wrap( sql))
         print sql
-        from video_base import engine_sql
-        self.df = pd.read_sql_query(sql, engine_sql)
+        #from video_base import engine_sql
+        try:
+            conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
+            cur = conn.cursor()
+            cur.execute(sql)
+
+            results = cur.fetchall()
+            data1 = {columns[0]:[result[0] for result in results],
+                    columns[1]:[result[1] for result in results],
+                    }
+            data = {columns[i]:[result[i] for result in results] for i in range(len(columns))}
+            self.df = pd.DataFrame(data, columns=columns)
+
+            # self.infoLogger.logger.info('begin')
+            # for result in cur.fetchall():
+            #     print result
+            #     self.infoLogger.logger.info(str(result))
+            #     break
+            # self.infoLogger.logger.info('end')
+            #
+            # engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
+            #            connect_args={'charset':'utf8'})
+            # self.df = pd.read_sql_query(sql, engine_sql)
+        except Exception, e:
+            self.errorLogger.logger.error(str(e))
+
+        self.infoLogger.logger.info(encode_wrap(len(self.df)))
 
         self.tableWidget.setRowCount(len(self.df))
 
@@ -283,6 +326,17 @@ class Ui_Result_Dialog(object):
 
         self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 
+
+def encode_wrap(str):
+    try:
+        sse = sys.stdout.encoding
+        return str.encode(sse)
+    except Exception, e:
+        return str
+
+def str_qt_to_utf(qt_str):
+    utf_str = unicode(qt_str.toUtf8(), 'utf-8', 'ignore')
+    return utf_str
 
 if __name__ == "__main__":
     import sys

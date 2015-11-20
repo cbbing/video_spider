@@ -15,6 +15,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+import os
 import urllib, urllib2
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
@@ -120,21 +121,43 @@ class Ui_Dialog(object):
         filename = dlg.getOpenFileName()
         from os.path import isfile
         if isfile(filename):
+            filename = str(filename)
+            print type(filename)
+            #dir_f = os.path.dirname(str(filename))
 
-            # 在 urllib2 上注册 http 流处理句柄
-            register_openers()
+            # ------ web post -----
+            # # 在 urllib2 上注册 http 流处理句柄
+            # register_openers()
+            #
+            # # headers 包含必须的 Content-Type 和 Content-Length
+            # # datagen 是一个生成器对象，返回编码过后的参数
+            # datagen, headers = multipart_encode({"myfile": open(str(filename), "rb")})
+            #
+            # # 创建请求对象
+            # request = urllib2.Request("http://%s:8080/upload" % self.ip, datagen, headers)
+            # # 实际执行请求并取得返回
+            # print urllib2.urlopen(request).read()
 
-            # 开始对文件 "DSC0001.jpg" 的 multiart/form-data 编码
-            # "image1" 是参数的名字，一般通过 HTML 中的 <input> 标签的 name 参数设置
 
-            # headers 包含必须的 Content-Type 和 Content-Length
-            # datagen 是一个生成器对象，返回编码过后的参数
-            datagen, headers = multipart_encode({"myfile": open(str(filename), "rb")})
+            # ------- ftp --------
+            from ftplib import FTP
 
-            # 创建请求对象
-            request = urllib2.Request("http://%s:8080/upload" % self.ip, datagen, headers)
-            # 实际执行请求并取得返回
-            print urllib2.urlopen(request).read()
+            ftp=FTP()
+            ftp.set_debuglevel(2)#打开调试级别2，显示详细信息;0为关闭调试信息
+            ftp.connect('101.200.183.216','21')#连接
+            ftp.login('Administrator','AAaa0924')#登录，如果匿名登录则用空串代替即可
+            print ftp.getwelcome()#显示ftp服务器欢迎信息
+            #ftp.cwd(dir_f) #选择操作目录
+            #filename='keys.xlsx'
+            bufsize = 1024#设置缓冲块大小
+            file_handler = open(filename,'rb')#以读模式在本地打开文件
+            ftp.storbinary('STOR %s' % os.path.basename(filename),file_handler,bufsize)#上传文件
+            ftp.set_debuglevel(0)
+            file_handler.close()
+            ftp.quit()
+            print "ftp up OK"
+
+
 
     #运行
     def on_run_clicked(self):

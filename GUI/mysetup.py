@@ -1,3 +1,5 @@
+# for py2exe  , no use!
+
 from distutils.core import setup
 import numpy
 import py2exe, sys, os

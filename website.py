@@ -14,6 +14,9 @@ from main import run_all
 from util.codeConvert import GetTime
 from init import *
 
+import sys, logging
+from wsgilog import WsgiLog
+import ConfigParser
 
 from datetime import datetime; now = datetime.now()
 from web import form
@@ -206,6 +209,22 @@ class FileItem:
         self.file_name = ''
         self.modify_time = ''
 
+class MyLog(WsgiLog):
+    def __init__(self, application):
+
+        cf = ConfigParser.ConfigParser()
+        cf.read('config.ini')
+
+        WsgiLog.__init__(
+            self,
+            application,
+            logformat = "[%(asctime)s] %(filename)s:%(lineno)d(%(funcName)s): [%(levelname)s] %(message)s",
+            tofile = True,
+            toprint = True,
+            file = cf.get("weblog", "file"),
+            interval = cf.get("weblog", "interval"),
+            backups = int(cf.get("weblog", "backups"))
+            )
 
 if __name__ == "__main__":
-    app.run()
+    app.run(MyLog)

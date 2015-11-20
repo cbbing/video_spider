@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, QtNetwork
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -138,8 +138,18 @@ class Ui_Dialog(object):
 
     #运行
     def on_run_clicked(self):
-        response = urllib.urlopen('http://%s:8080/run_video_search' % self.ip)
+        # btn =  RunButton()
+        # btn.show()
+        self.pushButton_run.setText(_translate("Dialog", "运行中", None))
+        self.pushButton_run.setEnabled(False)
+        response = urllib2.urlopen('http://%s:8080/run_video_search' % self.ip, timeout=3)
         print response
+
+        # progress = QtGui.QProgressDialog("running...", "ok", 0, 10)
+        # progress.show()
+        # t = WorkThread()
+        # t.punched.connect(lambda : progress.setValue(progress.value()+1))
+        # t.start()
 
 
     #结果
@@ -157,6 +167,43 @@ class Ui_Dialog(object):
         # myqq.setWindowTitle("My Table")
         # myqq.show()
         # myqq.exec_()
+
+class RunButton(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        super(QPushButton, self).__init__(parent=parent)
+
+        self.ip = "101.200.183.216"
+
+        self.http = QtNetwork.QHttp(parent=self)
+        self.http.done.connect(self.on_req_done)
+
+        self.url = QtCore.QUrl('http://%s:8080/result' % self.ip)
+
+        self.http.setHost(self.url.host(), self.url.port(8080))
+        self.getId = self.http.get(self.url.path())
+
+    def on_req_done(self, error):
+        if not error:
+            print "Success!"
+        else:
+            print "Error!"
+
+class WorkThread(QtCore.QThread):
+
+    punched = QtCore.pyqtSignal()
+
+    def __init__(self):
+        QtCore.QThread.__init__(self)
+
+        self.ip = "101.200.183.216"
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        response = urllib.urlopen('http://%s:8080/run_video_search' % self.ip)
+        self.punched.emit()
+        self.terminate()
 
 if __name__ == "__main__":
     import sys

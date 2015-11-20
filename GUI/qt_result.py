@@ -281,7 +281,7 @@ class Ui_Result_Dialog(object):
             data = {columns[i]:[result[i] for result in results] for i in range(len(columns))}
             self.df = pd.DataFrame(data, columns=columns)
 
-            # self.infoLogger.logger.info('begin')
+            self.infoLogger.logger.info('result len:%s' % len(self.df))
             # for result in cur.fetchall():
             #     print result
             #     self.infoLogger.logger.info(str(result))
@@ -294,7 +294,7 @@ class Ui_Result_Dialog(object):
         except Exception, e:
             self.errorLogger.logger.error(str(e))
 
-        self.infoLogger.logger.info(encode_wrap(len(self.df)))
+        #self.infoLogger.logger.info(encode_wrap(len(self.df)))
 
         self.tableWidget.setRowCount(len(self.df))
 

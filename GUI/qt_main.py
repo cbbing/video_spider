@@ -117,6 +117,7 @@ class Ui_Dialog(object):
     # 上传文件
     def on_openfile_clicked(self):
 
+
         dlg = QFileDialog()
         filename = dlg.getOpenFileName()
         from os.path import isfile
@@ -156,6 +157,16 @@ class Ui_Dialog(object):
             file_handler.close()
             ftp.quit()
             print "ftp up OK"
+
+            msgBox = QtGui.QMessageBox()
+            msgBox.setText(_fromUtf8("上传完毕"))
+            #msgBox.setInformativeText("Do you really want to disable safety enforcement?")
+            msgBox.addButton(QtGui.QMessageBox.Ok)
+            #msgBox.addButton(QtGui.QMessageBox.No)
+            #msgBox.setDefaultButton(QtGui.QMessageBox.No)
+            msgBox.exec_()
+
+
 
 
 

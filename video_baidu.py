@@ -16,6 +16,7 @@ from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
 from util.MyLogger import Logger
 import platform
+import requests
 
 
 
@@ -102,7 +103,7 @@ class BaiduVideo(BaseVideo):
             #sourceList = soup.findAll("div", attrs={'class':'content_left'})
             #print 'class="h3"' in text
 
-            driver_each = webdriver.Firefox()
+            #driver_each = webdriver.Firefox()
 
             for source in sourceList:
                 titleAndLink = source.find('a')
@@ -119,16 +120,20 @@ class BaiduVideo(BaseVideo):
                         item.href = titleAndLink['href']
 
                         #百度链接转真实url
-                        driver_each.get(item.href)
+                        print item.href
+                        originalURL = self.get_baidu_real_url(item.href)
+                        print originalURL
+                        item.href = originalURL
+                        # driver_each.get(item.href)
+                        #
+                        # #过滤无效视频
+                        # if 'error' in driver_each.current_url:
+                        #     continue
+                        # if '好像不能看了' in driver_each.page_source:
+                        #     continue
 
-                        #过滤无效视频
-                        if 'error' in driver_each.current_url:
-                            continue
-                        if '好像不能看了' in driver_each.page_source:
-                            continue
-
-                        self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
-                        item.href = driver_each.current_url
+                        #self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
+                        #item.href = driver_each.current_url
 
                         self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
                         self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
@@ -138,11 +143,22 @@ class BaiduVideo(BaseVideo):
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap(str(e)))
 
-            driver_each.quit()
+            #driver_each.quit()
 
         except Exception, e:
             self.errorLogger.logger.error(encode_wrap(str(e)))
 
+    def get_baidu_real_url(self, url):
+        tmpPage = requests.get(url, allow_redirects=False)
+        if tmpPage.status_code == 200:
+            urlMatch = re.search(r'URL=\'(.*?)\'', tmpPage.text.encode('utf-8'), re.S)
+            originalURL = urlMatch.group(1)
+        elif tmpPage.status_code == 302:
+            originalURL = tmpPage.headers.get('location')
+        else:
+            originalURL = url
+            print 'No URL found!!'
+        return originalURL
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

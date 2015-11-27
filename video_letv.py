@@ -30,6 +30,15 @@ class LetvVideo(BaseVideo):
 
 
     def run(self, keys):
+
+        cf = ConfigParser.ConfigParser()
+        cf.read(config_file_path)
+        lengthtypes = cf.get("letv","lengthtype")
+        if len(lengthtypes.strip('[').strip(']')) == 0:
+            print encode_wrap('配置为不运行')
+            return
+
+
         for key in keys:
             # 初始化
             self.items = []

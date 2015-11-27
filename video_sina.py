@@ -28,6 +28,14 @@ class SinaVideo(BaseVideo):
         self.errorLogger = Logger(logname=dir_log+'error_sina.log', logger='E')
 
     def run(self, keys):
+
+        cf = ConfigParser.ConfigParser()
+        cf.read(config_file_path)
+        lengthtypes = cf.get("sina","lengthtype")
+        if len(lengthtypes.strip('[').strip(']')) == 0:
+            print encode_wrap('配置为不运行')
+            return
+
         for key in keys:
             # 初始化
             self.items = []

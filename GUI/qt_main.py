@@ -176,7 +176,10 @@ class Ui_Dialog(object):
         # btn.show()
         #self.pushButton_run.setText(_translate("Dialog", "运行中", None))
         self.pushButton_run.setEnabled(False)
-        response = urllib2.urlopen('http://%s:8080/run_video_search' % self.ip, timeout=5)
+        try:
+            response = urllib2.urlopen('http://%s:8080/run_video_search' % self.ip, timeout=5)
+        except:
+            print 'gogogo '
         #print response
 
         msgBox = QtGui.QMessageBox()

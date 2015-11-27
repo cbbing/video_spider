@@ -135,7 +135,7 @@ def run_all():
     try:
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get("baofeng","lengthtype")
+        lengthtypes = cf.get("baidu","lengthtype")
         if len(lengthtypes.strip('[').strip(']')) > 0:
             print encode_wrap('运行百度搜索')
             video = BaiduVideo()

@@ -174,10 +174,20 @@ class Ui_Dialog(object):
     def on_run_clicked(self):
         # btn =  RunButton()
         # btn.show()
-        self.pushButton_run.setText(_translate("Dialog", "运行中", None))
+        #self.pushButton_run.setText(_translate("Dialog", "运行中", None))
         self.pushButton_run.setEnabled(False)
         response = urllib2.urlopen('http://%s:8080/run_video_search' % self.ip, timeout=5)
-        print response
+        #print response
+
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText(_fromUtf8("运行中..."))
+        msgBox.setInformativeText(_fromUtf8("搜索时间比较长,请耐心等待!"))
+        msgBox.addButton(QtGui.QMessageBox.Ok)
+        #msgBox.addButton(QtGui.QMessageBox.No)
+        #msgBox.setDefaultButton(QtGui.QMessageBox.No)
+        msgBox.exec_()
+
+        self.pushButton_run.setEnabled(True)
 
         # progress = QtGui.QProgressDialog("running...", "ok", 0, 10)
         # progress.show()

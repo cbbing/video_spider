@@ -142,7 +142,7 @@ def run_all():
             video.run_auto()
     except Exception,e:
         print e
-        
+
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     try:

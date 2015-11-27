@@ -10,21 +10,21 @@ systemName = platform.system()
 #配置文件 位置
 config_file_path = 'config.ini'
 if systemName == 'Windows':
-    config_file_path = 'C:\Users\Administrator\Desktop\Data\config.ini'
+    config_file_path = 'D:\Data\config.ini'
 
 #WWW 目录
 www_path = './www/Data'
 if systemName == 'Windows':
-    www_path = 'C:\Users\Administrator\Desktop\Data'
+    www_path = 'D:\Data'
 
 #关键词 - 文件位置
 key_path = 'keys.xlsx'
 if systemName == 'Windows':
-    key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
+    key_path = www_path + '\keys.xlsx'
 
 #结果目录
 if systemName == 'Windows':
-    dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
+    dir_path = www_path + '\Result\\'
 else:
     dir_path = '/Users/cbb/Documents/pythonspace/video_spider_master/data/'
 

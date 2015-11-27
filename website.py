@@ -227,4 +227,4 @@ class MyLog(WsgiLog):
             )
 
 if __name__ == "__main__":
-    app.run(MyLog)
+    app.run()

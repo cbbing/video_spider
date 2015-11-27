@@ -160,24 +160,29 @@ class BaiduVideo(BaseVideo):
             print 'No URL found!!'
         return originalURL
 
+    def run_auto(self):
+        systemName = platform.system()
+        if systemName == 'Windows':
+            key_path = 'D:\Data\keys-baidu.xlsx'
+            dir_path = 'D:/Data/Result/'
+        else:
+            key_path = 'keys-baidu.xlsx'
+            dir_path = './data/'
+
+        data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+        print data
+        if len(data) == 0:
+            print 'no key, program will exit in 3s...'
+            time.sleep(3)
+            sys.exit(1)
+
+
+        self.filePath = 'baidu_video'
+        self.run(data['key'].get_values())
+
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
-    systemName = platform.system()
-    if systemName == 'Windows':
-        key_path = 'D:\Data\keys-baidu.xlsx'
-        dir_path = 'D:/Data/Result/'
-    else:
-        key_path = 'keys-baidu.xlsx'
-        dir_path = './data/'
-
-    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
-    print data
-    if len(data) == 0:
-        print 'no key, program will exit in 3s...'
-        time.sleep(3)
-        sys.exit(1)
-
     video = BaiduVideo()
-    video.filePath = 'baidu_video'
-    video.run(data['key'].get_values())
+    video.run_auto()
+
 

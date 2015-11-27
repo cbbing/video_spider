@@ -8,6 +8,7 @@ sse = sys.stdout.encoding
 
 from multiprocessing.dummy import Pool as ThreadPool
 
+import ConfigParser
 import time, os
 import shutil
 import pandas as pd
@@ -122,17 +123,26 @@ def run(index):
             video = BaofengVideo()
             video.filePath = 'baofeng_video'
             video.run(keys)
+
+
+
     except Exception, e:
         print encode_wrap('编号:%d, 运行出错' % index), str(e)
 
 def run_all():
 
-    # systemName = platform.system()
-    # print os.getcwd()
-    # key_path = 'keys.xlsx'
-    #
-    # if systemName == 'Windows':
-    #     key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
+    # 百度
+    try:
+        cf = ConfigParser.ConfigParser()
+        cf.read(config_file_path)
+        lengthtypes = cf.get("baofeng","lengthtype")
+        if len(lengthtypes.strip('[').strip(']')) > 0:
+            print encode_wrap('运行百度搜索')
+            video = BaiduVideo()
+            video.run_auto()
+    except Exception,e:
+        print e
+        
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     try:
@@ -146,7 +156,7 @@ def run_all():
     time.sleep(10)
 
     indexs = range(1, 12)
-    pool = ThreadPool(processes=6)
+    pool = ThreadPool(processes=4)
     pool.map(run, indexs)
     pool.close()
     pool.join()

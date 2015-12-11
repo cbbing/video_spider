@@ -20,6 +20,7 @@ class SouhuVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '搜狐'
+        self.site = 'sohu'
         self.album_url = 'http://so.tv.sohu.com/mts?box=1&wd=key' #专辑的url
         self.general_url = 'http://so.tv.sohu.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
         self.filePath = 'souhu_video'
@@ -38,22 +39,32 @@ class SouhuVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        for key in keys:
-            # 初始化
-            self.items = []
+        self.run_keys(keys)
 
-            #搜索
-            self.search(key)
-
-            #过滤
-            #self.filter_short_video()
-
-            #创建dataframe
-            self.create_data(key)
-
-
-        #保存数据
-        self.save_data()
+        # for key in keys:
+        #
+        #     try:
+        #         # 初始化
+        #         self.items = []
+        #
+        #         #搜索
+        #         self.search(key)
+        #
+        #         #过滤
+        #         #self.filter_short_video()
+        #
+        #         #创建dataframe
+        #         df = self.create_data(key)
+        #
+        #         self.data_to_sql_by_key(key, df)
+        #
+        #     except Exception,e:
+        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
+        #         self.data_to_unfinish_file(self.web, key)
+        #
+        #
+        # #保存数据
+        # self.save_data()
 
     def search(self, key):
 

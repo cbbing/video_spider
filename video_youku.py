@@ -17,11 +17,11 @@ class YoukuVideo(SokuVideo):
         self.filePath = 'youku_video'
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
-        self.web = 'youku'
+        self.site = 'youku'
 
 if __name__=='__main__':
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', u'优酷网', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = YoukuVideo()

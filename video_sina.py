@@ -20,6 +20,7 @@ class SinaVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '新浪'
+        self.site = 'sina'
         self.general_url = 'http://so.video.sina.com.cn/s?wd=key' #普通搜索的url
         self.filePath = 'sina_video'
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
@@ -36,27 +37,33 @@ class SinaVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        for key in keys:
-            # 初始化
-            self.items = []
+        self.run_keys(keys)
 
-            #搜索
-            self.search(key)
-            #过滤
-            #self.filter_short_video()
-            #创建dataframe
-            self.create_data(key)
-
-            print '\n'
-
-            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-            #print '*'*20, '暂停10s', '*'*20
-            print '\n'
-            time.sleep(self.stop)
-
-
-        #保存数据
-        self.save_data()
+        # for key in keys:
+        #     try:
+        #         # 初始化
+        #         self.items = []
+        #
+        #         #搜索
+        #         self.search(key)
+        #
+        #         #创建dataframe
+        #         df = self.create_data(key)
+        #
+        #         self.data_to_sql_by_key(key, df)
+        #
+        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        #         #print '*'*20, '暂停10s', '*'*20
+        #         print '\n'
+        #         time.sleep(self.stop)
+        #
+        #     except Exception,e:
+        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
+        #         self.data_to_unfinish_file(self.web, key)
+        #
+        #
+        # #保存数据
+        # self.save_data()
 
     def search(self, key):
 

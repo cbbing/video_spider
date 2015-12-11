@@ -24,7 +24,7 @@ class SokuVideo(BaseVideo):
         self.general_url = '' #普通搜索的url
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
-        self.web = '' # youku or tudou
+        self.site = '' # youku or tudou
 
         self.infoLogger = Logger(logname=dir_log+'info_soku.log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_soku.log', logger='E')
@@ -33,32 +33,41 @@ class SokuVideo(BaseVideo):
 
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get(self.web,"lengthtype")
+        lengthtypes = cf.get(self.site,"lengthtype")
         if len(lengthtypes.strip('[').strip(']')) == 0:
             print encode_wrap('配置为不运行')
             return
 
-        for key in keys:
-            # 初始化
-            self.items = []
+        self.run_keys(keys)
 
-            #搜索
-            self.search(key)
-            #过滤
-            #self.filter_short_video()
-            #创建dataframe
-            self.create_data(key)
-
-            print '\n'*2
-            #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
-            self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-            print '\n'*2
-            time.sleep(self.stop)
-
-
-
-        #保存数据
-        self.save_data()
+        # for key in keys:
+        #     try:
+        #         # 初始化
+        #         self.items = []
+        #
+        #         #搜索
+        #         self.search(key)
+        #
+        #         #过滤
+        #         #self.filter_short_video()
+        #
+        #         #创建dataframe
+        #         df = self.create_data(key)
+        #
+        #         self.data_to_sql_by_key(key, df)
+        #
+        #         print '\n'*2
+        #         #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
+        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        #         print '\n'*2
+        #         time.sleep(self.stop)
+        #
+        #     except Exception,e:
+        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
+        #         self.data_to_unfinish_file(self.web, key)
+        #
+        # #保存数据
+        # #self.save_data()
 
     def search(self, key):
 
@@ -75,7 +84,7 @@ class SokuVideo(BaseVideo):
         # 普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get(self.web,"lengthtype")
+        lengthtypes = cf.get(self.site,"lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 

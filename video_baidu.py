@@ -17,13 +17,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from util.MyLogger import Logger
 import platform
 import requests
-
+from retrying import retry
 
 
 class BaiduVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '百度'
+        self.site = 'baidu'
         #self.general_url = 'http://www.baidu.com/s?wd=key' #普通搜索的url
         self.general_url ='https://www.baidu.com/s?wd=key&pn=10&oq=key&tn=baiduhome_pg&ie=utf-8&usm=1&rsv_idx=3&rsv_pq=a15244ab000719f5&rsv_t=0e3d8UvmBPqha2nBnvxnGcRrOKKFbThEAimJjEkxffLDR1TONjuYOYAU7LEf5YAWeJx7'
         self.filePath = 'baidu_video'
@@ -33,26 +34,41 @@ class BaiduVideo(BaseVideo):
         self.errorLogger = Logger(logname=dir_log+'error_baidu.log', logger='E')
 
 
+
     def run(self, keys):
-        for key in keys:
-            # 初始化
-            self.items = []
 
-            #搜索
-            self.search(key)
-            #过滤
-            #self.filter_short_video()
-            #创建dataframe
-            self.create_data(key)
+        self.run_keys(keys)
 
-            print '\n'
-            print '*'*20, '暂停1s', '*'*20
-            print '\n'
-            time.sleep(1)
-
-
-        #保存数据
-        self.save_data()
+        # keys_unfininsh = []
+        # for key in keys:
+        #     try:
+        #         # 初始化
+        #         self.items = []
+        #
+        #         #搜索
+        #         self.search(key)
+        #         #过滤
+        #         #self.filter_short_video()
+        #         #创建dataframe
+        #         df = self.create_data(key)
+        #         self.data_to_sql_by_key(key, df)
+        #
+        #         print '\n'
+        #         print '*'*20, '暂停1s', '*'*20
+        #         print '\n'
+        #         time.sleep(1)
+        #
+        #
+        #     except Exception,e:
+        #         keys_unfininsh.append(key)
+        #
+        #
+        #         self.errorLogger.logger.error(key + '_unfinish_' + str(e))
+        #
+        #
+        #
+        # #保存数据
+        # self.save_data()
 
     def search(self, key):
 
@@ -66,13 +82,14 @@ class BaiduVideo(BaseVideo):
         #print 'start phantomjs'
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
+        driver.set_page_load_timeout(10)
         driver.get(baidu_url)
 
-        driver.get_screenshot_as_file("show.png")
+        #driver.get_screenshot_as_file("show.png")
 
-        f = open('./data/baidu.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # f = open('./data/baidu.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #普通
         self.parse_data(driver.page_source, 1)

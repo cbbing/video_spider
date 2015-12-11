@@ -36,13 +36,41 @@ class BaseVideo:
         self.pagecount = int(cf.get("general","page_count"))
         self.filePath = ''
         self.engine = ''
+        self.site = ''
 
         self.stop = 3 # 暂停3s
 
         self.infoLogger = Logger(logname=dir_log+'info_base.log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_base.log', logger='E')
 
+    def run_keys(self, keys):
+        for key in keys:
+            try:
+                # 初始化
+                self.items = []
 
+                #搜索
+                self.search(key)
+
+                #创建dataframe
+                df = self.create_data(key)
+
+                self.data_to_sql_by_key(key, df)
+
+                print '\n'*2
+                self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+                print '\n'*2
+                time.sleep(self.stop)
+
+            except Exception,e:
+                self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
+                self.data_to_unfinish_file(self.site, key)
+
+        #保存数据
+        self.save_data()
+
+    def search(key):
+        pass
 
     def create_data(self, key):
         df = DataFrame({'Title':[item.title for item in self.items],
@@ -97,6 +125,7 @@ class BaseVideo:
         #self.filter_involt_video(df)
         self.infoLogger.logger.info(encode_wrap('去重后，总个数:%d' % len(df)))
         self.dfs.append((key, df))
+        return df
 
 
     def filter_short_video(self):
@@ -139,23 +168,25 @@ class BaseVideo:
 
     def save_data(self):
         self.data_to_excel()
-        self.data_to_sql()
+        #self.data_to_sql()
 
     def data_to_excel(self):
+        try:
+            now_data = GetNowDate()
+            if not os.path.exists(dir_path + now_data):
+                os.mkdir(dir_path + now_data)
 
-        now_data = GetNowDate()
-        if not os.path.exists(dir_path + now_data):
-            os.mkdir(dir_path + now_data)
+            now_time = GetNowTim3()
+            file_name = dir_path + now_data + '/' + self.filePath + '(' + now_time + ').xlsx'
 
-        now_time = GetNowTim3()
-        file_name = dir_path + now_data + '/' + self.filePath + '(' + now_time + ').xlsx'
-
-        with pd.ExcelWriter(file_name) as writer:
-            for key, df in self.dfs:
-                df.to_excel(writer, sheet_name=key)
-                #df.to_csv("./data/letv_video.csv")
-                #break
-        self.infoLogger.logger.info(encode_wrap('写入excel完成'))
+            with pd.ExcelWriter(file_name) as writer:
+                for key, df in self.dfs:
+                    df.to_excel(writer, sheet_name=key)
+                    #df.to_csv("./data/letv_video.csv")
+                    #break
+            self.infoLogger.logger.info(encode_wrap('写入excel完成'))
+        except:
+            self.errorLogger.logger.info(encode_wrap('写入excel fail'))
 
 
     def data_to_sql(self):
@@ -177,7 +208,31 @@ class BaseVideo:
                 self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
                 df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
+    def data_to_sql_by_key(self, key, df):
+        df['VideoKey'] = key
+        print df[:10]
+        try:
+            sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
+            #sql = "select Href from %s" % mysql_result_table
+            df_exist = pd.read_sql_query(sql, engine_sql)
+            if len(df_exist) > 0:
+                hrefs = df_exist['Href'].get_values()
+                df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
+        except Exception, e:
+            print e
 
+        if len(df)>0:
+            self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
+            df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
+
+    def data_to_unfinish_file(self, web, key):
+        try:
+            with open(dir_log + 'unfinish_list.txt', 'a') as f:
+                s_info = self.web + ',' + key + ',' + GetNowTime() + '\n'
+                f.write(s_info)
+                f.close()
+        except Exception, e:
+            self.errorLogger.logger.error(str(e))
 
     # 判断视频来源
     def get_video_source(self, url):
@@ -207,7 +262,7 @@ class BaseVideo:
             key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            #self.errorLogger.logger.error(encode_wrap(str(e)))
             return ''
 
 

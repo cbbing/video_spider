@@ -18,6 +18,7 @@ class IQiYiVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '爱奇艺'
+        self.site = 'iqiyi'
         self.album_url = 'http://so.iqiyi.com/so/q_key' #专辑的url
         self.general_url = 'http://so.iqiyi.com/so/q_key_ctg__t_tid_page_pid_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_' #普通搜索的url
         self.filePath = 'iqiyi_video'
@@ -37,23 +38,35 @@ class IQiYiVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        for key in keys:
-            # 初始化
-            self.items = []
+        self.run_keys(keys)
 
-            #搜索
-            self.search(key)
-
-            #过滤
-            #self.filter_short_video()
-
-            #创建dataframe
-            self.create_data(key)
-
-
-
-        #保存数据
-        self.save_data()
+        # for key in keys:
+        #
+        #     try:
+        #         # 初始化
+        #         self.items = []
+        #
+        #         #搜索
+        #         self.search(key)
+        #
+        #         #创建dataframe
+        #         df = self.create_data(key)
+        #
+        #         self.data_to_sql_by_key(key, df)
+        #
+        #         print '\n'
+        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        #         print '\n'
+        #         time.sleep(self.stop)
+        #
+        #     except Exception,e:
+        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
+        #         self.data_to_unfinish_file(self.web, key)
+        #
+        #
+        #
+        # #保存数据
+        # self.save_data()
 
     def search(self, key):
 

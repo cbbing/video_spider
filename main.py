@@ -42,9 +42,26 @@ def run(index):
     #
     # if systemName == 'Windows':
     #     key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
-    data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+
+    sheetDict = {1:'优酷网',
+                 2:'土豆网',
+                 3:'新浪',
+                 4:'搜狐',
+                 5:'腾讯网',
+                 6:'爱奇艺',
+                 7:'乐视',
+                 8:'华数',
+                 9:'风行',
+                 10:'响巢看看',
+                 11:'暴风',
+                 }
+    sheet = sheetDict.get(index, 'Sheet1')
+
+    data = pd.read_excel(key_path, sheet, index_col=None, na_values=['NA'])
     keys = data['key'].get_values()
     print keys
+    if len(keys) == 0:
+        return
 
     try:
         if index == 1:
@@ -156,7 +173,7 @@ def run_all():
     time.sleep(10)
 
     indexs = range(1, 12)
-    pool = ThreadPool(processes=4)
+    pool = ThreadPool(processes=2)
     pool.map(run, indexs)
     pool.close()
     pool.join()

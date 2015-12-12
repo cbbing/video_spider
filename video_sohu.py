@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
-from util.codeConvert import *
+from util.CodeConvert import *
 
 
 class SouhuVideo(BaseVideo):

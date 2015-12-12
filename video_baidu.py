@@ -17,7 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from util.MyLogger import Logger
 import platform
 import requests
-from retrying import retry
+#from retrying import retry
 
 
 class BaiduVideo(BaseVideo):

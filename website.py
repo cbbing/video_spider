@@ -11,7 +11,7 @@ sys.setdefaultencoding("utf-8")
 import web
 import os, time, hashlib
 from main import run_all
-from util.codeConvert import GetTime
+from util.CodeConvert import GetTime
 from init import *
 
 import sys, logging

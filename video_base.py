@@ -9,14 +9,16 @@ import time
 import re
 import ConfigParser
 from pandas import Series, DataFrame
+import random
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from util.MyLogger import Logger
-from util.codeConvert import *
+from util.CodeConvert import *
 from selenium import webdriver
 
 from init import *
+from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
@@ -42,6 +44,37 @@ class BaseVideo:
 
         self.infoLogger = Logger(logname=dir_log+'info_base.log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_base.log', logger='E')
+
+        ip_file = "../data/ip_proxy_%s.csv" % GetNowDate()
+        try:
+            self.df_ip = pd.read_csv(ip_file)
+        except:
+            print 'not exist:%s, get it now!' % ip_file
+            self.update_ip_data()
+
+
+    # 更新IP代理库
+    def update_ip_data(self):
+        ip_file = "../Data/ip_proxy_%s.csv" % GetNowDate()
+        ip_proxy = IP_Proxy()
+        ip_proxy.run()
+        self.df_ip = pd.read_csv(ip_file)
+
+    # 获取IP代理地址(随机)
+    def get_proxies(self):
+
+        if len(self.df_ip) > 0:
+            print len(self.df_ip)
+            index = random.randint(0, len(self.df_ip))
+            http = self.df_ip.ix[index, 'Type']
+            http = str(http).lower()
+            ip = self.df_ip.ix[index, 'IP']
+            port = self.df_ip.ix[index, 'Port']
+            ip_proxy = "%s://%s:%s" % (http, ip, port)
+            proxies = {http:ip_proxy}
+            return proxies
+        else:
+            return {}
 
     def run_keys(self, keys):
         for key in keys:

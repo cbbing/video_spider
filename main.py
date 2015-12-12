@@ -24,7 +24,7 @@ from video_fun import FunVideo
 from video_kankan import KankanVideo
 from video_baofeng import BaofengVideo
 from video_baidu import BaiduVideo
-from util.codeConvert import encode_wrap
+from util.CodeConvert import encode_wrap
 
 from init import *
 

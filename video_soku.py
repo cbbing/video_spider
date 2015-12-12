@@ -9,6 +9,7 @@ import re
 from video_base import *
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+from retrying import retry
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -69,11 +70,12 @@ class SokuVideo(BaseVideo):
         # #保存数据
         # #self.save_data()
 
+
     def search(self, key):
 
         # 专辑
         album_url = self.album_url.replace('key',key)
-        r = requests.get(album_url)
+        r = requests.get(album_url, proxies=self.get_proxies(), timeout=5)
         self.parse_data_album(r.text)
 
         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
@@ -186,6 +188,14 @@ class SokuVideo(BaseVideo):
                             break
 
 
+
+def retry_if_result_none(result):
+    return result is None
+
+@retry(retry_on_result=retry_if_result_none)
+def get_result():
+    return None
+
 if __name__=='__main__':
 
     data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
@@ -196,5 +206,8 @@ if __name__=='__main__':
     #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
+
+    #print do_something_unreliable()
+    #get_result()
 
 

@@ -307,12 +307,14 @@ class Ui_Result_Dialog(object):
 
     def data_export(self):
 
+
+
         #按关键词分组
-        dfs = []
-        keys_se = self.df['VideoKey'].drop_duplicates()
-        for video_key in list(keys_se):
-            df_each = self.df[self.df['VideoKey'] == video_key]
-            dfs.append((video_key, df_each))
+        # dfs = []
+        # keys_se = self.df['VideoKey'].drop_duplicates()
+        # for video_key in list(keys_se):
+        #     df_each = self.df[self.df['VideoKey'] == video_key]
+        #     dfs.append((video_key, df_each))
 
         file_name = QFileDialog.getSaveFileName(self.pushButton_export,
                                     self.tableWidget.tr("保存文件"),
@@ -321,8 +323,9 @@ class Ui_Result_Dialog(object):
         print file_name
         if len(file_name) > 0:
             with pd.ExcelWriter(str_qt_to_utf(file_name)) as writer:
-                for key, df in dfs:
-                    df.to_excel(writer, sheet_name=key)
+                self.df.to_excel(writer, sheet_name='Sheet1')
+                # for key, df in dfs:
+                #     df.to_excel(writer, sheet_name=key)
 
         self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 

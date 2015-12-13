@@ -26,8 +26,8 @@ class LetvVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_letv.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_letv.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_letv(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_letv(' + GetNowDate()+ ').log', logger='E')
 
 
     def run(self, keys):
@@ -80,11 +80,11 @@ class LetvVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(letv_url)
 
-        driver.get_screenshot_as_file("show.png")
-
-        f = open('./data/data.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # driver.get_screenshot_as_file("show.png")
+        #
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #专辑
         self.parse_data_album(driver.page_source)

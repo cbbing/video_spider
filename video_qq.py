@@ -26,8 +26,8 @@ class QQVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_qq.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_qq.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_qq(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_qq(' + GetNowDate()+ ').log', logger='E')
 
 
     def run(self, keys):
@@ -41,32 +41,6 @@ class QQVideo(BaseVideo):
 
         self.run_keys(keys)
 
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #         #过滤
-        #         #self.filter_short_video()
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         print '\n'
-        #         time.sleep(self.stop)
-        #
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
 
@@ -82,11 +56,11 @@ class QQVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(qq_url)
 
-        driver.get_screenshot_as_file("show.png")
-
-        f = open('./data/data.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # driver.get_screenshot_as_file("show.png")
+        #
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #专辑
         self.parse_data_album(driver.page_source)

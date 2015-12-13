@@ -27,8 +27,8 @@ class SokuVideo(BaseVideo):
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
         self.site = '' # youku or tudou
 
-        self.infoLogger = Logger(logname=dir_log+'info_soku.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_soku.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log + 'info_soku(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+ 'error_soku(' + GetNowDate()+ ').log', logger='E')
 
     def run(self, keys):
 
@@ -39,44 +39,16 @@ class SokuVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        self.run_keys(keys)
-
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #过滤
-        #         #self.filter_short_video()
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'*2
-        #         #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         print '\n'*2
-        #         time.sleep(self.stop)
-        #
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        # #保存数据
-        # #self.save_data()
+        self.run_keys_multithreading(keys)
 
 
     def search(self, key):
 
         # 专辑
         album_url = self.album_url.replace('key',key)
-        r = requests.get(album_url, proxies=self.get_proxies(), timeout=5)
-        self.parse_data_album(r.text)
+        #r = requests.get(album_url)
+        r = self.get_requests(album_url)
+        self.parse_data_album(r.text, key)
 
         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
@@ -95,17 +67,18 @@ class SokuVideo(BaseVideo):
                 soku_url = soku_url.replace('pid', str(i+1))
                 soku_url = soku_url.replace('key',key)
 
-                r = requests.get(soku_url)
+                #r = requests.get(soku_url)
+                r = self.get_requests(soku_url)
                 self.parse_data(r.text, i+1, lengthtype)
 
                 self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 print '\n'
-                time.sleep(self.stop)
+                #time.sleep(self.stop)
 
 
     # 专辑
-    def parse_data_album(self, text):
+    def parse_data_album(self, text, key):
         soup = bs(text)
 
         #视频链接-专辑
@@ -134,7 +107,8 @@ class SokuVideo(BaseVideo):
 
             except Exception, e:
                 #print str(e)
-                self.errorLogger.logger.error(encode_wrap(str(e)))
+                info = '{0}:{1}:{2}:{3}'.format(self.site, key, '专辑',str(e))
+                self.errorLogger.logger.error(encode_wrap(info))
 
 
 
@@ -162,7 +136,7 @@ class SokuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                    print encode_wrap('未找到对应的时长类型!')
 
                 self.items.append(item)
                 # self.titles.append(titleAndLink['title'])
@@ -198,11 +172,12 @@ def get_result():
 
 if __name__=='__main__':
 
-    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
-    print data.columns
+    data = pd.read_excel('keys.xlsx', '优酷网', index_col=None, na_values=['NA'])
+    #print data.columns
 
     youkuVideo = SokuVideo()
-    youkuVideo.run(data['key'].get_values())
+    #youkuVideo.get_requests_data('http://www.baidu.com')
+    youkuVideo.run_keys_multithreading(data['key'].get_values())
     #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

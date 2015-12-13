@@ -10,12 +10,15 @@ import re
 import ConfigParser
 from pandas import Series, DataFrame
 import random
+import requests
 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from util.MyLogger import Logger
 from util.CodeConvert import *
 from selenium import webdriver
+from retrying import retry
+from multiprocessing.dummy import Pool as ThreadPool
 
 from init import *
 from IPProxy.ip_proxy import IP_Proxy
@@ -42,10 +45,10 @@ class BaseVideo:
 
         self.stop = 3 # 暂停3s
 
-        self.infoLogger = Logger(logname=dir_log+'info_base.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_base.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_base(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_base(' + GetNowDate()+ ').log', logger='E')
 
-        ip_file = "../data/ip_proxy_%s.csv" % GetNowDate()
+        ip_file = "./data/ip_proxy_%s.csv" % GetNowDate()
         try:
             self.df_ip = pd.read_csv(ip_file)
         except:
@@ -55,7 +58,7 @@ class BaseVideo:
 
     # 更新IP代理库
     def update_ip_data(self):
-        ip_file = "../Data/ip_proxy_%s.csv" % GetNowDate()
+        ip_file = "./data/ip_proxy_%s.csv" % GetNowDate()
         ip_proxy = IP_Proxy()
         ip_proxy.run()
         self.df_ip = pd.read_csv(ip_file)
@@ -76,31 +79,54 @@ class BaseVideo:
         else:
             return {}
 
+    # requests使用代理请求
+    @retry(stop_max_attempt_number=10)
+    def get_requests(self, url):
+        proxy = self.get_proxies()
+
+        r = requests.get(url, proxies=proxy, timeout=5)
+        print url, proxy, r.status_code
+        return r
+
+    # 单线程运行keys
     def run_keys(self, keys):
         for key in keys:
-            try:
-                # 初始化
-                self.items = []
+            self.run_key(key)
 
-                #搜索
-                self.search(key)
+    # 多线程运行keys
+    def run_keys_multithreading(self, keys):
 
-                #创建dataframe
-                df = self.create_data(key)
+        t0 = time.time()
 
-                self.data_to_sql_by_key(key, df)
+        #多线程
+        pool = ThreadPool(processes=20)
+        pool.map(self.run_key, keys)
+        pool.close()
+        pool.join()
 
-                print '\n'*2
-                self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-                print '\n'*2
-                time.sleep(self.stop)
+        t1 = time.time()
+        print "Total time running multi: %s seconds" % ( str(t1-t0))
 
-            except Exception,e:
-                self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
-                self.data_to_unfinish_file(self.site, key)
+        # #保存数据
+        #self.save_data()
 
-        #保存数据
-        self.save_data()
+    # 运行单个key
+    def run_key(self, key):
+        try:
+            # 初始化
+            self.items = []
+
+            #搜索
+            self.search(key)
+
+            #创建dataframe
+            df = self.create_data(key)
+
+            self.data_to_sql_by_key(key, df)
+
+        except Exception,e:
+            self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
+            self.data_to_unfinish_file(self.site, key)
 
     def search(key):
         pass
@@ -152,11 +178,11 @@ class BaseVideo:
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
         print df[:10]
 
-        self.infoLogger.logger.info(encode_wrap('去重前，总个数:%d' % len(df)))
+        self.infoLogger.logger.info(encode_wrap('%s:%s:去重前，总个数:%d' % (self.site, key, len(df))))
         df = df.drop_duplicates(['Href'])
         #过滤无效的视频
         #self.filter_involt_video(df)
-        self.infoLogger.logger.info(encode_wrap('去重后，总个数:%d' % len(df)))
+        self.infoLogger.logger.info(encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df))))
         self.dfs.append((key, df))
         return df
 
@@ -217,9 +243,9 @@ class BaseVideo:
                     df.to_excel(writer, sheet_name=key)
                     #df.to_csv("./data/letv_video.csv")
                     #break
-            self.infoLogger.logger.info(encode_wrap('写入excel完成'))
+            self.infoLogger.logger.info(encode_wrap('%s:写入excel完成' % self.site))
         except:
-            self.errorLogger.logger.info(encode_wrap('写入excel fail'))
+            self.errorLogger.logger.info(encode_wrap('%s:写入excel fail' % self.site))
 
 
     def data_to_sql(self):
@@ -238,7 +264,7 @@ class BaseVideo:
                 print e
 
             if len(df)>0:
-                self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
+                self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
                 df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
     def data_to_sql_by_key(self, key, df):
@@ -255,7 +281,7 @@ class BaseVideo:
             print e
 
         if len(df)>0:
-            self.infoLogger.logger.info('写入mysql, %s, 数量:%s' %(key, len(df)))
+            self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
             df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
     def data_to_unfinish_file(self, web, key):
@@ -265,7 +291,8 @@ class BaseVideo:
                 f.write(s_info)
                 f.close()
         except Exception, e:
-            self.errorLogger.logger.error(str(e))
+            info = '{0}:{1}:{2}:{3}'.format(self.site, key,"write_to_unfinish_file fail!", str(e))
+            self.errorLogger.logger.error(encode_wrap(info))
 
     # 判断视频来源
     def get_video_source(self, url):

@@ -26,8 +26,8 @@ class FunVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_fun.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_fun.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_fun(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_fun(' + GetNowDate()+ ').log', logger='E')
 
     def run(self, keys):
 
@@ -40,30 +40,6 @@ class FunVideo(BaseVideo):
 
         self.run_keys(keys)
 
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         print '\n'
-        #         time.sleep(self.stop)
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
 
@@ -77,14 +53,14 @@ class FunVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(fun_url)
 
-        driver.get_screenshot_as_file("show.png")
+        #driver.get_screenshot_as_file("show.png")
 
-        f = open('./data/data.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #专辑
-        self.parse_data_album(driver.page_source)
+        self.parse_data_album(driver.page_source, key)
 
         # 模拟点击
         driver.find_element_by_link_text('视频').click()
@@ -94,7 +70,7 @@ class FunVideo(BaseVideo):
         #普通
 
         #第一页
-        self.parse_data(driver.page_source, 1, 0)  #风行不支持时长选择，默认为0
+        self.parse_data(driver.page_source, 1, 0, key)  #风行不支持时长选择，默认为0
 
         #获取下一页
         try:
@@ -108,7 +84,7 @@ class FunVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                self.parse_data(driver.page_source, i+2, 0)
+                self.parse_data(driver.page_source, i+2, 0, key)
 
         except Exception,e:
             self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
@@ -119,7 +95,7 @@ class FunVideo(BaseVideo):
 
 
     # 专辑搜索
-    def parse_data_album(self, text):
+    def parse_data_album(self, text, key):
         try:
             soup = bs(text)
 
@@ -149,14 +125,14 @@ class FunVideo(BaseVideo):
 
                         self.items.append(item)
                     except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
+                        self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
 
         except Exception, e:
-                self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
+                self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
 
 
     # 普通搜索
-    def parse_data(self, text, page, lengthType):
+    def parse_data(self, text, page, lengthType, key):
 
         try:
 
@@ -186,16 +162,16 @@ class FunVideo(BaseVideo):
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                                print encode_wrap('未找到对应的时长类型!')
 
                             self.items.append(item)
 
                         except Exception,e:
-                            self.errorLogger.logger.error(encode_wrap(str(e)))
+                            self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
 
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
 
 
 if __name__=='__main__':

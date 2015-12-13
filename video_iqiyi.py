@@ -25,8 +25,8 @@ class IQiYiVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_iqiyi.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_iqiyi.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_iqiyi(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_iqiyi(' + GetNowDate()+ ').log', logger='E')
 
 
     def run(self, keys):
@@ -38,41 +38,15 @@ class IQiYiVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        self.run_keys(keys)
+        self.run_keys_multithreading(keys)
 
-        # for key in keys:
-        #
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         print '\n'
-        #         time.sleep(self.stop)
-        #
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
 
         # 专辑
         album_url = self.album_url.replace('key',key)
-        r = requests.get(album_url)
+        #r = requests.get(album_url)
+        r = self.get_requests(album_url)
         self.parse_data_album(r.text)
 
         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
@@ -93,7 +67,8 @@ class IQiYiVideo(BaseVideo):
                 url = url.replace('pid', str(i+1))
                 url = url.replace('key',key)
 
-                r = requests.get(url)
+                #r = requests.get(url)
+                r = self.get_requests(url)
                 self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'
@@ -152,7 +127,7 @@ class IQiYiVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                    print encode_wrap('未找到对应的时长类型!')
 
                 self.items.append(item)
             except Exception,e:

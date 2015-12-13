@@ -27,8 +27,8 @@ class SouhuVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_sohu.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_sohu.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_sohu(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_sohu(' + GetNowDate()+ ').log', logger='E')
 
     def run(self, keys):
 
@@ -39,38 +39,15 @@ class SouhuVideo(BaseVideo):
             print encode_wrap('配置为不运行')
             return
 
-        self.run_keys(keys)
+        self.run_keys_multithreading(keys)
 
-        # for key in keys:
-        #
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #过滤
-        #         #self.filter_short_video()
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
 
         # 专辑
         album_url = self.album_url.replace('key',key)
-        r = requests.get(album_url)
+        #r = requests.get(album_url)
+        r = self.get_requests(album_url)
         self.parse_data_album(r.text)
 
         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
@@ -89,7 +66,8 @@ class SouhuVideo(BaseVideo):
                 url = url.replace('pid', str(i+1))
                 url = url.replace('key',key)
 
-                r = requests.get(url)
+                #r = requests.get(url)
+                r = self.get_requests(url)
                 self.parse_data(r.text, i+1, lengthtype)
 
                 print '\n'

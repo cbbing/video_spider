@@ -30,8 +30,8 @@ class BaiduVideo(BaseVideo):
         self.filePath = 'baidu_video'
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_baidu.log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_baidu.log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_baidu(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_baidu(' + GetNowDate()+ ').log', logger='E')
 
 
 

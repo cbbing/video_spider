@@ -14,6 +14,12 @@ def str_qt_to_utf(qt_str):
     utf_str = unicode(qt_str.toUtf8(), 'utf-8', 'ignore')
     return utf_str
 
+def check_contain_chinese(check_str):
+     for ch in check_str.decode('utf-8'):
+          if u'\u4e00' <= ch <= u'\u9fff':
+                return True
+     return False
+
 
 def GetDate(timefrom1970):
     return time.strftime("%Y-%m-%d",time.localtime(timefrom1970))

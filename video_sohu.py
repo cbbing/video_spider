@@ -55,10 +55,10 @@ class SouhuVideo(BaseVideo):
         r = self.get_requests(album_url)
         self.parse_data_album(r.text)
 
-        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, encode_wrap('暂停10s'), '*'*20
-        print '\n'
-        time.sleep(self.stop)
+        # self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        # #print '*'*20, encode_wrap('暂停10s'), '*'*20
+        # print '\n'
+        # time.sleep(self.stop)
 
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
@@ -75,11 +75,11 @@ class SouhuVideo(BaseVideo):
                 r = self.get_requests(url)
                 self.parse_data(r.text, i+1, lengthtype)
 
-                print '\n'
-                self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
+                #print '\n'
+                #self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, encode_wrap('暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype)), '*'*20
-                print '\n'
-                time.sleep(self.stop)
+                #print '\n'
+                #time.sleep(self.stop)
 
 
     # 专辑

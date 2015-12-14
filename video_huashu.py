@@ -50,14 +50,14 @@ class HuashuVideo(BaseVideo):
     def search(self, key):
 
         # 专辑
-        album_url = self.album_url.replace('key',key)
+        #album_url = self.album_url.replace('key',key)
         #r = requests.get(album_url)
         #self.parse_data_album(r.text)
 
-        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, '暂停5s', '*'*20
-        print '\n'
-        time.sleep(self.stop)
+        # self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        # #print '*'*20, '暂停5s', '*'*20
+        # print '\n'
+        # time.sleep(self.stop)
 
 
         # 普通
@@ -76,11 +76,11 @@ class HuashuVideo(BaseVideo):
                 r = self.get_requests(url)
                 self.parse_data(r.text, i+1, lengthtype)
 
-                print '\n'
-                self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
-                #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
-                print '\n'
-                time.sleep(self.stop)
+                # print '\n'
+                # self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
+                # #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
+                # print '\n'
+                # time.sleep(self.stop)
 
 
     # 专辑

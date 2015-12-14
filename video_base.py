@@ -105,7 +105,7 @@ class BaseVideo:
         pool.join()
 
         t1 = time.time()
-        print "Total time running multi: %s seconds" % ( str(t1-t0))
+        print "Total time running run_keys_multithreading: %s seconds" % ( str(t1-t0))
 
         # #保存数据
         #self.save_data()
@@ -128,6 +128,16 @@ class BaseVideo:
             self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
             self.data_to_unfinish_file( key)
 
+    # 运行未完成的key
+    def run_unfinished_keys(self, keys_total, start_time):
+        v_source = self.get_video_source('.'+self.site+'.com')
+        sql = "select distinct VideoKey from %s where Time>'%s' and Source='%s'" % (mysql_result_table, start_time, v_source)
+        df = pd.read_sql_query(sql, engine_sql)
+        if len(df) > 0:
+            keys_finished = df['VideoKey'].get_values()
+            keys_unfinished = [key for key in set(keys_total).difference(set(keys_finished))]
+            self.run_keys_multithreading(keys_unfinished)
+
     def search(key):
         pass
 
@@ -145,7 +155,15 @@ class BaseVideo:
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
 
         #匹配度
-        f = lambda x : '完全匹配' if key in x else '不匹配'
+        def is_key_match(key, x):
+            for ch in key:
+                if not ch in x:
+                    return False
+            return True
+        f = lambda x : '完全匹配' if is_key_match(key, x) else '不匹配'
+
+        #f = lambda x : '完全匹配' if key in x else '不匹配'
+
         df['KeyMatch'] = df['Title'].apply(f)
         df = df.sort_index(by='KeyMatch', ascending=False)
 
@@ -338,14 +356,17 @@ class DataItem:
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-    print data.columns
+    # data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    # print data.columns
 
-    youkuVideo = BaseVideo()
-    youkuVideo.run(data['key'].get_values())
+    # youkuVideo = BaseVideo()
+    # youkuVideo.run(data['key'].get_values())
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 
-
+    print check_contain_chinese('中国')
+    check_str = '跟班×服务Servant×Service'
+    for ch in check_str.decode('utf-8'):
+        print ch
 

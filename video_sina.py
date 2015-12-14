@@ -39,32 +39,6 @@ class SinaVideo(BaseVideo):
 
         self.run_keys(keys)
 
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         #print '*'*20, '暂停10s', '*'*20
-        #         print '\n'
-        #         time.sleep(self.stop)
-        #
-        #     except Exception,e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        # #保存数据
-        # self.save_data()
-
     def search(self, key):
 
         qq_url = self.general_url

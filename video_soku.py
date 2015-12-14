@@ -68,20 +68,40 @@ class SokuVideo(BaseVideo):
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
+            page_count = self.pagecount
+
+            for i in range(page_count):
                 soku_url = self.general_url.replace('tid', lengthtype)
                 soku_url = soku_url.replace('pid', str(i+1))
                 soku_url = soku_url.replace('key',key)
 
                 #r = requests.get(soku_url)
                 r = self.get_requests(soku_url)
-                self.parse_data(r.text, i+1, lengthtype)
+                sucess = self.parse_data(r.text, i+1, lengthtype)
+
+                if not sucess:
+                    break
 
                 #self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 #print '\n'
                 #time.sleep(self.stop)
 
+    # 获取实际页数
+    def get_real_page_count(self, html):
+        soup = bs(html)
+        sk_pager = soup.find('div', {'class':'sk_pager'})
+
+        page_count = 1
+
+        if sk_pager:
+            pages = sk_pager.find_all('li')
+            for page in pages:
+                s = page.get_text()
+                if s.isdigit() and int(s) > page_count:
+                    page_count = int(s)
+
+        return page_count
 
     # 专辑
     def parse_data_album(self, text, key):
@@ -149,8 +169,8 @@ class SokuVideo(BaseVideo):
                 # self.hrefs.append(titleAndLink['href'])
 
         # 视频时长
-        dramaList = soup.findAll('div', attrs={'class':'v-thumb'})
-        for drama in dramaList:
+        dramaList_dura = soup.findAll('div', attrs={'class':'v-thumb'})
+        for drama in dramaList_dura:
             titleAndImg = drama.findAll('img')
 
             if titleAndImg:
@@ -167,6 +187,10 @@ class SokuVideo(BaseVideo):
                             item.duration = vTime[3].text
                             break
 
+        if len(dramaList):
+            return True
+        else:
+            return False
 
 
 def retry_if_result_none(result):

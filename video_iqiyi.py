@@ -74,7 +74,10 @@ class IQiYiVideo(BaseVideo):
 
                 #r = requests.get(url)
                 r = self.get_requests(url)
-                self.parse_data(r.text, i+1, lengthtype)
+                sucess = self.parse_data(r.text, i+1, lengthtype)
+
+                if not sucess:
+                    break
 
                 # print '\n'
                 # self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
@@ -138,6 +141,10 @@ class IQiYiVideo(BaseVideo):
             except Exception,e:
                 print e
 
+        if len(dramaList):
+            return True
+        else:
+            return False
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

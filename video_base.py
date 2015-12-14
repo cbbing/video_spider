@@ -85,7 +85,9 @@ class BaseVideo:
         proxy = self.get_proxies()
 
         r = requests.get(url, proxies=proxy, timeout=5)
-        print url, proxy, r.status_code
+        print '{0}  状态码:{1},{2}'.format(url, r.status_code, proxy)
+        if not int(r.status_code) in range(200, 201):
+            raise Exception('request fail')
         return r
 
     # 单线程运行keys

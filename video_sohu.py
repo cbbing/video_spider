@@ -40,6 +40,7 @@ class SouhuVideo(BaseVideo):
             return
 
         start_time = GetNowTime()
+        #self.run_keys(keys)
         self.run_keys_multithreading(keys)
 
         #重试运行三次
@@ -66,14 +67,19 @@ class SouhuVideo(BaseVideo):
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
+            page_count = self.pagecount
+
+            for i in range(page_count):
                 url = self.general_url.replace('tid', lengthtype)
                 url = url.replace('pid', str(i+1))
                 url = url.replace('key',key)
 
                 #r = requests.get(url)
                 r = self.get_requests(url)
-                self.parse_data(r.text, i+1, lengthtype)
+                sucess = self.parse_data(r.text, i+1, lengthtype)
+
+                if not sucess:
+                    break
 
                 #print '\n'
                 #self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
@@ -143,12 +149,16 @@ class SouhuVideo(BaseVideo):
 
             self.items.append(item)
 
+        if len(dramaList):
+            return True
+        else:
+            return False
 
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', '搜狐', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = SouhuVideo()

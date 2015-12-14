@@ -126,7 +126,7 @@ class BaseVideo:
 
         except Exception,e:
             self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
-            self.data_to_unfinish_file(self.site, key)
+            self.data_to_unfinish_file( key)
 
     def search(key):
         pass
@@ -284,10 +284,10 @@ class BaseVideo:
             self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
             df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
-    def data_to_unfinish_file(self, web, key):
+    def data_to_unfinish_file(self, key):
         try:
             with open(dir_log + 'unfinish_list.txt', 'a') as f:
-                s_info = self.web + ',' + key + ',' + GetNowTime() + '\n'
+                s_info = self.site + ',' + key + ',' + GetNowTime() + '\n'
                 f.write(s_info)
                 f.close()
         except Exception, e:

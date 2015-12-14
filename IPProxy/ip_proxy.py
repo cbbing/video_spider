@@ -29,7 +29,7 @@ class IP_Proxy:
         self.source = 'http://www.haodailiip.com/guonei/page'
         self.count = 10
         self.ip_items = []
-        self.dir_path = '../data/'
+        self.dir_path = './data/'
 
 
     def parse(self, url):

@@ -342,6 +342,7 @@ class BaseVideo:
                       'kankan':'响巢看看',
                       'baofeng':'暴风影音',
                       'baomihua':'爆米花',
+                      'pptv':'PPTV',
                       'baidu':'百度'}
 
         try:

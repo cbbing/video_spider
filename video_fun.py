@@ -43,6 +43,8 @@ class FunVideo(BaseVideo):
 
     def search(self, key):
 
+        items_all = []
+
         fun_url = self.general_url
         fun_url = fun_url.replace('key',key)
 
@@ -60,17 +62,18 @@ class FunVideo(BaseVideo):
         # f.close()
 
         #专辑
-        self.parse_data_album(driver.page_source, key)
+        items = self.parse_data_album(driver.page_source, key)
+        items_all.extend(items)
 
         # 模拟点击
         driver.find_element_by_link_text('视频').click()
 
 
-
         #普通
 
         #第一页
-        self.parse_data(driver.page_source, 1, 0, key)  #风行不支持时长选择，默认为0
+        items = self.parse_data(driver.page_source, 1, 0, key)  #风行不支持时长选择，默认为0
+        items_all.extend(items)
 
         #获取下一页
         try:
@@ -84,7 +87,8 @@ class FunVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                self.parse_data(driver.page_source, i+2, 0, key)
+                items = self.parse_data(driver.page_source, i+2, 0, key)
+                items_all.extend(items)
 
         except Exception,e:
             self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
@@ -93,9 +97,11 @@ class FunVideo(BaseVideo):
         driver.quit()
         self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
+        return items_all
 
     # 专辑搜索
     def parse_data_album(self, text, key):
+        items = []
         try:
             soup = bs(text)
 
@@ -123,16 +129,19 @@ class FunVideo(BaseVideo):
                         item.page = 1
                         item.durationType = '专辑'
 
-                        self.items.append(item)
+                        items.append(item)
                     except Exception,e:
                         self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
 
         except Exception, e:
                 self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
 
+        return items
 
     # 普通搜索
     def parse_data(self, text, page, lengthType, key):
+
+        items = []
 
         try:
 
@@ -164,7 +173,7 @@ class FunVideo(BaseVideo):
                             except Exception,e:
                                 print encode_wrap('未找到对应的时长类型!')
 
-                            self.items.append(item)
+                            items.append(item)
 
                         except Exception,e:
                             self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
@@ -173,6 +182,7 @@ class FunVideo(BaseVideo):
         except Exception, e:
             self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
 
+        return items
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

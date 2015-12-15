@@ -39,7 +39,8 @@ class PPTVVideo(BaseVideo):
             return
 
         start_time = GetNowTime()
-        self.run_keys_multithreading(keys)
+        self.run_keys(keys)
+        #self.run_keys_multithreading(keys)
 
         #重试运行三次
         for _ in range(0, 3):
@@ -47,6 +48,8 @@ class PPTVVideo(BaseVideo):
 
 
     def search(self, key):
+
+        items_all = []
 
         # 专辑
         #album_url = self.album_url.replace('key',key)
@@ -68,20 +71,17 @@ class PPTVVideo(BaseVideo):
 
             #r = requests.get(url)
             r = self.get_requests(url)
-            sucess = self.parse_data(r.text, i+1, key)
+            items = self.parse_data(r.text, i+1, key)
+            items_all.extend(items)
 
-            if not sucess:
-                break
-
-                # print '\n'
-                # self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
-                # #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
-                # print '\n'
-                # time.sleep(self.stop)
+        return items_all
 
 
     # 专辑
     def parse_data_album(self, text):
+
+        items = []
+
         try:
             soup = bs(text)
 
@@ -99,13 +99,17 @@ class PPTVVideo(BaseVideo):
                 item.page = 1
                 item.durationType = '专辑'
 
-                self.items.append(item)
+                items.append(item)
         except Exception, e:
-                print str(e)
+            print str(e)
 
+        return items
 
     # 普通
     def parse_data(self, text, page, key):
+
+        items = []
+
         soup = bs(text)
 
         #视频链接-全部结果
@@ -123,23 +127,20 @@ class PPTVVideo(BaseVideo):
 
                 durationTag = drama.find('p', attrs={'class':'ui-pic'})
                 if durationTag:
-                    item.duration = durationTag.get_text()
+                    item.duration = durationTag.text.strip()
 
                 item.page = page
 
-                self.items.append(item)
+                items.append(item)
             except Exception,e:
                 print e
 
-        if len(dramaList):
-            return True
-        else:
-            return False
+        return items
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'pptv', index_col=None, na_values=['NA'])
     print data
 
     video = PPTVVideo()

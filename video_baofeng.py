@@ -41,32 +41,10 @@ class BaofengVideo(BaseVideo):
 
         self.run_keys(keys)
 
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'
-        #         self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #         print '\n'
-        #         time.sleep(self.stop)
-        #     except Exception, e:
-        #         self.errorLogger.logger.info(key+'_unfinish_' + str(e))
-        #         self.data_to_unfinish_file(self.web, key)
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
+
+        items_all = []
 
         fun_url = self.general_url
         fun_url = fun_url.replace('key',key)
@@ -77,15 +55,16 @@ class BaofengVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(fun_url)
 
-        driver.get_screenshot_as_file("show.png")
-
-        f = open('./data/data.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # driver.get_screenshot_as_file("show.png")
+        #
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #普通
         #第一页
-        self.parse_data(driver.page_source, 1, 0, key)  #暴风不支持时长选择，默认为0
+        items = self.parse_data(driver.page_source, 1, 0, key)  #暴风不支持时长选择，默认为0
+        items_all.extend(items)
 
         #获取下一页
         try:
@@ -99,7 +78,8 @@ class BaofengVideo(BaseVideo):
 
                 #driver.get_screenshot_as_file("show.png")
 
-                self.parse_data(driver.page_source, i+2, 0, key)
+                items = self.parse_data(driver.page_source, i+2, 0, key)
+                items_all.extend(items)
 
         except Exception,e:
             self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
@@ -108,9 +88,12 @@ class BaofengVideo(BaseVideo):
         driver.quit()
         self.infoLogger.logger.info(encode_wrap(fun_url + ":" + key + ' parse phantomjs success '))
 
+        return items_all
 
     # 普通搜索
     def parse_data(self, text, page, lengthType, key):
+
+        items = []
 
         try:
 
@@ -147,7 +130,7 @@ class BaofengVideo(BaseVideo):
                             except Exception,e:
                                 print encode_wrap('未找到对应的时长类型!')
 
-                            self.items.append(item)
+                            items.append(item)
 
                         except Exception,e:
                             info = '{0}:{1} 解析失败, Page:{2}, LengthType:{3},{4}'.format(self.site, key, page, lengthType, str(e))
@@ -158,6 +141,8 @@ class BaofengVideo(BaseVideo):
             info = '{0}:{1} 解析失败, Page:{2}, LengthType:{3},{4}'.format(self.site, key, page, lengthType, str(e))
             self.errorLogger.logger.error(encode_wrap(str(e)))
             print str(e)
+
+        return items
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

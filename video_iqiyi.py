@@ -91,7 +91,7 @@ class IQiYiVideo(BaseVideo):
                 item = DataItem()
 
                 self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
+                #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
                 item.title = drama['title']
                 item.href = drama['href']
 
@@ -121,7 +121,7 @@ class IQiYiVideo(BaseVideo):
                 titleAndLink = drama.find('img')
                 if titleAndLink:
                     self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                    self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))#titleAndLink['href']
+                    #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))#titleAndLink['href']
                     item.title = titleAndLink['title']
                     item.href = drama['href']
                 durationTag = drama.find('span', attrs={'class':'v_name'})
@@ -143,11 +143,11 @@ class IQiYiVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', '爱奇艺', index_col=None, na_values=['NA'])
     print data
 
-    youkuVideo = IQiYiVideo()
-    youkuVideo.run(data['key'].get_values())
+    video = IQiYiVideo()
+    video.run(data['key'].get_values())
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

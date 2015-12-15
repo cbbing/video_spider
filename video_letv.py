@@ -44,7 +44,7 @@ class LetvVideo(BaseVideo):
 
     def search(self, key):
 
-        #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
+        items_all = []
 
         letv_url = self.general_url
         letv_url = letv_url.replace('key',key)
@@ -63,7 +63,8 @@ class LetvVideo(BaseVideo):
         # f.close()
 
         #专辑
-        self.parse_data_album(driver.page_source)
+        items = self.parse_data_album(driver.page_source)
+        items_all.extend(items)
 
         # 模拟点击
         driver.find_element_by_link_text('播放时长').click()
@@ -80,14 +81,15 @@ class LetvVideo(BaseVideo):
                 # 模拟点击
                 driver.find_element_by_link_text(buttonText).click()
 
-                driver.get_screenshot_as_file("show.png")
+                #driver.get_screenshot_as_file("show.png")
 
                 self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
                 print '\n'
                 time.sleep(self.stop)
 
                 #第一页
-                self.parse_data(driver.page_source, 1, lengthtype)
+                items = self.parse_data(driver.page_source, 1, lengthtype)
+                items_all.extend(items)
 
                 #获取下一页
                 try:
@@ -101,7 +103,8 @@ class LetvVideo(BaseVideo):
 
                         driver.get_screenshot_as_file("show.png")
 
-                        self.parse_data(driver.page_source, i+2, lengthtype)
+                        items = self.parse_data(driver.page_source, i+2, lengthtype)
+                        items_all.extend(items)
 
                 except Exception,e:
                     self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))

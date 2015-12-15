@@ -49,16 +49,12 @@ class HuashuVideo(BaseVideo):
 
     def search(self, key):
 
+        items_all = []
+
         # 专辑
         #album_url = self.album_url.replace('key',key)
         #r = requests.get(album_url)
         #self.parse_data_album(r.text)
-
-        # self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        # #print '*'*20, '暂停5s', '*'*20
-        # print '\n'
-        # time.sleep(self.stop)
-
 
         # 普通
         cf = ConfigParser.ConfigParser()
@@ -74,20 +70,18 @@ class HuashuVideo(BaseVideo):
 
                 #r = requests.get(url)
                 r = self.get_requests(url)
-                sucess = self.parse_data(r.text, i+1, lengthtype)
+                items = self.parse_data(r.text, i+1, lengthtype)
 
-                if not sucess:
-                    break
+                items_all.extend(items)
 
-                # print '\n'
-                # self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
-                # #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s' % (key, i+1, lengthtype), '*'*20
-                # print '\n'
-                # time.sleep(self.stop)
+        return items_all
 
 
     # 专辑
     def parse_data_album(self, text, key):
+
+        items = []
+
         try:
             soup = bs(text)
 
@@ -112,16 +106,20 @@ class HuashuVideo(BaseVideo):
                         item.page = 1
                         item.durationType = '专辑'
 
-                        self.items.append(item)
+                        items.append(item)
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
 
         except Exception, e:
                 self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
 
+        return items
 
     # 普通
     def parse_data(self, text, page, lengthType):
+
+        items = []
+
         soup = bs(text)
 
         #视频链接-全部结果
@@ -150,12 +148,9 @@ class HuashuVideo(BaseVideo):
                 except Exception,e:
                     print encode_wrap('未找到对应的时长类型!')
 
-                self.items.append(item)
+                items.append(item)
 
-        if len(dramaList):
-            return True
-        else:
-            return False
+        return items
 
 
 if __name__=='__main__':

@@ -36,41 +36,12 @@ class BaiduVideo(BaseVideo):
 
 
     def run(self, keys):
-
         self.run_keys(keys)
 
-        # keys_unfininsh = []
-        # for key in keys:
-        #     try:
-        #         # 初始化
-        #         self.items = []
-        #
-        #         #搜索
-        #         self.search(key)
-        #         #过滤
-        #         #self.filter_short_video()
-        #         #创建dataframe
-        #         df = self.create_data(key)
-        #         self.data_to_sql_by_key(key, df)
-        #
-        #         print '\n'
-        #         print '*'*20, '暂停1s', '*'*20
-        #         print '\n'
-        #         time.sleep(1)
-        #
-        #
-        #     except Exception,e:
-        #         keys_unfininsh.append(key)
-        #
-        #
-        #         self.errorLogger.logger.error(key + '_unfinish_' + str(e))
-        #
-        #
-        #
-        # #保存数据
-        # self.save_data()
 
     def search(self, key):
+
+        items_all = []
 
         #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 
@@ -92,7 +63,8 @@ class BaiduVideo(BaseVideo):
         # f.close()
 
         #普通
-        self.parse_data(driver.page_source, 1)
+        items = self.parse_data(driver.page_source, 1)
+        items_all.extend(items)
 
         for i in range(2, self.pagecount+1):
             # 模拟点击
@@ -102,15 +74,20 @@ class BaiduVideo(BaseVideo):
             print '\n'
             #time.sleep(3)
 
-            self.parse_data(driver.page_source, i)
+            items = self.parse_data(driver.page_source, i)
+            items_all.extend(items)
 
         self.infoLogger.logger.info('stop phantomjs')
 
         driver.quit()
 
+        return items_all
+
 
     # 普通搜索
     def parse_data(self, text, page):
+
+        items = []
 
         try:
 
@@ -155,7 +132,7 @@ class BaiduVideo(BaseVideo):
                         self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
                         self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
-                        self.items.append(item)
+                        items.append(item)
 
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap(str(e)))
@@ -164,6 +141,8 @@ class BaiduVideo(BaseVideo):
 
         except Exception, e:
             self.errorLogger.logger.error(encode_wrap(str(e)))
+
+        return items
 
     def get_baidu_real_url(self, url):
         tmpPage = requests.get(url, allow_redirects=False)

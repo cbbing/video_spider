@@ -10,6 +10,7 @@ from video_base import *
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from retrying import retry
+from util.helper import fn_timer as fn_timer_
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -30,6 +31,7 @@ class SokuVideo(BaseVideo):
         self.infoLogger = Logger(logname=dir_log + 'info_soku(' + GetNowDate()+ ').log', logger='I')
         self.errorLogger = Logger(logname=dir_log+ 'error_soku(' + GetNowDate()+ ').log', logger='E')
 
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()
@@ -50,11 +52,14 @@ class SokuVideo(BaseVideo):
 
     def search(self, key):
 
+        items_all = []
+
         # 专辑
         album_url = self.album_url.replace('key',key)
         #r = requests.get(album_url)
         r = self.get_requests(album_url)
-        self.parse_data_album(r.text, key)
+        items = self.parse_data_album(r.text, key)
+        items_all.extend(items)
 
         # self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         # #print '*'*20, '暂停10s'.decode('utf8'), '*'*20
@@ -68,24 +73,26 @@ class SokuVideo(BaseVideo):
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
-            page_count = self.pagecount
-
-            for i in range(page_count):
+            for i in range(self.pagecount):
                 soku_url = self.general_url.replace('tid', lengthtype)
                 soku_url = soku_url.replace('pid', str(i+1))
                 soku_url = soku_url.replace('key',key)
 
                 #r = requests.get(soku_url)
                 r = self.get_requests(soku_url)
-                sucess = self.parse_data(r.text, i+1, lengthtype)
+                items = self.parse_data(r.text, i+1, lengthtype, key)
 
-                if not sucess:
+                if items:
+                    items_all.extend(items)
+                else:
                     break
 
                 #self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 #print '\n'
                 #time.sleep(self.stop)
+
+        return items_all
 
     # 获取实际页数
     def get_real_page_count(self, html):
@@ -105,6 +112,9 @@ class SokuVideo(BaseVideo):
 
     # 专辑
     def parse_data_album(self, text, key):
+
+        items = []
+
         soup = bs(text)
 
         #视频链接-专辑
@@ -126,23 +136,25 @@ class SokuVideo(BaseVideo):
                 item.durationType = '专辑'
 
                 self.infoLogger.logger.info(encode_wrap('标题:%s' % drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:%s' % href))
+                #self.infoLogger.logger.info(encode_wrap('链接:%s' % href))
                 # print '标题:'.decode('utf8'),drama['title'].decode('utf8')
                 # print '链接:'.decode('utf8'),href
-                self.items.append(item)
+                items.append(item)
 
             except Exception, e:
                 #print str(e)
                 info = '{0}:{1}:{2}:{3}'.format(self.site, key, '专辑',str(e))
                 self.errorLogger.logger.error(encode_wrap(info))
 
+        return items
 
 
     # 普通
-    def parse_data(self, text, page, lengthType):
-        soup = bs(text)
+    def parse_data(self, text, page, lengthType, key):
 
-        sse = sys.stdout.encoding
+        items = []
+
+        soup = bs(text)
 
         #视频链接
         dramaList = soup.findAll('div', attrs={'class':'v-link'})
@@ -150,8 +162,8 @@ class SokuVideo(BaseVideo):
             titleAndLink = drama.find('a')
 
             if titleAndLink:
-                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
+                self.infoLogger.logger.info(encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title'])))
+                #self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 #print '标题:'.decode('utf8'),titleAndLink['title'].decode('gb18030')
                 #print '链接:'.decode('utf8'),titleAndLink['href']
 
@@ -164,7 +176,7 @@ class SokuVideo(BaseVideo):
                 except Exception,e:
                     print encode_wrap('未找到对应的时长类型!')
 
-                self.items.append(item)
+                items.append(item)
                 # self.titles.append(titleAndLink['title'])
                 # self.hrefs.append(titleAndLink['href'])
 
@@ -178,7 +190,7 @@ class SokuVideo(BaseVideo):
                 #print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
                 #print '图片链接:',titleAndImg[0]['src']
 
-                for item in self.items:
+                for item in items:
                     if item.title == titleAndImg[0]['alt']:
                         vTime = dramaList[0].findAll('div')
                         if len(vTime) > 3:
@@ -187,10 +199,7 @@ class SokuVideo(BaseVideo):
                             item.duration = vTime[3].text
                             break
 
-        if len(dramaList):
-            return True
-        else:
-            return False
+        return items
 
 
 def retry_if_result_none(result):

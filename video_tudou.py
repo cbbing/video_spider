@@ -23,11 +23,11 @@ class TudouVideo(SokuVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', '土豆网', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = TudouVideo()
-    youkuVideo.run(data['key'].get_values())
+    youkuVideo.run(data['key'].get_values()[:100])
     #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

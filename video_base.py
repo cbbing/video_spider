@@ -25,6 +25,8 @@ from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
+from util.helper import fn_timer as fn_timer_
+
 engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
 conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
@@ -37,7 +39,7 @@ class BaseVideo:
         cf.read(config_file_path)
 
         self.dfs = []
-        self.items = []
+        #self.items = []
         self.pagecount = int(cf.get("general","page_count"))
         self.filePath = ''
         self.engine = ''
@@ -79,15 +81,24 @@ class BaseVideo:
         else:
             return {}
 
+
     # requests使用代理请求
-    @retry(stop_max_attempt_number=10)
+    @retry(stop_max_attempt_number=100)
     def get_requests(self, url):
+
         proxy = self.get_proxies()
 
         r = requests.get(url, proxies=proxy, timeout=5)
-        print '{0}  状态码:{1},{2}'.format(url, r.status_code, proxy)
-        if not int(r.status_code) in range(200, 201):
+        output = 'Code:{1}  Proxy:{2}  Url:{0}  '.format(url, r.status_code, proxy)
+        output = encode_wrap(output)
+
+        self.errorLogger.logger.error(output)
+
+        if int(r.status_code) != 200:
             raise Exception('request fail')
+
+
+
         return r
 
     # 单线程运行keys
@@ -96,18 +107,14 @@ class BaseVideo:
             self.run_key(key)
 
     # 多线程运行keys
+    @fn_timer_
     def run_keys_multithreading(self, keys):
-
-        t0 = time.time()
 
         #多线程
         pool = ThreadPool(processes=20)
         pool.map(self.run_key, keys)
         pool.close()
         pool.join()
-
-        t1 = time.time()
-        print "Total time running run_keys_multithreading: %s seconds" % ( str(t1-t0))
 
         # #保存数据
         #self.save_data()
@@ -116,13 +123,13 @@ class BaseVideo:
     def run_key(self, key):
         try:
             # 初始化
-            self.items = []
+            #self.items = []
 
             #搜索
-            self.search(key)
+            items = self.search(key)
 
             #创建dataframe
-            df = self.create_data(key)
+            df = self.create_data(key, items)
 
             self.data_to_sql_by_key(key, df)
 
@@ -141,14 +148,14 @@ class BaseVideo:
             self.run_keys_multithreading(keys_unfinished)
 
     def search(key):
-        pass
+        return []
 
-    def create_data(self, key):
-        df = DataFrame({'Title':[item.title for item in self.items],
-                        'Href':[item.href for item in self.items],
-                        'Duration':[item.duration for item in self.items],
-                        'Page':[item.page for item in self.items],
-                        'DurationType':[item.durationType for item in self.items]
+    def create_data(self, key, items):
+        df = DataFrame({'Title':[item.title for item in items],
+                        'Href':[item.href for item in items],
+                        'Duration':[item.duration for item in items],
+                        'Page':[item.page for item in items],
+                        'DurationType':[item.durationType for item in items]
                         },
                        columns=['Title', 'Href', 'Duration', 'DurationType', 'Page'])
         print df[:10]
@@ -207,26 +214,26 @@ class BaseVideo:
         return df
 
 
-    def filter_short_video(self):
-        items_temp = []
-        for item in self.items:
-            if len(str(item.duration)) > 0:
-
-                mustFilter = True
-                splits = str(item.duration).split(':')
-                if len(splits) == 2:
-                    minute = int(splits[0])
-                    if minute >= 10:
-                        mustFilter = False
-                elif len(splits) == 3:
-                    mustFilter = False
-
-                if not mustFilter:
-                    items_temp.append(item)
-            else:
-                items_temp.append(item)
-
-        self.items = items_temp
+    # def filter_short_video(self):
+    #     items_temp = []
+    #     for item in self.items:
+    #         if len(str(item.duration)) > 0:
+    #
+    #             mustFilter = True
+    #             splits = str(item.duration).split(':')
+    #             if len(splits) == 2:
+    #                 minute = int(splits[0])
+    #                 if minute >= 10:
+    #                     mustFilter = False
+    #             elif len(splits) == 3:
+    #                 mustFilter = False
+    #
+    #             if not mustFilter:
+    #                 items_temp.append(item)
+    #         else:
+    #             items_temp.append(item)
+    #
+    #     self.items = items_temp
 
     def filter_involt_video(self, df):
 

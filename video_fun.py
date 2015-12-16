@@ -29,6 +29,7 @@ class FunVideo(BaseVideo):
         self.infoLogger = Logger(logname=dir_log+'info_fun(' + GetNowDate()+ ').log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_fun(' + GetNowDate()+ ').log', logger='E')
 
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()

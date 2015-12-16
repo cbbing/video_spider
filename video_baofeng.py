@@ -30,6 +30,7 @@ class BaofengVideo(BaseVideo):
         self.errorLogger = Logger(logname=dir_log+'error_baofeng(' + GetNowDate()+ ').log', logger='E')
 
 
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()

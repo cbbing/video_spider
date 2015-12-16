@@ -34,7 +34,7 @@ class BaiduVideo(BaseVideo):
         self.errorLogger = Logger(logname=dir_log+'error_baidu(' + GetNowDate()+ ').log', logger='E')
 
 
-
+    @fn_timer_
     def run(self, keys):
         self.run_keys(keys)
 

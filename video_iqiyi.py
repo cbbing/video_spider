@@ -14,6 +14,7 @@ import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
 
+
 class IQiYiVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
@@ -28,7 +29,7 @@ class IQiYiVideo(BaseVideo):
         self.infoLogger = Logger(logname=dir_log+'info_iqiyi(' + GetNowDate()+ ').log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_iqiyi(' + GetNowDate()+ ').log', logger='E')
 
-
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()
@@ -147,7 +148,7 @@ if __name__=='__main__':
     print data
 
     video = IQiYiVideo()
-    video.run(data['key'].get_values())
+    video.run(data['key'].get_values()[:100])
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

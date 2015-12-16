@@ -30,6 +30,7 @@ class SouhuVideo(BaseVideo):
         self.infoLogger = Logger(logname=dir_log+'info_sohu(' + GetNowDate()+ ').log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_sohu(' + GetNowDate()+ ').log', logger='E')
 
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()
@@ -44,8 +45,8 @@ class SouhuVideo(BaseVideo):
         self.run_keys_multithreading(keys)
 
         #重试运行三次
-        for _ in range(0, 3):
-            self.run_unfinished_keys(keys, start_time)
+        #for _ in range(0, 3):
+        #    self.run_unfinished_keys(keys, start_time)
 
 
     def search(self, key):
@@ -152,11 +153,11 @@ class SouhuVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', '搜狐', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = SouhuVideo()
-    youkuVideo.run(data['key'].get_values())
+    youkuVideo.run(data['key'].get_values()[:100])
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

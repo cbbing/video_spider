@@ -30,6 +30,7 @@ class QQVideo(BaseVideo):
         self.errorLogger = Logger(logname=dir_log+'error_qq(' + GetNowDate()+ ').log', logger='E')
 
 
+    @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()

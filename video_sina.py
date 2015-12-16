@@ -41,23 +41,16 @@ class SinaVideo(BaseVideo):
 
     def search(self, key):
 
+        items_all = []
+
         qq_url = self.general_url
         qq_url = qq_url.replace('key',key)
 
         self.infoLogger.logger.info(encode_wrap('start phantomjs'))
         self.infoLogger.logger.info(encode_wrap(qq_url))
-        #print 'start phantomjs'
-        #print qq_url
-        #driver = webdriver.PhantomJS()
+
         driver = webdriver.Firefox()
         driver.get(qq_url)
-
-        # driver.get_screenshot_as_file("show.png")
-        #
-        # f = open('./data/data.html','w')
-        # f.write(driver.page_source)
-        # f.close()
-
 
         #普通
         cf = ConfigParser.ConfigParser()
@@ -89,7 +82,8 @@ class SinaVideo(BaseVideo):
                 time.sleep(self.stop)
 
                 #第一页
-                self.parse_data(driver.page_source, 1, lengthtype)
+                items = self.parse_data(driver.page_source, 1, lengthtype)
+                items_all.extend(items)
 
                 #获取下一页
                 try:
@@ -102,7 +96,8 @@ class SinaVideo(BaseVideo):
                         time.sleep(self.stop)
 
                         driver.get_screenshot_as_file("show.png")
-                        self.parse_data(driver.page_source, i+2, lengthtype)
+                        items = self.parse_data(driver.page_source, i+2, lengthtype)
+                        items_all.extend(items)
 
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap('未达到%d页，提前结束' % self.pagecount))
@@ -116,9 +111,12 @@ class SinaVideo(BaseVideo):
         driver.quit()
         print 'parse phantomjs success'
 
+        return items_all
 
     # 普通搜索
     def parse_data(self, text, page, lengthType):
+
+        items = []
 
         soup = bs(text)
 
@@ -154,12 +152,13 @@ class SinaVideo(BaseVideo):
                     except Exception,e:
                         self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
-                    self.items.append(item)
+                    items.append(item)
 
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap(str(e)))
                     #print str(e)
 
+        return items
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

@@ -117,9 +117,13 @@ class LetvVideo(BaseVideo):
         driver.quit()
         self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
+        return items_all
 
     # 专辑搜索
     def parse_data_album(self, text):
+
+        items = []
+
         try:
             soup = bs(text)
 
@@ -153,7 +157,7 @@ class LetvVideo(BaseVideo):
                         item.page = 1
                         item.durationType = '专辑'
 
-                        self.items.append(item)
+                        items.append(item)
                 except Exception,e:
                     self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
 
@@ -178,7 +182,7 @@ class LetvVideo(BaseVideo):
                         item.page = 1
                         item.durationType = '花絮'
 
-                        self.items.append(item)
+                        items.append(item)
 
                 except Exception, e:
                     self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
@@ -187,9 +191,13 @@ class LetvVideo(BaseVideo):
         except Exception, e:
                 print str(e)
 
+        return items
+
 
     # 普通搜索
     def parse_data(self, text, page, lengthType):
+
+        items = []
 
         try:
 
@@ -224,7 +232,7 @@ class LetvVideo(BaseVideo):
                             except Exception,e:
                                 self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
-                            self.items.append(item)
+                            items.append(item)
 
                     except Exception,e:
                         self.errorLogger.logger.error(encode_wrap(str(e)))
@@ -233,6 +241,7 @@ class LetvVideo(BaseVideo):
         except Exception, e:
             self.errorLogger.logger.error(encode_wrap(str(e)))
 
+        return items
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

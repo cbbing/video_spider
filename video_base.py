@@ -86,9 +86,11 @@ class BaseVideo:
     @retry(stop_max_attempt_number=100)
     def get_requests(self, url):
 
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36'}
+
         proxy = self.get_proxies()
 
-        r = requests.get(url, proxies=proxy, timeout=5)
+        r = requests.get(url, proxies=proxy, headers=headers, timeout=5)
         output = 'Code:{1}  Proxy:{2}  Url:{0}  '.format(url, r.status_code, proxy)
         output = encode_wrap(output)
 
@@ -343,6 +345,7 @@ class BaseVideo:
                       'baofeng':'暴风影音',
                       'baomihua':'爆米花',
                       'pptv':'PPTV',
+                      'tv189':'TV189',
                       'baidu':'百度'}
 
         try:

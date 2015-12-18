@@ -153,7 +153,7 @@ class SouhuVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', '搜狐', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = SouhuVideo()

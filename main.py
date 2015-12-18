@@ -21,9 +21,17 @@ from video_iqiyi import IQiYiVideo
 from video_letv import LetvVideo
 from video_huashu import HuashuVideo
 from video_fun import FunVideo
-from video_kankan import KankanVideo
+#from video_kankan import KankanVideo
+from video_kankan_no_js import KanKanVideo
 from video_baofeng import BaofengVideo
-from video_baidu import BaiduVideo
+#from video_baidu import BaiduVideo
+from video_baidu_no_js import BaiduVideo
+from video_pptv import PPTVVideo
+from video_56 import V56Video
+from video_ku6 import Ku6Video
+from video_baomihua import BaomihuaVideo
+from video_tv189 import TV189Video
+
 from util.CodeConvert import encode_wrap
 
 from init import *
@@ -43,6 +51,9 @@ def run(index):
     # if systemName == 'Windows':
     #     key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
 
+
+
+
     sheetDict = {1:'优酷网',
                  2:'土豆网',
                  3:'新浪',
@@ -54,8 +65,20 @@ def run(index):
                  9:'风行',
                  10:'响巢看看',
                  11:'暴风',
+                 12:'PPTV',
+                 13:'56网',
+                 14:'酷6',
+                 15:'爆米花',
+                 16:'TV189'
                  }
-    sheet = sheetDict.get(index, 'Sheet1')
+
+    cf = ConfigParser.ConfigParser()
+    cf.read(config_file_path)
+    excel_sheet = cf.get('general', 'excel_sheet')
+    if excel_sheet == 0:
+        sheet = sheetDict.get(index, 'Sheet1')
+    else:
+        sheet = 'Sheet1'
 
     data = pd.read_excel(key_path, sheet, index_col=None, na_values=['NA'])
     keys = data['key'].get_values()
@@ -130,7 +153,7 @@ def run(index):
         elif index == 10:
             #10
             print 'begin kankan'
-            video = KankanVideo()
+            video = KanKanVideo()
             video.filePath = 'kankan_video'
             video.run(keys)
 
@@ -139,6 +162,36 @@ def run(index):
             print 'begin baofeng'
             video = BaofengVideo()
             video.filePath = 'baofeng_video'
+            video.run(keys)
+        elif index == 12:
+            #12
+            print 'begin pptv'
+            video = PPTVVideo()
+            video.filePath = 'pptv_video'
+            video.run(keys)
+        elif index == 13:
+            #13
+            print 'begin 56'
+            video = V56Video()
+            video.filePath = 'v56_video'
+            video.run(keys)
+        elif index == 14:
+            #14
+            print 'begin ku6'
+            video = Ku6Video()
+            video.filePath = 'ku5_video'
+            video.run(keys)
+        elif index == 15:
+            #15
+            print 'begin baomihua'
+            video = BaomihuaVideo()
+            video.filePath = 'baomihua_video'
+            video.run(keys)
+        elif index == 16:
+            #16
+            print 'begin tv189'
+            video = TV189Video()
+            video.filePath = 'tv189_video'
             video.run(keys)
 
 
@@ -149,16 +202,34 @@ def run(index):
 def run_all():
 
     # 百度
-    try:
-        cf = ConfigParser.ConfigParser()
-        cf.read(config_file_path)
-        lengthtypes = cf.get("baidu","lengthtype")
-        if len(lengthtypes.strip('[').strip(']')) > 0:
-            print encode_wrap('运行百度搜索')
-            video = BaiduVideo()
-            video.run_auto()
-    except Exception,e:
-        print e
+    # try:
+    #     cf = ConfigParser.ConfigParser()
+    #     cf.read(config_file_path)
+    #     lengthtypes = cf.get("baidu","lengthtype")
+    #     if len(lengthtypes.strip('[').strip(']')) > 0:
+    #         print encode_wrap('运行百度搜索')
+    #         video = BaiduVideo()
+    #         video.run_auto()
+    # except Exception,e:
+    #     print e
+
+
+    indexs = range(1, 17)
+    #可以并行的index
+    indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16]]
+    indexs_others = [index for index in set(indexs).difference(set(indexs_parallel))]
+
+    #多线程
+    pool = ThreadPool(processes=4)
+    pool.map(run, indexs_parallel)
+    pool.close()
+    pool.join()
+
+    for index in indexs_others:
+        try:
+            run(index)
+        except Exception, e:
+            print str(e)
 
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
@@ -191,18 +262,32 @@ def run_each():
              '9：风行\n' \
              '10：响巢看看\n' \
              '11：暴风影音\n' \
+             '12：PPTV\n' \
+             '13：56网\n' \
+             '14: 酷6\n' \
+             '15: 爆米花\n' \
+             '16: TV189\n' \
              '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:
         raw = raw.replace('，', ',')
         indexs = raw.split(',')
-        for index in indexs:
-            index = index.strip()
-            if index.isdigit():
-                try:
-                    run(index)
-                except Exception, e:
-                    print str(e)
+        indexs = [int(index.strip()) for index in indexs]
+        #可以并行的index
+        indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16]]
+        indexs_others = [index for index in set(indexs).difference(set(indexs_parallel))]
+
+        #多线程
+        pool = ThreadPool(processes=4)
+        pool.map(run, indexs_parallel)
+        pool.close()
+        pool.join()
+
+        for index in indexs_others:
+            try:
+                run(index)
+            except Exception, e:
+                print str(e)
     except Exception, e:
         print encode_wrap('请输入正确的序号')
 

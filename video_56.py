@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-#抓取PPTV搜索结果
+#抓取56搜索结果
 import sys
 import time
 import requests
@@ -39,12 +39,12 @@ class V56Video(BaseVideo):
             return
 
         start_time = GetNowTime()
-        self.run_keys(keys)
-        #self.run_keys_multithreading(keys)
+        #self.run_keys(keys)
+        self.run_keys_multithreading(keys)
 
         #重试运行三次
-        for _ in range(0, 3):
-            self.run_unfinished_keys(keys, start_time)
+        # for _ in range(0, 3):
+        #     self.run_unfinished_keys(keys, start_time)
 
 
     def search(self, key):
@@ -161,7 +161,7 @@ if __name__=='__main__':
     print data
 
     video = V56Video()
-    video.run(data['key'].get_values()[:1])
+    video.run(data['key'].get_values()[:100])
 
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

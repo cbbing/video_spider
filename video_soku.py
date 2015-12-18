@@ -45,8 +45,8 @@ class SokuVideo(BaseVideo):
         self.run_keys_multithreading(keys)
 
         #重试运行三次
-        for _ in range(0, 3):
-            self.run_unfinished_keys(keys, start_time)
+        # for _ in range(0, 3):
+        #     self.run_unfinished_keys(keys, start_time)
 
 
 

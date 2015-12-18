@@ -35,6 +35,7 @@ from video_tv189 import TV189Video
 from util.CodeConvert import encode_wrap
 
 from init import *
+from util.helper import fn_timer as fn_timer_
 
 def run(index):
     index = int(index)
@@ -249,6 +250,7 @@ def run_all():
     pool.close()
     pool.join()
 
+@fn_timer_
 def run_each():
     prompt = '请选择序号：\n' \
              '1：优酷\n' \

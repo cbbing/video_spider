@@ -115,7 +115,7 @@ class SokuVideo(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'html5lib')
 
         #视频链接-专辑
         dramaList = soup.findAll('a', attrs={'class':'accordion-toggle collapsed'})
@@ -154,7 +154,7 @@ class SokuVideo(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text,'html5lib')
 
         #视频链接
         dramaList = soup.findAll('div', attrs={'class':'v-link'})

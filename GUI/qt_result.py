@@ -316,6 +316,9 @@ class Ui_Result_Dialog(object):
         #     df_each = self.df[self.df['VideoKey'] == video_key]
         #     dfs.append((video_key, df_each))
 
+        print self.df.columns
+        self.df = self.df.drop_duplicates(['Href'])
+
         file_name = QFileDialog.getSaveFileName(self.pushButton_export,
                                     self.tableWidget.tr("保存文件"),
                                     "",

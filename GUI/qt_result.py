@@ -182,7 +182,7 @@ class Ui_Result_Dialog(object):
     def condition_init(self):
         #来源
         source_list = ["不限","百度", "优酷", "土豆", "爱奇艺", "腾讯", "新浪", "搜狐", "乐视", "响巢看看", "华数", "风行", "暴风影音",
-                       "PPTV", "56网", "酷6","爆米花", "TV189"
+                       "PPTV", "56网", "酷6","爆米花", "TV189",'央视网', '芒果TV'
                        ]
         source_list_tr = [_translate("Dialog", x, None) for x in source_list]
         self.comboBox_source.addItems(source_list_tr)

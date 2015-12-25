@@ -31,6 +31,8 @@ from video_56 import V56Video
 from video_ku6 import Ku6Video
 from video_baomihua import BaomihuaVideo
 from video_tv189 import TV189Video
+from video_cctv import CCTVVideo
+from video_hunantv import HuNanTVVideo
 
 from util.CodeConvert import encode_wrap
 
@@ -70,7 +72,9 @@ def run(index):
                  13:'56网',
                  14:'酷6',
                  15:'爆米花',
-                 16:'TV189'
+                 16:'TV189',
+                 17:'央视网',
+                 18:'芒果TV',
                  }
 
     cf = ConfigParser.ConfigParser()
@@ -194,6 +198,18 @@ def run(index):
             video = TV189Video()
             video.filePath = 'tv189_video'
             video.run(keys)
+        elif index == 17:
+            #17
+            print 'begin cctv'
+            video = CCTVVideo()
+            video.filePath = 'cctv_video'
+            video.run(keys)
+        elif index == 18:
+            #18
+            print 'begin hunantv'
+            video = HuNanTVVideo()
+            video.filePath = 'hunantv_video'
+            video.run(keys)
 
 
 
@@ -215,9 +231,9 @@ def run_all():
     #     print e
 
 
-    indexs = range(1, 17)
+    indexs = range(1, 19)
     #可以并行的index
-    indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16]]
+    indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16,17]]
     indexs_others = [index for index in set(indexs).difference(set(indexs_parallel))]
 
     #多线程
@@ -226,6 +242,7 @@ def run_all():
     pool.close()
     pool.join()
 
+    # JS run one by one
     for index in indexs_others:
         try:
             run(index)
@@ -234,21 +251,21 @@ def run_all():
 
 
     #data = pd.read_excel('C:\Users\Administrator\Desktop\Data\keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
-    try:
-        data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
-        print data
-    except Exception, e:
-        print encode_wrap('excel表读取错误，程序退出！')
-        return
-
-    print encode_wrap('请确认以上关键字, 10s后继续...')
-    time.sleep(10)
-
-    indexs = range(1, 12)
-    pool = ThreadPool(processes=2)
-    pool.map(run, indexs)
-    pool.close()
-    pool.join()
+    # try:
+    #     data = pd.read_excel(key_path, 'Sheet1', index_col=None, na_values=['NA'])
+    #     print data
+    # except Exception, e:
+    #     print encode_wrap('excel表读取错误，程序退出！')
+    #     return
+    #
+    # print encode_wrap('请确认以上关键字, 10s后继续...')
+    # time.sleep(10)
+    #
+    # indexs = range(1, 12)
+    # pool = ThreadPool(processes=2)
+    # pool.map(run, indexs)
+    # pool.close()
+    # pool.join()
 
 @fn_timer_
 def run_each():
@@ -269,6 +286,8 @@ def run_each():
              '14: 酷6\n' \
              '15: 爆米花\n' \
              '16: TV189\n' \
+             '17: 央视网\n'\
+             '18: 芒果TV\n'\
              '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:
@@ -276,7 +295,7 @@ def run_each():
         indexs = raw.split(',')
         indexs = [int(index.strip()) for index in indexs]
         #可以并行的index
-        indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16]]
+        indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16,17]]
         indexs_others = [index for index in set(indexs).difference(set(indexs_parallel))]
 
         #多线程

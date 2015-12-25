@@ -23,12 +23,12 @@ class HuNanTVVideo(BaseVideo):
         self.engine = '芒果TV'
         self.site = 'hunantv'
         self.general_url = 'http://so.hunantv.com/so/k-{key}#' #普通搜索的url
-        self.filePath = 'cctv_video'
+        self.filePath = 'hunantv_video'
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_qq(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_qq(' + GetNowDate()+ ').log', logger='E')
+        self.infoLogger = Logger(logname=dir_log+'info_hunantv(' + GetNowDate()+ ').log', logger='I')
+        self.errorLogger = Logger(logname=dir_log+'error_hunantv(' + GetNowDate()+ ').log', logger='E')
 
 
     @fn_timer_
@@ -76,23 +76,24 @@ class HuNanTVVideo(BaseVideo):
         for lengthtype in lengthtypes:
 
             try:
-                buttonText = self.timelengthDict[int(lengthtype)]
+                buttonText = self.timelengthDict[0]
+                #buttonText = self.timelengthDict[int(lengthtype)]
 
                 #js = "var sel=document.getElementById('durationlist');sel.options[1].onclick()"
                 #driver.execute_script(js)
 
                 #鼠标悬停
-                durationBtn = driver.find_elements_by_xpath('//a[@id="duration-btn"]')
-                print durationBtn.count()
-                test= driver.find_element_by_link_text('综艺')
-                action = webdriver.ActionChains(driver)
-                action.move_to_element(durationBtn)
-                #action.click_and_hold().perform()
-                action.click()
-                action.perform()
-
-                # 模拟点击
-                driver.find_element_by_link_text(buttonText).click()
+                # durationBtn = driver.find_elements_by_xpath('//a[@id="duration-btn"]')
+                # print durationBtn.count()
+                # test= driver.find_element_by_link_text('综艺')
+                # action = webdriver.ActionChains(driver)
+                # action.move_to_element(durationBtn)
+                # #action.click_and_hold().perform()
+                # action.click()
+                # action.perform()
+                #
+                # # 模拟点击
+                # driver.find_element_by_link_text(buttonText).click()
 
 
                 print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
-#抓取酷6搜索结果
-import sys
-import time
-import requests
-from pandas import Series, DataFrame
+#抓取CCTV搜索结果
 
+import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from bs4 import BeautifulSoup as bs
+import time
+import requests
+import re
 import pandas as pd
 from pandas import Series, DataFrame
+from bs4 import BeautifulSoup as bs
+from selenium import webdriver
+
 from video_base import *
 
 class CCTVVideo(BaseVideo):
@@ -19,6 +20,7 @@ class CCTVVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '央视网'
         self.site = 'cctv'
+        self.album_url = 'http://search.cctv.com/search.php?qtext={key}&type=video' #专辑的url
         self.general_url = 'http://search.cctv.com/ifsearch.php?qtext={key}&type=video&page={pid}&datepid=1&vtime={tid}' #普通搜索的url
         self.filePath = 'cctv_video'
 
@@ -38,8 +40,8 @@ class CCTVVideo(BaseVideo):
             return
 
         start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
+        self.run_keys(keys)
+        #self.run_keys_multithreading(keys)
 
         #重试运行三次
         # for _ in range(0, 3):
@@ -51,10 +53,11 @@ class CCTVVideo(BaseVideo):
         items_all = []
 
         # 专辑
-        #album_url = self.album_url.replace('key',key)
-        #r = requests.get(album_url)
-        #r = self.get_requests(album_url)
-        #self.parse_data_album(r.text)
+        album_url = self.album_url.format(key=key)
+        driver = webdriver.Firefox()
+        driver.get(album_url)
+
+        self.parse_data_album(driver.page_source)
 
         #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         #print '*'*20, '暂停10s', '*'*20
@@ -92,23 +95,36 @@ class CCTVVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'html5lib')
 
             #视频链接-专辑
-            dramaList = soup.findAll('a', attrs={'class':'album_link'})
+            dramaList = soup.findAll('ul', attrs={'id':'p30566_img_recent_ul'})
             for drama in dramaList:
 
-                item = DataItem()
+                liAll = drama.find_all('li')
+                for li in liAll:
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
-                item.title = drama['title']
-                item.href = drama['href']
+                    item = DataItem()
 
-                item.page = 1
-                item.durationType = '专辑'
+                    a_last = li.find_all('a')[-1]
+                    if a_last:
+                        item.title = a_last.get_text().strip()
+                        onclick_str = a_last['onclick']
+                        f = re.findall('\'(.*?)\'', onclick_str)
+                        if len(f) > 2:
+                            item.href = f[1]
 
-                items.append(item)
+
+
+
+                    durationTag = drama.find('div', {'class':'p_info'})
+                    if durationTag:
+                        item.duration = durationTag.text.strip()
+
+                    item.page = 1
+                    item.durationType = '专辑'
+
+                    items.append(item)
         except Exception, e:
             print str(e)
 

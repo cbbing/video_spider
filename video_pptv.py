@@ -42,10 +42,6 @@ class PPTVVideo(BaseVideo):
         #self.run_keys(keys)
         self.run_keys_multithreading(keys)
 
-        # #重试运行三次
-        # for _ in range(0, 3):
-        #     self.run_unfinished_keys(keys, start_time)
-
 
     def search(self, key):
 
@@ -147,6 +143,7 @@ class PPTVVideo(BaseVideo):
                     item.duration = durationTag.text.strip()
 
                 item.page = page
+                item.durationType = '不限'
 
                 items.append(item)
             except Exception,e:

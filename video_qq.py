@@ -59,15 +59,13 @@ class QQVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(qq_url)
 
-        # driver.get_screenshot_as_file("show.png")
-        #
-        # f = open('./data/data.html','w')
-        # f.write(driver.page_source)
-        # f.close()
-
         #专辑
-        items = self.parse_data_album(driver.page_source)
+        items = self.parse_data_album(driver)
         items_all.extend(items)
+
+        #模拟点击"V",让时长按钮可见
+        element = driver.find_element_by_xpath('//a[@class="btn_arrow _cox_filter_btn"]')
+        element.click()
 
         #普通
         cf = ConfigParser.ConfigParser()
@@ -116,106 +114,207 @@ class QQVideo(BaseVideo):
         return items_all
 
     # 专辑搜索
-    def parse_data_album(self, text):
+    def parse_data_album(self, driver):
 
         items = []
 
+        def get_album1():
+            soup = bs(driver.page_source, 'lxml')
+            album = soup.find('div', {'class':'mod_search_detail search_detail_event cf'})
+            if album:
+                a = album.find('a')
+                if a:
+                    item = DataItem()
+                    item.title = a['title']
+                    item.href = a['href']
+                    item.page = 1
+                    item.durationType = '专辑'
+
+                    items.append(item)
+
+        def get_album2():
+
+            soup = bs(driver.page_source, 'lxml')
+
+            liAll = soup.find_all('li', {'class':'list_item _albums_cont'})
+            for li in liAll:
+                h2 = li.find('h2', {'class':'result_title'})
+                albumTitle =h2.get_text()
+
+                divAll = li.find_all('div', {'class':'mod_album_titlist_lists video_play_list_cont'})
+                if not divAll:
+                    continue
+                for div in divAll:
+                    aAll = div.find_all('a')
+                    for a in aAll:
+
+                        item = DataItem()
+                        item.title = albumTitle + ' ' + a['title']
+                        item.href = a['href']
+                        item.page = 1
+                        item.durationType = '专辑'
+
+                        items.append(item)
+
+        def get_album3():
+            """
+            片花
+            """
+            soup = bs(driver.page_source, 'lxml')
+
+            liAll = soup.find_all('li', {'class':'list_item _albums_cont'})
+            for li in liAll:
+                h2 = li.find('h2', {'class':'result_title'})
+                albumTitle =h2.get_text()
+
+                divAll = li.find_all('div', {'class':'mod_figures_preview'})
+                for div in divAll:
+                    liAll = div.find_all('li')
+                    for li in liAll:
+                        a = li.find('a')
+                        if a:
+                            item = DataItem()
+                            item.title = '片花 ' + albumTitle + ' ' + a['title']
+                            item.href = a['href']
+                            item.page = 1
+                            item.durationType = '专辑'
+
+                            items.append(item)
+
+
+        def click_year_lab():
+            """
+            模拟点击年份标签, 让JS渲染出各个年份的专辑链接地址
+            """
+
+            yearLabs = []
+
+            soup = bs(driver.page_source, 'lxml')
+            multilineAll = soup.find_all('div', {'class':'mod_album_titlist_title mod_album_titlist_title_multiline'})
+            for multiline in multilineAll:
+                aAll = multiline.find_all('a')
+                for a in aAll:
+                    yearLabs.append(a.get_text())
+
+            for lab in set(yearLabs):
+                try:
+                    btn_years = driver.find_elements_by_link_text(lab)
+                    for btn in btn_years:
+                        btn.click()
+                except:
+                    None
+
+
         try:
-            soup = bs(text)
+            click_year_lab()
+            get_album1()
+            get_album2()
+            get_album3()
 
-            albumList = soup.findAll('li', attrs={'class':'list_item'})
-            for album in albumList:
+        except Exception,e:
+            self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
 
-
-                #视频链接-专辑(样式一，如偶像来了等综艺节目）
-                try:
-                    dramaList = album.findAll('div', attrs={'class':'mod_album_titlist_lists video_play_list_cont'})
-                    for drama in dramaList:
-
-                        titleAndLinkList = drama.findAll('a')
-                        for titleAndLink in titleAndLinkList:
-
-                            item = DataItem()
-
-                            self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
-                            self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
-
-                            item.title = titleAndLink['title']
-                            item.href = titleAndLink['href']
-                            item.page = 1
-                            item.durationType = '专辑'
-
-                            items.append(item)
-                except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
-
-
-
-
-                #视频链接-专辑(样式二，如电视连续剧）
-                try:
-                    drama = album.find('h2', attrs={'class':'result_title'})
-                    albumTitle = drama.find('a')['title']
-
-                    dramaList = album.findAll('div', attrs={'class':'mod_album_notitlist_lists video_play_list_cont'})
-                    for drama in dramaList:
-
-                        titleAndLinkList = drama.findAll('a')
-                        for titleAndLink in titleAndLinkList:
-
-                            item = DataItem()
-
-                            try:
-                                self.infoLogger.logger.info(encode_wrap('标题:',albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'))
-                                self.infoLogger.logger.info(encode_wrap('链接:'+ titleAndLink['href']))
-                                # print '标题:',albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'
-                                # print '链接:',titleAndLink['href']
-                                item.title = albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'
-                                item.href = titleAndLink['href']
-
-                                item.page = 1
-                                item.durationType = '专辑'
-
-                                items.append(item)
-                            except:
-                                self.infoLogger.logger.info(encode_wrap('专辑item中不含标题和链接'))
-                                #print '专辑item中不含标题和链接'
-
-
-                except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap("专辑解析出错,%s" % str(e)))
-
-
-
-                #视频链接-片花
-                try:
-                    dramaList = album.findAll('div', attrs={'class':'mod_figures_preview'})
-                    for drama in dramaList:
-
-                        titleAndLinkList = drama.findAll('a')
-                        for titleAndLink in titleAndLinkList:
-
-                            item = DataItem()
-
-                            self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
-                            # print '标题:',titleAndLink['title']
-                            # print '链接:',titleAndLink['href']
-                            item.title = titleAndLink['title']
-                            item.href = titleAndLink['href']
-
-                            item.page = 1
-                            item.durationType = '专辑'
-
-                            items.append(item)
-                except Exception, e:
-                    self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
-                    #print "片花解析出错", str(e)
-
-        except Exception, e:
-            print str(e)
 
         return items
+
+        # try:
+        #     soup = bs(text, 'lxml')
+        #
+        #
+        #
+        #     albumList = soup.findAll('li', attrs={'class':'list_item'})
+        #     for album in albumList:
+        #
+        #
+        #         #视频链接-专辑(样式一，如偶像来了等综艺节目）
+        #         try:
+        #             dramaList = album.findAll('div', attrs={'class':'mod_album_titlist_lists video_play_list_cont'})
+        #             for drama in dramaList:
+        #
+        #                 titleAndLinkList = drama.findAll('a')
+        #                 for titleAndLink in titleAndLinkList:
+        #
+        #                     item = DataItem()
+        #
+        #                     self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
+        #                     self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
+        #
+        #                     item.title = titleAndLink['title']
+        #                     item.href = titleAndLink['href']
+        #                     item.page = 1
+        #                     item.durationType = '专辑'
+        #
+        #                     items.append(item)
+        #         except Exception,e:
+        #             self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
+        #
+        #
+        #
+        #
+        #         #视频链接-专辑(样式二，如电视连续剧）
+        #         try:
+        #             drama = album.find('h2', attrs={'class':'result_title'})
+        #             albumTitle = drama.find('a')['title']
+        #
+        #             dramaList = album.findAll('div', attrs={'class':'mod_album_notitlist_lists video_play_list_cont'})
+        #             for drama in dramaList:
+        #
+        #                 titleAndLinkList = drama.findAll('a')
+        #                 for titleAndLink in titleAndLinkList:
+        #
+        #                     item = DataItem()
+        #
+        #                     try:
+        #                         self.infoLogger.logger.info(encode_wrap('标题:',albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'))
+        #                         self.infoLogger.logger.info(encode_wrap('链接:'+ titleAndLink['href']))
+        #                         # print '标题:',albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'
+        #                         # print '链接:',titleAndLink['href']
+        #                         item.title = albumTitle+'第'+ titleAndLink['data-s-eponum'] +'集'
+        #                         item.href = titleAndLink['href']
+        #
+        #                         item.page = 1
+        #                         item.durationType = '专辑'
+        #
+        #                         items.append(item)
+        #                     except:
+        #                         self.infoLogger.logger.info(encode_wrap('专辑item中不含标题和链接'))
+        #                         #print '专辑item中不含标题和链接'
+        #
+        #
+        #         except Exception,e:
+        #             self.errorLogger.logger.error(encode_wrap("专辑解析出错,%s" % str(e)))
+        #
+        #
+        #
+        #         #视频链接-片花
+        #         try:
+        #             dramaList = album.findAll('div', attrs={'class':'mod_figures_preview'})
+        #             for drama in dramaList:
+        #
+        #                 titleAndLinkList = drama.findAll('a')
+        #                 for titleAndLink in titleAndLinkList:
+        #
+        #                     item = DataItem()
+        #
+        #                     self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+        #                     self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
+        #                     # print '标题:',titleAndLink['title']
+        #                     # print '链接:',titleAndLink['href']
+        #                     item.title = titleAndLink['title']
+        #                     item.href = titleAndLink['href']
+        #
+        #                     item.page = 1
+        #                     item.durationType = '专辑'
+        #
+        #                     items.append(item)
+        #         except Exception, e:
+        #             self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
+        #             #print "片花解析出错", str(e)
+        #
+        # except Exception, e:
+        #     print str(e)
+
+
 
 
     # 普通搜索
@@ -225,9 +324,9 @@ class QQVideo(BaseVideo):
 
         try:
 
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
-            source = soup.find("ul", attrs={'class':'mod_list_pic_140 mod_figure_list mod_figure_list_175'})
+            source = soup.find("ul", attrs={'class':'mod_figure_list mod_figure_list_190'})
             if source:
                 titleAndLinks = source.findAll('a')
 
@@ -272,7 +371,7 @@ class QQVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'Sheet2', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     video = QQVideo()

@@ -19,7 +19,7 @@ class PPTVVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = 'PPTV'
         self.site = 'pptv'
-        self.album_url = 'http://so.pptv.com/so/q_key' #专辑的url
+        self.album_url = 'http://search.pptv.com/s_video?kw={key}' #专辑的url
         self.general_url = 'http://search.pptv.com/result?search_query=key&p=pid' #普通搜索的url
         self.filePath = 'pptv_video'
 
@@ -52,16 +52,10 @@ class PPTVVideo(BaseVideo):
         items_all = []
 
         # 专辑
-        #album_url = self.album_url.replace('key',key)
-        #r = requests.get(album_url)
-        #r = self.get_requests(album_url)
-        #self.parse_data_album(r.text)
-
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, '暂停10s', '*'*20
-        #print '\n'
-        #time.sleep(self.stop)
-
+        album_url = self.album_url.format(key=key)
+        r = self.get_requests(album_url)
+        items_album = self.parse_data_album(r.text)
+        items_all.extend(items_album)
 
         # 普通
         for i in range(self.pagecount):
@@ -83,23 +77,46 @@ class PPTVVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
-            #视频链接-专辑
-            dramaList = soup.findAll('a', attrs={'class':'album_link'})
+            # 专辑一
+            dramaList = soup.findAll('div', attrs={'class':'scon cf'})
             for drama in dramaList:
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
-                item.title = drama['title']
-                item.href = drama['href']
+                a = drama.find('a')
+                if a:
+                    item.title = a['title']
+                    item.href = a['href']
+
+                    jishu = drama.find('ul', {'class':'dlist3 cf'})
+                    if jishu:
+                        hrefAll = jishu.find_all('a')
+                        if len(hrefAll) >= 2:
+                            item.title += ' 第' + hrefAll[0].get_text() + "-" + hrefAll[-1].get_text() + '集'
+
 
                 item.page = 1
                 item.durationType = '专辑'
 
                 items.append(item)
+
+            # 专辑二
+            drama2 = soup.find('ul', attrs={'class':'dlist cf'})
+            if drama2:
+                more_a_list = drama2.find_all('a')
+                for more_a in more_a_list:
+                    item = DataItem()
+                    item.title = more_a['title']
+                    item.href = more_a['href']
+
+                    item.page = 1
+                    item.durationType = '专辑'
+
+                    items.append(item)
+
+
         except Exception, e:
             print str(e)
 
@@ -140,7 +157,7 @@ class PPTVVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', 'pptv', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     video = PPTVVideo()

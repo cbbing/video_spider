@@ -54,16 +54,15 @@ class CCTVVideo(BaseVideo):
 
         # 专辑
         album_url = self.album_url.format(key=key)
+        # r = self.get_requests(album_url)
+        # r.encoding = 'utf8'
         driver = webdriver.Firefox()
         driver.get(album_url)
 
-        self.parse_data_album(driver.page_source)
+        items_album = self.parse_data_album(driver)
+        items_all.extend(items_album)
 
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, '暂停10s', '*'*20
-        #print '\n'
-        #time.sleep(self.stop)
-
+        driver.quit()
 
         # 普通
         cf = ConfigParser.ConfigParser()
@@ -90,44 +89,76 @@ class CCTVVideo(BaseVideo):
 
 
     # 专辑
-    def parse_data_album(self, text):
+    def parse_data_album(self, driver):
 
         items = []
 
-        try:
-            soup = bs(text, 'html5lib')
+        def get_top_album(soup, playlist='playlist_img_div'):
+            """
+            获取第一行的专辑
+            """
+            try:
 
-            #视频链接-专辑
-            dramaList = soup.findAll('ul', attrs={'id':'p30566_img_recent_ul'})
-            for drama in dramaList:
+                pFindMore = soup.find('p', {'class':'tv_rec'})
+                if pFindMore:
+                    aFindMore = pFindMore.find('a')
+                    if aFindMore:
+                        href_pre = aFindMore['href']
+                        href_pre = href_pre.replace('videoset', 'video')
 
-                liAll = drama.find_all('li')
-                for li in liAll:
+                drama = soup.find('div', attrs={'class':playlist})
+                if drama:
 
-                    item = DataItem()
+                    liAll = drama.find_all('li')
+                    for li in liAll:
 
-                    a_last = li.find_all('a')[-1]
-                    if a_last:
-                        item.title = a_last.get_text().strip()
-                        onclick_str = a_last['onclick']
-                        f = re.findall('\'(.*?)\'', onclick_str)
-                        if len(f) > 2:
-                            item.href = f[1]
+                        item = DataItem()
+
+                        a_last = li.find_all('a')[-1]
+                        if a_last:
+                            item.title = a_last.get_text().strip()
+                            onclick_str = a_last['onclick']
+                            f = re.findall('\'(.*?)\'', onclick_str)
+                            if len(f) > 2:
+                                item.href = href_pre + '/' + f[1]
+
+                        durationTag = drama.find('div', {'class':'p_info'})
+                        if durationTag:
+                            item.duration = durationTag.text.strip()
+
+                        item.page = 1
+                        item.durationType = '专辑'
+
+                        items.append(item)
+            except Exception, e:
+                print str(e)
 
 
+        def get_more_album_list(driver):
+            """
+            获取更多专辑
+            """
+            try:
+                driver.find_element_by_link_text('展开>>').click()
+
+                soup = bs(driver.page_source, 'html5lib')
+                moreList = soup.find_all('ul', {'class':'list_tv mt22 clearfix'})
+                for more in moreList:
+                    liList = more.find_all('li')
+                    for li in liList:
+                        a = li.find_all('a', {'href':'###'})
+                        if len(a):
+                            driver.find_element_by_link_text(a[-1].get_text()).click()
+                            soup = bs(driver.page_source, 'html5lib')
+                            soup_sub = soup.find('div', {'class':'list_tv_sub'})
+                            get_top_album(soup_sub, playlist='playlist_img_div2')
+            except Exception, e:
+                print str(e)
 
 
-                    durationTag = drama.find('div', {'class':'p_info'})
-                    if durationTag:
-                        item.duration = durationTag.text.strip()
-
-                    item.page = 1
-                    item.durationType = '专辑'
-
-                    items.append(item)
-        except Exception, e:
-            print str(e)
-
+        soup = bs(driver.page_source, 'html5lib')
+        get_top_album(soup)
+        get_more_album_list(driver)
         return items
 
     # 普通

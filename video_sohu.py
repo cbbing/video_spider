@@ -41,8 +41,8 @@ class SouhuVideo(BaseVideo):
             return
 
         start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
+        self.run_keys(keys)
+        #self.run_keys_multithreading(keys)
 
         #重试运行三次
         #for _ in range(0, 3):
@@ -84,30 +84,27 @@ class SouhuVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
             #视频链接-专辑
-            dramaList = soup.findAll('div', attrs={'class':'seriesList'})
-            for drama in dramaList:
+            drama = soup.find('div', attrs={'class':'area  special'})
+            if drama:
 
-                titleAndLinkList = drama.findAll('a')
-                for titleAndLink in titleAndLinkList:
+                divAll = drama.find_all('div', {'class':'infoA cfix'})
+                for div in divAll:
+                    a = div.find('a')
 
                     item = DataItem()
 
-                    self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
-                    self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
-                    #print encode_wrap('标题:%s' % titleAndLink['title'])
-                    #print encode_wrap('链接:%s' % titleAndLink['href'])
-                    item.title = titleAndLink['title']
-                    item.href = titleAndLink['href']
+                    item.title = a['title']
+                    item.href = a['href']
                     item.page = 1
                     item.durationType = '专辑'
 
                     items.append(item)
         except Exception, e:
             self.errorLogger.logger.error(encode_wrap(str(e)))
-            print str(e)
+
 
         return items
 
@@ -117,7 +114,7 @@ class SouhuVideo(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'lxml')
 
         #视频链接-全部结果
         dramaList = soup.findAll('div', attrs={'class':'pic170'})
@@ -153,7 +150,7 @@ class SouhuVideo(BaseVideo):
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')
 
-    data = pd.read_excel('keys.xlsx', '搜狐', index_col=None, na_values=['NA'])
+    data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
     youkuVideo = SouhuVideo()

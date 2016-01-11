@@ -69,14 +69,22 @@ class CCTVVideo(BaseVideo):
         cf.read(config_file_path)
         lengthtypes = cf.get(self.site,"lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
+
+        page_count = self.pagecount
         for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
+            i = 0
+            while i <  page_count:
                 url = self.general_url.format(key=key, pid=i+1, tid=(int)(lengthtype)-1)
 
                 #r = requests.get(soku_url)
                 r = self.get_requests(url)
                 r.encoding = 'utf8'
+
+                if i == 0:
+                    soup = bs(r.text, 'lxml')
+                    real_pagecount = min(self.pagecount, self._get_page_count(soup))
+                    page_count = min(real_pagecount, self.pagecount)
 
                 items = self.parse_data(r.text, i+1, lengthtype, key)
 
@@ -84,6 +92,8 @@ class CCTVVideo(BaseVideo):
                     items_all.extend(items)
                 else:
                     break
+
+                i += 1
 
         return items_all
 
@@ -203,6 +213,29 @@ class CCTVVideo(BaseVideo):
                 print e
 
         return items
+
+
+    def _get_page_count(self, soup):
+        """
+        获取总页码
+        :param soup:
+        :return page_count:
+        """
+
+        try:
+
+            pagerUL = soup.find('div', {'class':'ifpage'})
+            data_pages = pagerUL.find_all('a')
+            page_count = 0
+            for a in data_pages:
+                cur_count = (int)(a.get_text())
+                if cur_count > page_count:
+                    page_count = cur_count
+
+        except Exception,e:
+            # 只有一页
+            page_count = 1
+        return page_count
 
 if __name__=='__main__':
     #key = raw_input('输入搜索关键字:')

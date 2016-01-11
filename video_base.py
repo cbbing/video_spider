@@ -25,7 +25,7 @@ from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
-from util.helper import fn_timer as fn_timer_
+from util.helper import fn_timer as fn_timer_, get_ip_dataframe
 
 engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
@@ -50,12 +50,13 @@ class BaseVideo:
         self.infoLogger = Logger(logname=dir_log+'info_base(' + GetNowDate()+ ').log', logger='I')
         self.errorLogger = Logger(logname=dir_log+'error_base(' + GetNowDate()+ ').log', logger='E')
 
-        ip_file = "./data/ip_proxy_%s.csv" % GetNowDate()
-        try:
-            self.df_ip = pd.read_csv(ip_file)
-        except:
-            print 'not exist:%s, get it now!' % ip_file
-            self.update_ip_data()
+        self.df_ip = get_ip_dataframe()
+        # ip_file = "./data/ip_proxy_%s.csv" % GetNowDate()
+        # try:
+        #     self.df_ip = pd.read_csv(ip_file)
+        # except:
+        #     print 'not exist:%s, get it now!' % ip_file
+        #     self.update_ip_data()
 
 
     # 更新IP代理库

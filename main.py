@@ -34,7 +34,7 @@ from video_tv189 import TV189Video
 from video_cctv import CCTVVideo
 from video_hunantv import HuNanTVVideo
 
-from util.CodeConvert import encode_wrap
+from util.code_convert import encode_wrap
 
 from init import *
 from util.helper import fn_timer as fn_timer_

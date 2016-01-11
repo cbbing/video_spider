@@ -27,7 +27,7 @@ import MySQLdb
 QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
 
 from MyLogger import Logger
-#from util.codeConvert import *
+#from util.code_convert import *
 
 
 try:

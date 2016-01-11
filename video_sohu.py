@@ -9,12 +9,7 @@ from pandas import Series, DataFrame
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from bs4 import BeautifulSoup as bs
-import pandas as pd
-from pandas import Series, DataFrame
 from video_base import *
-from util.CodeConvert import *
-
 
 class SouhuVideo(BaseVideo):
     def __init__(self):

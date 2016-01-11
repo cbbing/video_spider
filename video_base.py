@@ -15,7 +15,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from util.MyLogger import Logger
-from util.CodeConvert import *
+from util.code_convert import *
 from selenium import webdriver
 from retrying import retry
 from multiprocessing.dummy import Pool as ThreadPool

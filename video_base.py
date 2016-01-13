@@ -25,7 +25,9 @@ from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
-from util.helper import fn_timer as fn_timer_, get_ip_dataframe
+from util.helper import fn_timer as fn_timer_
+from util.webHelper import get_ip_dataframe
+from Post.check_404 import check_404
 
 engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
@@ -70,7 +72,7 @@ class BaseVideo:
     def get_proxies(self):
 
         if len(self.df_ip) > 0:
-            print len(self.df_ip)
+            #print len(self.df_ip)
             index = random.randint(0, len(self.df_ip))
             http = self.df_ip.ix[index, 'Type']
             http = str(http).lower()
@@ -78,6 +80,7 @@ class BaseVideo:
             port = self.df_ip.ix[index, 'Port']
             ip_proxy = "%s://%s:%s" % (http, ip, port)
             proxies = {http:ip_proxy}
+            print proxies
             return proxies
         else:
             return {}
@@ -95,7 +98,7 @@ class BaseVideo:
         output = 'Code:{1}  Proxy:{2}  Url:{0}  '.format(url, r.status_code, proxy)
         output = encode_wrap(output)
 
-        self.errorLogger.logger.error(output)
+        #self.errorLogger.logger.error(output)
 
         if int(r.status_code) != 200:
             raise Exception('request fail')
@@ -133,6 +136,11 @@ class BaseVideo:
 
             #创建dataframe
             df = self.create_data(key, items)
+
+            # 失效链接判断
+            # f = lambda url : '有效' if check_404(url) else '无效'
+            # df['Validity'] = df['Href'].apply(f)
+            # print df['Validity']
 
             self.data_to_sql_by_key(key, df)
 
@@ -340,6 +348,7 @@ class BaseVideo:
                       '1905':'1905电影网',
                       'kankan':'响巢看看',
                       'cntv':'CNTV',
+                      'cctv':'CCTV',
                       'ku6':'酷6',
                       'fun':'风行网',
                       'kankan':'响巢看看',

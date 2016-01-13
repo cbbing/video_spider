@@ -17,7 +17,7 @@ from selenium import webdriver
 from selenium.webdriver.common.proxy import *
 
 from code_convert import encode_wrap, GetNowDate
-from video_base import engine_sql as engine
+from sqlalchemy import create_engine
 from helper import fn_timer
 
 # 浏览器的窗口最大化
@@ -86,7 +86,50 @@ def get_session(url, has_proxy=True, cookie=None):
 
 
 @retry(stop_max_attempt_number=100)
-def get_web_driver(url, has_proxy=True):
+def get_web_driver(url, has_proxy=True, simulator='Firefox'):
+    """
+    Selenium 使用代理请求
+    :param url:
+    :param simulator:FireFox or PhantomJS
+    :return driver:
+    """
+
+    def _get_driver():
+        if has_proxy:
+            proxies = get_proxies()
+            if proxies.has_key('http'):
+                myProxy = proxies['http']
+            elif proxies.has_key('https'):
+                myProxy = proxies['https']
+
+            proxy = Proxy({
+               'proxyType': ProxyType.MANUAL,
+                'httpProxy': myProxy,
+                # 'ftpProxy': myProxy,
+                # 'sslProxy': myProxy,
+                # 'noProxy':d ''
+            })
+            print encode_wrap("使用代理:"), myProxy
+            if simulator == 'PhantomJS':
+                driver = webdriver.PhantomJS(proxy=proxy)
+            else:
+                driver = webdriver.Firefox(proxy=proxy)
+        else:
+            if simulator == 'PhantomJS':
+                driver = webdriver.PhantomJS()
+            else:
+                driver = webdriver.Firefox()
+        return driver
+
+    driver = _get_driver()
+    #driver.set_page_load_timeout(30)
+    driver.get(url)
+
+    return driver
+
+
+@retry(stop_max_attempt_number=100)
+def get_web_driver_phantomjs(url, has_proxy=True):
     """
     Selenium 使用代理请求
     :param url:
@@ -119,6 +162,14 @@ def get_web_driver(url, has_proxy=True):
 
 @wrapcache.wrapcache(timeout=60*60*8)  # 缓存8小时
 def get_ip_dataframe():
+    host_mysql = 'rdsw5ilfm0dpf8lee609.mysql.rds.aliyuncs.com'
+    port_mysql = '3306'
+    user_mysql = 'licj'
+    pwd_mysql = 'AAaa1234'
+    db_name_mysql = 'wealth_db'
+
+    engine = create_engine('mysql+mysqldb://%s:%s@%s:%s/%s' % (user_mysql, pwd_mysql, host_mysql, port_mysql, db_name_mysql), connect_args={'charset':'utf8'})
+
     mysql_table_ip = 'ip_proxy'
     sql = 'select * from {0} where Speed > 0 order by Speed limit {1}'.format(mysql_table_ip, 1000)
     df_ip = pd.read_sql_query(sql, engine)

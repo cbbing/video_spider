@@ -12,6 +12,7 @@ import logging.handlers
 import ConfigParser
 from code_convert import *
 
+
 #用字典保存日志级别
 format_dict = {
    1 : logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(funcName)s() - line:%(lineno)d - %(message)s'), #error

@@ -324,11 +324,15 @@ class Ui_Result_Dialog(object):
         file_name = QFileDialog.getSaveFileName(self.pushButton_export,
                                     self.tableWidget.tr("保存文件"),
                                     "",
-                                    "Excel Files (*.xlsx)")
+                                    "Excel Files (*.xlsx); CSV (*csv)")
         print file_name
         if len(file_name) > 0:
-            with pd.ExcelWriter(str_qt_to_utf(file_name)) as writer:
-                self.df.to_excel(writer, sheet_name='Sheet1')
+            file_name_unicode = str_qt_to_utf(file_name)
+            if file_name_unicode.endswith('csv'):
+                self.df.to_csv(file_name_unicode)
+            else:
+                with pd.ExcelWriter(file_name_unicode) as writer:
+                    self.df.to_excel(writer, sheet_name='Sheet1')
                 # for key, df in dfs:
                 #     df.to_excel(writer, sheet_name=key)
 

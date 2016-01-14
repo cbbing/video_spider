@@ -166,9 +166,12 @@ class BaiduVideo(BaseVideo):
         self.filePath = 'baidu_video'
         self.run(data['key'].get_values())
 
-if __name__=='__main__':
-    #key = raw_input('输入搜索关键字:')
+def run_baidu():
     video = BaiduVideo()
     video.run_auto()
+
+if __name__=='__main__':
+    #key = raw_input('输入搜索关键字:')
+    run_baidu()
 
 

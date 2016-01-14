@@ -218,8 +218,10 @@ class BaseVideo:
 
         self.infoLogger.logger.info(encode_wrap('%s:%s:去重前，总个数:%d' % (self.site, key, len(df))))
         df = df.drop_duplicates(['Href'])
+
         #过滤无效的视频
-        #self.filter_involt_video(df)
+        self.filter_involt_video(df)
+
         self.infoLogger.logger.info(encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df))))
         self.dfs.append((key, df))
         return df
@@ -248,20 +250,30 @@ class BaseVideo:
 
     def filter_involt_video(self, df):
 
-        driver = webdriver.Firefox()
+        # 失效链接判断
+        if self.site == 'youku':
 
-        for i in range(len(df)):
-            se = df.loc[i]
-            print se
-            driver.get(se['Href'])
+            # f = lambda url : '有效' if check_404(url) else '无效'
+            # df['Validity'] = df['Href'].apply(f)
+            # print df['Validity']
 
-            #过滤无效视频
-            if 'error' in driver.current_url or '好像不能看了' in driver.page_source:
+            #driver = webdriver.PhantomJS()
+            driver = webdriver.Firefox()
+
+            for i in range(len(df)):
+                se = df.loc[i]
                 print se
-                df.drop(se.name)
+                if not check_404(se['Href'], driver): #删除无效视频
+                    print se
+                    df.drop(se.name)
+
+                #过滤无效视频
+                # if 'error' in driver.current_url or '好像不能看了' in driver.page_source:
+                #     print se
+                #     df.drop(se.name)
 
 
-        driver.quit()
+            driver.quit()
 
     def save_data(self):
         self.data_to_excel()

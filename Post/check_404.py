@@ -7,7 +7,7 @@ from selenium import webdriver
 from util.helper import fn_timer
 
 @fn_timer
-def check_404(url):
+def check_404(url, driver):
     """
     检测是否有无效链接
     :param date_start:
@@ -15,19 +15,22 @@ def check_404(url):
     :return:
     """
     #url = 'http://v.youku.com/v_show/id_XNjIyMzEwODU2.html?from=s1.8-1-1.2'
+    try:
+        # if driver == None:
+        #     driver = webdriver.PhantomJS()
 
-    driver = webdriver.PhantomJS()
+        driver.get(url)
+        soup = bs(driver.page_source, 'lxml')
+        # driver.close()
 
-    driver.get(url)
-    soup = bs(driver.page_source, 'lxml')
-    driver.close()
+        if '404' in soup.title.text:
+            return False
 
-    if '404' in soup.title.text:
-        return True
+    except:
+        None
 
-    driver.close()
-    return False
+    return True
 
 
 
-print check_404('http://v.youku.com/v_show/id_XNjIyMzEwODU2.html?from=s1.8-1-1.2')
+#print check_404('http://v.youku.com/v_show/id_XNjIyMzEwODU2.html?from=s1.8-1-1.2')

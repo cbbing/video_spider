@@ -257,8 +257,8 @@ class BaseVideo:
             # df['Validity'] = df['Href'].apply(f)
             # print df['Validity']
 
-            #driver = webdriver.PhantomJS()
-            driver = webdriver.Firefox()
+            driver = webdriver.PhantomJS()
+            #driver = webdriver.Firefox()
 
             for i in range(len(df)):
                 se = df.loc[i]

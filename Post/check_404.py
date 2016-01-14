@@ -22,7 +22,7 @@ def check_404(url, driver):
         driver.get(url)
         soup = bs(driver.page_source, 'lxml')
         # driver.close()
-
+        print soup.title.text
         if '404' in soup.title.text:
             return False
 

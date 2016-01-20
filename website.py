@@ -10,12 +10,13 @@ sys.setdefaultencoding("utf-8")
 
 import web
 import os, time, hashlib
-from main import run_all
+from main import run_all, run_auto
 from util.code_convert import GetTime
 from init import *
+from video_baidu_no_js import run_baidu
 
 import sys, logging
-from wsgilog import WsgiLog
+#from wsgilog import WsgiLog
 import ConfigParser
 
 from datetime import datetime; now = datetime.now()
@@ -30,7 +31,8 @@ urls = (
     '/download', 'download',
     '/upload', 'Upload',
     '/result', 'resultList',
-    '/run_video_search', 'run_video_search'
+    '/run_video_search/param=(.*)', 'run_video_search',
+    '/run_baidu_search', 'run_baidu_search'
 
 )
 
@@ -111,9 +113,17 @@ class Menu:
 
 
 class run_video_search:
-    def GET(self):
-        run_all()
+    def GET(self, param):
+        if len(param) > 0:
+            run_auto(param)
         return 'Hello, ' + 'Video' + '!'
+
+
+class run_baidu_search:
+    def GET(self):
+        run_baidu()
+        return 'Hello, ' + 'Video' + '!'
+
 
 
 BUF_SIZE = 262144
@@ -209,22 +219,22 @@ class FileItem:
         self.file_name = ''
         self.modify_time = ''
 
-class MyLog(WsgiLog):
-    def __init__(self, application):
-
-        cf = ConfigParser.ConfigParser()
-        cf.read('config.ini')
-
-        WsgiLog.__init__(
-            self,
-            application,
-            logformat = "[%(asctime)s] %(filename)s:%(lineno)d(%(funcName)s): [%(levelname)s] %(message)s",
-            tofile = True,
-            toprint = True,
-            file = cf.get("weblog", "file"),
-            interval = cf.get("weblog", "interval"),
-            backups = int(cf.get("weblog", "backups"))
-            )
+# class MyLog(WsgiLog):
+#     def __init__(self, application):
+#
+#         cf = ConfigParser.ConfigParser()
+#         cf.read('config.ini')
+#
+#         WsgiLog.__init__(
+#             self,
+#             application,
+#             logformat = "[%(asctime)s] %(filename)s:%(lineno)d(%(funcName)s): [%(levelname)s] %(message)s",
+#             tofile = True,
+#             toprint = True,
+#             file = cf.get("weblog", "file"),
+#             interval = cf.get("weblog", "interval"),
+#             backups = int(cf.get("weblog", "backups"))
+#             )
 
 if __name__ == "__main__":
     app.run()

@@ -56,7 +56,7 @@ class BaiduVideo(BaseVideo):
         items_all.extend(items)
 
         baidu_url = self.general_url.replace('keys',key)
-        for i in xrange(1, self.pagecount):
+        for i in range(1, self.pagecount):
 
             url = baidu_url.replace('pid','{}0'.format(i))
             r = self.get_requests(url)

@@ -145,7 +145,7 @@ class BaseVideo:
             self.data_to_sql_by_key(key, df)
 
         except Exception,e:
-            self.errorLogger.logger.info(self.site +'_' +key+'_unfinish_' + str(e))
+            self.errorLogger.logger.info(self.site +'_' +key+'_unfinish:' + str(e))
             self.data_to_unfinish_file( key)
 
     # 运行未完成的key

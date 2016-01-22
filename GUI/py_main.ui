@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>645</width>
-    <height>389</height>
+    <width>682</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,16 +118,225 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_3">
+  <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>260</y>
-     <width>581</width>
-     <height>111</height>
+     <y>280</y>
+     <width>571</width>
+     <height>81</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="0">
+     <widget class="QCheckBox" name="checkBox_2">
+      <property name="text">
+       <string>爱奇艺</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QCheckBox" name="checkBox_5">
+      <property name="text">
+       <string>腾讯视频</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QCheckBox" name="checkBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>优酷</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QCheckBox" name="checkBox_4">
+      <property name="text">
+       <string>新浪视频</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="checkBox_3">
+      <property name="text">
+       <string>土豆</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QCheckBox" name="checkBox_9">
+      <property name="text">
+       <string>风行</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QCheckBox" name="checkBox_7">
+      <property name="text">
+       <string>乐视</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QCheckBox" name="checkBox_6">
+      <property name="text">
+       <string>搜狐视频</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QCheckBox" name="checkBox_10">
+      <property name="text">
+       <string>暴风影音</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
+     <widget class="QCheckBox" name="checkBox_14">
+      <property name="text">
+       <string>酷6</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QCheckBox" name="checkBox_8">
+      <property name="text">
+       <string>华数</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QCheckBox" name="checkBox_11">
+      <property name="text">
+       <string>响巢看看</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QCheckBox" name="checkBox_13">
+      <property name="text">
+       <string>56网</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QCheckBox" name="checkBox_12">
+      <property name="text">
+       <string>PPTV</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4">
+     <widget class="QCheckBox" name="checkBox_15">
+      <property name="text">
+       <string>爆米花</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="5">
+     <widget class="QCheckBox" name="checkBox_16">
+      <property name="text">
+       <string>TV89</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="5">
+     <widget class="QCheckBox" name="checkBox_17">
+      <property name="text">
+       <string>央视网</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="5">
+     <widget class="QCheckBox" name="checkBox_18">
+      <property name="text">
+       <string>芒果TV</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>370</y>
+     <width>211</width>
+     <height>57</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>单个平台</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>所有平台</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QProgressBar" name="progressBar_2">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>370</y>
+     <width>101</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>平台搜索</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>370</y>
+     <width>131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>百度搜索</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar_3">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>410</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
   </widget>
  </widget>
  <resources/>

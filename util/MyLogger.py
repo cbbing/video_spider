@@ -11,6 +11,7 @@ import logging
 import logging.handlers
 import ConfigParser
 from code_convert import *
+from init import dir_log
 
 #用字典保存日志级别
 format_dict = {
@@ -38,6 +39,8 @@ class Logger():
             cf = ConfigParser.ConfigParser()
             cf.read('../config.ini')
             logname = cf.get('log','info_log_name')
+
+        logname = dir_log+'info(' + GetNowDate()+ ').log'
 
 
         #hdlr=logging.basicConfig(logname,level=logging.NOTSET,format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')

@@ -140,9 +140,9 @@ class HuNanTVVideo(BaseVideo):
 
             soup = bs(text, 'html5lib')
 
-            source = soup.find("ul", attrs={'class':'ullist-vido clearfix'})
+            source = soup.find("div", attrs={'class':'search-resultlist'})
             if source:
-                titleAndLinks = source.findAll('a')
+                titleAndLinks = source.findAll('div', {'class':'result-box'})
 
                 #视频链接
                 for titleAndLink in titleAndLinks:
@@ -150,19 +150,23 @@ class HuNanTVVideo(BaseVideo):
 
                         if titleAndLink:
 
+                            data_a = titleAndLink.find('a')
+                            if not data_a:
+                                continue
+
                             item = DataItem()
 
-                            item.title = titleAndLink['title']
-                            item.href = titleAndLink['href']
+                            item.title = data_a.get_text()
+                            item.href = data_a['href']
 
                             self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
                             self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
-                            durationTag = titleAndLink.find('span', attrs={'class':'rb'})
-                            if durationTag:
-                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
-                                #print '时长:',durationTag.text
-                                item.duration = durationTag.text
+                            # durationTag = titleAndLink.find('span', attrs={'class':'rb'})
+                            # if durationTag:
+                            #     self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
+                            #     #print '时长:',durationTag.text
+                            #     item.duration = durationTag.text
 
                             item.page = page
                             try:

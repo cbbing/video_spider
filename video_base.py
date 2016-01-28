@@ -220,7 +220,7 @@ class BaseVideo:
         df = df.drop_duplicates(['Href'])
 
         #过滤无效的视频
-        self.filter_involt_video(df)
+        #self.filter_involt_video(df)
 
         self.infoLogger.logger.info(encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df))))
         self.dfs.append((key, df))

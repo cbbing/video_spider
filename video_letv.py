@@ -125,68 +125,23 @@ class LetvVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
-
-            albumList = soup.findAll('ul', attrs={'class':'zongyi_ul j-play-list'})
+            soup = bs(text, 'lxml')
+            albumList = soup.findAll('h1')
             for album in albumList:
+                a = album.find('a')
+                if not a:
+                    continue
 
-                driver_each = webdriver.Firefox()
+                item = DataItem()
+                item.title = a['title']
+                item.href = a['href']
+                item.page = 1
+                item.durationType = '专辑'
 
-                #视频链接-专辑(样式一，如偶像来了等综艺节目）
-                try:
-                    titleAndLinkList = album.findAll('a')
-                    for titleAndLink in titleAndLinkList:
+                if 'http' not in item.href:
+                    continue
 
-                        item = DataItem()
-
-                        item.title = titleAndLink.get_text()
-                        item.href = titleAndLink['href']
-
-                        if not 'letv' in item.href:
-                            item.href = 'http://so.letv.com/' + item.href
-
-                        #链接转真实url
-                        driver_each.get(item.href)
-                        time.sleep(3)
-                        self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
-                        item.href = driver_each.current_url
-
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
-
-                        item.page = 1
-                        item.durationType = '专辑'
-
-                        items.append(item)
-                except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
-
-                driver_each.quit()
-
-            #视频链接-片花
-            albumList = soup.findAll('div', attrs={'class':'list j-play-list'})
-            for album in albumList:
-
-                try:
-                    dramaList = album.findAll('dd', attrs={'class':'d-t'})
-                    for drama in dramaList:
-
-                        titleAndLink = drama.find('a')
-                        item = DataItem()
-
-                        self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                        self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
-                        item.title = titleAndLink['title']
-                        item.href = titleAndLink['href']
-
-                        item.page = 1
-                        item.durationType = '花絮'
-
-                        items.append(item)
-
-                except Exception, e:
-                    self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
-                    #print "片花解析出错", str(e)
+                items.append(item)
 
         except Exception, e:
                 print str(e)

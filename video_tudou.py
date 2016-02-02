@@ -12,7 +12,7 @@ class TudouVideo(SokuVideo):
     def __init__(self):
         SokuVideo.__init__(self)
 
-        self.album_url = 'http://www.soku.com/t/nisearch/key/_cid__time__sort_score_display_album?site=1' #专辑的url
+        self.album_url = 'http://www.soku.com/t/npsearch/key/' #专辑的url
         self.general_url = 'http://www.soku.com/t/nisearch/key/_cid__time_tid_sort_score_display_album?site=1&page=pid' #普通搜索的url
         self.filePath = 'tudou_video'
 

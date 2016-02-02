@@ -249,31 +249,34 @@ class BaseVideo:
     #     self.items = items_temp
 
     def filter_involt_video(self, df):
+        try:
+            # 失效链接判断
+            if self.site == 'youku':
 
-        # 失效链接判断
-        if self.site == 'youku':
+                # f = lambda url : '有效' if check_404(url) else '无效'
+                # df['Validity'] = df['Href'].apply(f)
+                # print df['Validity']
 
-            # f = lambda url : '有效' if check_404(url) else '无效'
-            # df['Validity'] = df['Href'].apply(f)
-            # print df['Validity']
+                driver = webdriver.PhantomJS()
+                #driver = webdriver.Firefox()
 
-            driver = webdriver.PhantomJS()
-            #driver = webdriver.Firefox()
-
-            for i in range(len(df)):
-                se = df.loc[i]
-                print se
-                if not check_404(se['Href'], driver): #删除无效视频
+                for i in range(len(df)):
+                    se = df.loc[i]
                     print se
-                    df.drop(se.name)
+                    if not check_404(se['Href'], driver): #删除无效视频
+                        print se
+                        df.drop(se.name)
 
-                #过滤无效视频
-                # if 'error' in driver.current_url or '好像不能看了' in driver.page_source:
-                #     print se
-                #     df.drop(se.name)
+                    #过滤无效视频
+                    # if 'error' in driver.current_url or '好像不能看了' in driver.page_source:
+                    #     print se
+                    #     df.drop(se.name)
 
 
-            driver.quit()
+                driver.quit()
+
+        except Exception,e:
+            print e
 
     def save_data(self):
         self.data_to_excel()

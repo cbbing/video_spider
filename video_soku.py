@@ -118,8 +118,10 @@ class SokuVideo(BaseVideo):
         soup = bs(text, 'html5lib')
 
         #视频链接-专辑
-        dramaList = soup.findAll('a', attrs={'class':'accordion-toggle collapsed'})
+        #dramaList = soup.findAll('a', href=re.compile("^http://www.youku.com/playlist_show/"), title=re.compile(".+"))
+        dramaList = soup.findAll('a', href=re.compile("^http://www.youku.com/playlist_show/|http://www.tudou.com/playlist/id/"), title=re.compile(".+"))
         for drama in dramaList:
+
 
             item = DataItem()
 
@@ -127,11 +129,12 @@ class SokuVideo(BaseVideo):
 
 
                 # 2015-09-16， 搜库专辑链接变动了！
-                m = re.search(r"url=(.*?)&", drama['href'])
-                href = m.group(1)
+                # m = re.search(r"url=(.*?)&", drama['href'])
+                # href = m.group(1)
 
+                # 2016-02-02
                 item.title = drama['title']
-                item.href = href
+                item.href = drama['href']
                 item.page = 1
                 item.durationType = '专辑'
 

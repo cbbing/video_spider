@@ -73,7 +73,6 @@ class TV189Video(BaseVideo):
             for i in range(self.pagecount):
                 url = self.general_url.replace('pid', str(i+1)).replace('keys',key)
 
-                #r = requests.get(soku_url)
                 r = self.get_requests(url)
                 items = self.parse_data(r.text, i+1, lengthtype, key)
 
@@ -118,14 +117,15 @@ class TV189Video(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'lxml')
 
         #视频链接-全部结果
-        tableArea = soup.find('div', {'class':'search_list'})
-        if not tableArea:
-            return []
-
-        dramaList = tableArea.findAll('div', attrs={'class':'item_content'})
+        # tableArea = soup.find('div', {'class':'search_list'})
+        # if not tableArea:
+        #     return []
+        #
+        # dramaList = tableArea.findAll('div', attrs={'class':'item_content'})
+        dramaList = soup.find_all('h4')
         for drama in dramaList:
 
             try:

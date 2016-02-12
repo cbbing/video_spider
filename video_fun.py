@@ -21,6 +21,7 @@ class FunVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '风行'
         self.site = 'fun'
+        #self.album_url = 'http://www.fun.tv/search/?word=key'
         self.general_url = 'http://www.fun.tv/search/?word=key' #普通搜索的url
         self.filePath = 'fun_video'
 
@@ -49,9 +50,6 @@ class FunVideo(BaseVideo):
         fun_url = self.general_url
         fun_url = fun_url.replace('key',key)
 
-        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
-        self.infoLogger.logger.info(encode_wrap(fun_url))
-
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
         driver.get(fun_url)
@@ -67,7 +65,7 @@ class FunVideo(BaseVideo):
         items_all.extend(items)
 
         # 模拟点击
-        driver.find_element_by_link_text('视频').click()
+        #driver.find_element_by_link_text('视频').click()
 
 
         #普通
@@ -79,7 +77,7 @@ class FunVideo(BaseVideo):
         #获取下一页
         try:
             for i in range(self.pagecount-1):
-                driver.find_element_by_link_text('下一页').click()
+                driver.find_element_by_link_text('%d' % (i+2)).click()
 
                 print '\n'
                 self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
@@ -104,35 +102,33 @@ class FunVideo(BaseVideo):
     def parse_data_album(self, text, key):
         items = []
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
-            albumList = soup.findAll('ul', attrs={'class':'torrent fix text'})
-            for album in albumList:
+            search_result = soup.find('div', {'class':'search-result'})
+            more_result = soup.find('div', {'class':'morelist'})
 
-                #视频链接-专辑(样式一，如偶像来了等综艺节目）
+            album_list = search_result.find_all('a', href=re.compile('^/subject/\d+'), title=re.compile('.+')) # 一般3个
+            more_list = more_result.find_all('a', href=re.compile('^/vplay/g-\d+'), title=re.compile('.+')) # 更多
+            album_list.extend(more_list)
+            for album in album_list:
 
-                titleAndLinkList = album.findAll('a')
-                for titleAndLink in titleAndLinkList:
+                item = DataItem()
 
-                    try:
-                        item = DataItem()
+                item.title = album['title']
+                item.href = album['href']
+                if not 'fun' in item.href:
+                    item.href = 'http://www.fun.tv' + item.href
 
-                        item.title = titleAndLink['title']
-                        item.href = titleAndLink['href']
+                print encode_wrap('标题:%s' % item.title)
+                print encode_wrap('链接:%s' % item.href)
 
-                        if not 'fun' in item.href:
-                            item.href = 'http://www.fun.tv/' + item.href
+                item.page = 1
+                item.durationType = '专辑'
+
+                items.append(item)
 
 
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
-                        item.page = 1
-                        item.durationType = '专辑'
-
-                        items.append(item)
-                    except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
 
         except Exception, e:
                 self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
@@ -146,39 +142,32 @@ class FunVideo(BaseVideo):
 
         try:
 
-            soup = bs(text)
+            soup = bs(text, 'lxml')
+            search_result = soup.find('div', {'class':'videolist'})
+            search_list = search_result.find_all('a', href=re.compile('^/vplay/'), title=re.compile('.+')) # 更多
 
-            source = soup.find("div", attrs={'class':'search-result'})
-            if source:
-                titleAndLinks = source.findAll('a')
 
-                #视频链接
-                for titleAndLink in titleAndLinks:
+            #视频链接
+            for titleAndLink in search_list:
 
-                    if titleAndLink:
-                        try:
-                            item = DataItem()
+                item = DataItem()
 
-                            item.title = titleAndLink['title']
-                            item.href = titleAndLink['href']
+                item.title = titleAndLink['title']
+                item.href = titleAndLink['href']
 
-                            if not 'fun' in item.href:
-                                item.href = 'http://www.fun.tv' + item.href
+                if not 'fun' in item.href:
+                    item.href = 'http://www.fun.tv' + item.href
 
-                            self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
+                self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
-                            item.page = page
-                            try:
-                                item.durationType = self.timelengthDict[int(lengthType)]
-                            except Exception,e:
-                                print encode_wrap('未找到对应的时长类型!')
+                item.page = page
+                try:
+                    item.durationType = self.timelengthDict[int(lengthType)]
+                except Exception,e:
+                    print encode_wrap('未找到对应的时长类型!')
 
-                            items.append(item)
-
-                        except Exception,e:
-                            self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
-
+                items.append(item)
 
         except Exception, e:
             self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))

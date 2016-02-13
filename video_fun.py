@@ -91,7 +91,7 @@ class FunVideo(BaseVideo):
                 items_all.extend(items)
 
         except Exception,e:
-            self.infoLogger.logger.info('未达到%d页，提前结束' % i)
+            infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
 
 
         driver.quit()
@@ -132,7 +132,7 @@ class FunVideo(BaseVideo):
 
 
         except Exception, e:
-            self.errorLogger.logger.error( "%s: %s 专辑解析出错:%s" % (self.site, key, str(e)))
+            errorLogger.logger.error( "%s: %s 专辑解析出错:%s" % (self.site, key, str(e)))
 
         return items
 
@@ -171,7 +171,7 @@ class FunVideo(BaseVideo):
                 items.append(item)
 
         except Exception, e:
-            self.errorLogger.logger.error(self.site + ":"+key + ":" + str(e))
+            errorLogger.logger.error(self.site + ":"+key + ":" + str(e))
 
         return items
 

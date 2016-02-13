@@ -130,12 +130,12 @@ class KankanVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info('未达到%d页，提前结束' % i)
+                    infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
 
 
             except Exception,e:
                 info = '{0}:{1} 解析失败, LengthType:{3},{4}'.format(self.site, key, lengthtype, str(e))
-                self.errorLogger.logger.error(info)
+                errorLogger.logger.error(info)
 
 
         driver.quit()
@@ -172,7 +172,7 @@ class KankanVideo(BaseVideo):
 
                         items.append(item)
                     except Exception,e:
-                        self.errorLogger.logger.error( "%s: 专辑解析出错:%s" % (key, str(e)))
+                        errorLogger.logger.error( "%s: 专辑解析出错:%s" % (key, str(e)))
 
         except Exception, e:
             print str(e)
@@ -221,11 +221,11 @@ class KankanVideo(BaseVideo):
                             items.append(item)
 
                         except Exception,e:
-                            self.errorLogger.logger.error(key + ":" + str(e))
+                            errorLogger.logger.error(key + ":" + str(e))
 
 
         except Exception, e:
-            self.errorLogger.logger.error(key + ":" + str(e))
+            errorLogger.logger.error(key + ":" + str(e))
 
         return items
 

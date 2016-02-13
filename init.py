@@ -32,4 +32,9 @@ else:
 dir_log = dir_path + 'log/'
 
 #mysql 结果表
-mysql_result_table = 'video_result'
+mysql_result_table = 'video_result_201512'
+
+from util.MyLogger import Logger
+from util.code_convert import GetNowDate
+infoLogger = Logger(logname=dir_log+'info_video(' + GetNowDate()+ ').log', logger='I')
+errorLogger = Logger(logname=dir_log+'error_video(' + GetNowDate()+ ').log', logger='E')

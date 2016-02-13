@@ -102,12 +102,12 @@ class SinaVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.errorLogger.logger.error('未达到%d页，提前结束' % i)
+                    errorLogger.logger.error('未达到%d页，提前结束' % self.pagecount)
                     #print '未达到%d页，提前结束' % self.pagecount
 
 
             except Exception,e:
-                self.errorLogger.logger.error(str(e))
+                errorLogger.logger.error(str(e))
                 #print str(e)
 
         driver.quit()
@@ -158,7 +158,7 @@ class SinaVideo(BaseVideo):
                     items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(str(e))
+                    errorLogger.logger.error(str(e))
                     #print str(e)
 
         return items

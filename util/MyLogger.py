@@ -11,7 +11,6 @@ import logging
 import logging.handlers
 import ConfigParser
 from code_convert import *
-from init import dir_log
 
 #用字典保存日志级别
 format_dict = {
@@ -40,7 +39,7 @@ class Logger():
             cf.read('../config.ini')
             logname = cf.get('log','info_log_name')
 
-        logname = dir_log+'info(' + GetNowDate()+ ').log'
+        #logname = dir_log+'info(' + GetNowDate()+ ').log'
 
 
         #hdlr=logging.basicConfig(logname,level=logging.NOTSET,format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -52,18 +51,18 @@ class Logger():
         fh.setLevel(logging.DEBUG)
 
         # 再创建一个handler，用于输出到控制台
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        # ch = logging.StreamHandler()
+        # ch.setLevel(logging.DEBUG)
 
         # 定义handler的输出格式
         #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         formatter = format_dict[int(loglevel)]
         fh.setFormatter(formatter)
-        ch.setFormatter(formatter)
+        # ch.setFormatter(formatter)
 
         # 给logger添加handler
         self.logger.addHandler(fh)
-        self.logger.addHandler(ch)
+        # self.logger.addHandler(ch)
 
 
     def getlog(self):

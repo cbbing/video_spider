@@ -30,8 +30,8 @@ class BaiduVideo(BaseVideo):
         self.filePath = 'baidu_video'
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_baidu(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_baidu(' + GetNowDate()+ ').log', logger='E')
+        # infoLogger = Logger(logname=dir_log+'info_baidu(' + GetNowDate()+ ').log', logger='I')
+        # errorLogger = Logger(logname=dir_log+'error_baidu(' + GetNowDate()+ ').log', logger='E')
 
 
     @fn_timer_
@@ -70,7 +70,7 @@ class BaiduVideo(BaseVideo):
             # 模拟点击
             driver.find_element_by_link_text('下一页>').click()
             #driver.get_screenshot_as_file("show.png")
-            self.infoLogger.logger.info('%s, 第%d页' % (key, i))
+            infoLogger.logger.info('%s, 第%d页' % (key, i))
             print '\n'
             #time.sleep(3)
 
@@ -135,12 +135,12 @@ class BaiduVideo(BaseVideo):
                         items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(self.site + ":" + str(e))
+                    errorLogger.logger.error(self.site + ":" + str(e))
 
             #driver_each.quit()
 
         except Exception, e:
-            self.errorLogger.logger.error(self.site + ":" + str(e))
+            errorLogger.logger.error(self.site + ":" + str(e))
 
         return items
 

@@ -106,11 +106,11 @@ class LetvVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info('未达到%d页，提前结束' % i)
+                    infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
 
 
             except Exception,e:
-                self.errorLogger.logger.error(str(e))
+                errorLogger.logger.error(str(e))
 
 
         driver.quit()
@@ -190,11 +190,11 @@ class LetvVideo(BaseVideo):
                             items.append(item)
 
                     except Exception,e:
-                        self.errorLogger.logger.error(str(e))
+                        errorLogger.logger.error(str(e))
 
 
         except Exception, e:
-            self.errorLogger.logger.error(str(e))
+            errorLogger.logger.error(str(e))
 
         return items
 

@@ -96,7 +96,7 @@ class SouhuVideo(BaseVideo):
 
                 items.append(item)
         except Exception, e:
-            self.errorLogger.logger.error(str(e))
+            errorLogger.logger.error(str(e))
 
 
         return items
@@ -132,7 +132,7 @@ class SouhuVideo(BaseVideo):
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]
                 except Exception,e:
-                    self.errorLogger.logger.error('未找到对应的时长类型!')
+                    errorLogger.logger.error('未找到对应的时长类型!')
 
 
             items.append(item)

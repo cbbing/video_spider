@@ -48,8 +48,8 @@ class BaiduVideo(BaseVideo):
         baidu_url = self.general_url
         baidu_url = baidu_url.replace('key',key)
 
-        self.infoLogger.logger.info('start phantomjs')
-        self.infoLogger.logger.info(baidu_url)
+        # self.infoLogger.logger.info('start phantomjs')
+        # self.infoLogger.logger.info(baidu_url)
         #print 'start phantomjs'
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -70,14 +70,14 @@ class BaiduVideo(BaseVideo):
             # 模拟点击
             driver.find_element_by_link_text('下一页>').click()
             #driver.get_screenshot_as_file("show.png")
-            self.infoLogger.logger.info(encode_wrap('%s, 第%d页' % (key, i)))
+            self.infoLogger.logger.info('%s, 第%d页' % (key, i))
             print '\n'
             #time.sleep(3)
 
             items = self.parse_data(driver.page_source, i)
             items_all.extend(items)
 
-        self.infoLogger.logger.info('stop phantomjs')
+        #self.infoLogger.logger.info('stop phantomjs')
 
         driver.quit()
 
@@ -129,18 +129,18 @@ class BaiduVideo(BaseVideo):
                         #self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
                         #item.href = driver_each.current_url
 
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
+                        # self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
+                        # self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
                         items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
+                    self.errorLogger.logger.error(self.site + ":" + str(e))
 
             #driver_each.quit()
 
         except Exception, e:
-            self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
+            self.errorLogger.logger.error(self.site + ":" + str(e))
 
         return items
 

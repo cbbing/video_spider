@@ -268,7 +268,7 @@ class Ui_Result_Dialog(object):
             sql = sql + " where Time>'%s' and Time <'%s' " %(date_start_str, date_end_str)
 
 
-        self.infoLogger.logger.info(encode_wrap( sql))
+        self.infoLogger.logger.info( sql)
         print sql
         #from video_base import engine_sql
         try:

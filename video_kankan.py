@@ -121,7 +121,7 @@ class KankanVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页').click()
 
-                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        #self.infoLogger.logger.info('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
@@ -130,12 +130,12 @@ class KankanVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
+                    self.infoLogger.logger.info('未达到%d页，提前结束' % i)
 
 
             except Exception,e:
                 info = '{0}:{1} 解析失败, LengthType:{3},{4}'.format(self.site, key, lengthtype, str(e))
-                self.errorLogger.logger.error(encode_wrap(info))
+                self.errorLogger.logger.error(info)
 
 
         driver.quit()
@@ -172,7 +172,7 @@ class KankanVideo(BaseVideo):
 
                         items.append(item)
                     except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap( "%s: 专辑解析出错:%s" % (key, str(e))))
+                        self.errorLogger.logger.error( "%s: 专辑解析出错:%s" % (key, str(e)))
 
         except Exception, e:
             print str(e)
@@ -221,11 +221,11 @@ class KankanVideo(BaseVideo):
                             items.append(item)
 
                         except Exception,e:
-                            self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
+                            self.errorLogger.logger.error(key + ":" + str(e))
 
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(key + ":" + str(e)))
+            self.errorLogger.logger.error(key + ":" + str(e))
 
         return items
 

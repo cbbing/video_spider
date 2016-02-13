@@ -147,7 +147,7 @@ class SokuVideo(BaseVideo):
             except Exception, e:
                 #print str(e)
                 info = '{0}:{1}:{2}:{3}'.format(self.site, key, '专辑',str(e))
-                self.errorLogger.logger.error(encode_wrap(info))
+                self.errorLogger.logger.error(info)
 
         return items
 

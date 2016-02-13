@@ -125,12 +125,12 @@ class BaiduVideo(BaseVideo):
                         items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
+                    self.errorLogger.logger.error(self.site + ":" + str(e))
 
             #driver_each.quit()
 
         except Exception, e:
-            self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
+            self.errorLogger.logger.error(self.site + ":" + str(e))
 
         return items
 

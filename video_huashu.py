@@ -105,10 +105,10 @@ class HuashuVideo(BaseVideo):
                     item.durationType = '专辑'
                     items.append(item)
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
+                    self.errorLogger.logger.error('%s:%s:专辑解析出错' % (self.site, key))
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
+            self.errorLogger.logger.error('%s:%s:专辑解析出错' % (self.site, key))
 
         return items
 

@@ -195,7 +195,7 @@ class CCTVVideo(BaseVideo):
                 item.title = area_a[-1].get_text()
                 item.href = area_a[-1]['href']
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 durationTag = drama.find('span')

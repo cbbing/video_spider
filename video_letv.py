@@ -97,7 +97,7 @@ class LetvVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页').click()
 
-                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
                         print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
@@ -108,11 +108,11 @@ class LetvVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
+                    self.infoLogger.logger.info('未达到%d页，提前结束' % i)
 
 
             except Exception,e:
-                self.errorLogger.logger.error(encode_wrap(str(e)))
+                self.errorLogger.logger.error(str(e))
 
 
         driver.quit()
@@ -192,11 +192,11 @@ class LetvVideo(BaseVideo):
                             items.append(item)
 
                     except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap(str(e)))
+                        self.errorLogger.logger.error(str(e))
 
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            self.errorLogger.logger.error(str(e))
 
         return items
 

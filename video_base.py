@@ -145,7 +145,7 @@ class BaseVideo:
             self.data_to_sql_by_key(key, df)
 
         except Exception,e:
-            self.errorLogger.logger.info('unfinish:' + self.site +'_' + key + "_" + str(e))
+            self.errorLogger.logger.error('unfinish:' + self.site +'_' + key + "_" + str(e))
             self.data_to_unfinish_file( key)
 
     # 运行未完成的key
@@ -301,7 +301,7 @@ class BaseVideo:
             #self.infoLogger.logger.info(encode_wrap('%s:写入excel完成' % self.site))
             print encode_wrap('%s:写入excel完成' % self.site)
         except:
-            self.errorLogger.logger.info(encode_wrap('%s:写入excel fail' % self.site))
+            self.errorLogger.logger.info('%s:写入excel fail' % self.site)
 
 
     def data_to_sql(self):
@@ -350,7 +350,7 @@ class BaseVideo:
                 f.close()
         except Exception, e:
             info = '{0}:{1}:{2}:{3}'.format(self.site, key,"write_to_unfinish_file fail!", str(e))
-            self.errorLogger.logger.error(encode_wrap(info))
+            self.errorLogger.logger.error(info)
 
     # 判断视频来源
     def get_video_source(self, url):

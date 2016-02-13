@@ -74,7 +74,7 @@ class BaofengVideo(BaseVideo):
                 items_all.extend(items)
 
         except Exception,e:
-            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
+            self.infoLogger.logger.info('未达到%d页，提前结束' % i)
 
 
         return items_all
@@ -118,7 +118,7 @@ class BaofengVideo(BaseVideo):
 
         except Exception, e:
             info = '{0}:{1} 解析失败, Page:{2}, LengthType:{3},{4}'.format(self.site, key, page, lengthType, str(e))
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            self.errorLogger.logger.error(str(e))
             print str(e)
 
         return items

@@ -97,17 +97,17 @@ class SinaVideo(BaseVideo):
                         print '\n'
                         time.sleep(self.stop)
 
-                        driver.get_screenshot_as_file("show.png")
+                        #driver.get_screenshot_as_file("show.png")
                         items = self.parse_data(driver.page_source, i+2, lengthtype)
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('未达到%d页，提前结束' % i))
+                    self.errorLogger.logger.error('未达到%d页，提前结束' % i)
                     #print '未达到%d页，提前结束' % self.pagecount
 
 
             except Exception,e:
-                self.errorLogger.logger.error(encode_wrap(str(e)))
+                self.errorLogger.logger.error(str(e))
                 #print str(e)
 
         driver.quit()
@@ -158,7 +158,7 @@ class SinaVideo(BaseVideo):
                     items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap(str(e)))
+                    self.errorLogger.logger.error(str(e))
                     #print str(e)
 
         return items

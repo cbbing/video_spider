@@ -102,11 +102,11 @@ class QQVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
+                    self.infoLogger.logger.info('未达到%d页，提前结束' % i)
 
 
             except Exception,e:
-                self.errorLogger.logger.error(encode_wrap(str(e)))
+                self.errorLogger.logger.error(str(e))
 
 
         driver.quit()
@@ -225,7 +225,7 @@ class QQVideo(BaseVideo):
 
 
         except Exception,e:
-            self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
+            self.errorLogger.logger.error( "专辑解析出错:%s" % str(e))
 
 
         return items
@@ -268,16 +268,16 @@ class QQVideo(BaseVideo):
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                                self.errorLogger.logger.error('未找到对应的时长类型!')
 
                             items.append(item)
 
                     except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap(str(e)))
+                        self.errorLogger.logger.error(str(e))
                         #print str(e)
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            self.errorLogger.logger.error(str(e))
 
         return items
 

@@ -66,9 +66,6 @@ class LetvVideo(BaseVideo):
         items = self.parse_data_album(driver.page_source)
         items_all.extend(items)
 
-        # 模拟点击
-        driver.find_element_by_link_text('播放时长').click()
-
         #普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
@@ -79,6 +76,7 @@ class LetvVideo(BaseVideo):
             try:
                 buttonText = self.timelengthDict[int(lengthtype)]
                 # 模拟点击
+                driver.find_element_by_link_text('播放时长').click()
                 driver.find_element_by_link_text(buttonText).click()
 
                 #driver.get_screenshot_as_file("show.png")
@@ -157,7 +155,7 @@ class LetvVideo(BaseVideo):
 
         try:
 
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
             source = soup.find("div", attrs={'class':'wrap-body'})
             if source:

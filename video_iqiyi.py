@@ -26,8 +26,8 @@ class IQiYiVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 2:'10分钟以下', 3:'10-30分钟', 4:'30-60分钟', 5:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_iqiyi(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_iqiyi(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_iqiyi(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_iqiyi(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -52,13 +52,13 @@ class IQiYiVideo(BaseVideo):
         items_all = []
 
         # 专辑
-        album_url = self.album_url.replace('key',key)
+        #album_url = self.album_url.replace('key',key)
         #r = requests.get(album_url)
-        r = self.get_requests(album_url)
-        items = self.parse_data_album(r.text)
-        items_all.extend(items)
+        #r = self.get_requests(album_url)
+        #items = self.parse_data_album(r.text)
+        #items_all.extend(items)
 
-        # 普通
+        # 爱奇艺:普通与专辑合并了
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
         lengthtypes = cf.get("iqiyi","lengthtype")
@@ -83,7 +83,7 @@ class IQiYiVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
             #视频链接-专辑
             dramaList = soup.findAll('a', attrs={'class':'album_link'})
@@ -91,7 +91,7 @@ class IQiYiVideo(BaseVideo):
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
                 item.title = drama['title']
                 item.href = drama['href']
@@ -110,25 +110,21 @@ class IQiYiVideo(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'lxml')
 
         #视频链接-全部结果
-        dramaList = soup.findAll('a', attrs={'class':'figure  figure-180101 '})
+        dramaList = soup.findAll('h3', attrs={'class':'result_title'})
         for drama in dramaList:
 
             try:
                 item = DataItem()
 
-                titleAndLink = drama.find('img')
-                if titleAndLink:
-                    self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                    #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))#titleAndLink['href']
-                    item.title = titleAndLink['title']
-                    item.href = drama['href']
-                durationTag = drama.find('span', attrs={'class':'v_name'})
-                if durationTag:
-                    item.duration = durationTag.text
+                a = drama.find('a')
+                if not a:
+                    continue
 
+                item.title = a['title']
+                item.href = a['href']
                 item.page = page
                 try:
                     item.durationType = self.timelengthDict[int(lengthType)]

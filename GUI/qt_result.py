@@ -336,7 +336,7 @@ class Ui_Result_Dialog(object):
                 # for key, df in dfs:
                 #     df.to_excel(writer, sheet_name=key)
 
-        self.infoLogger.logger.info(encode_wrap('写入excel完成'))
+        #self.infoLogger.logger.info(encode_wrap('写入excel完成'))
 
 
 def encode_wrap(str):

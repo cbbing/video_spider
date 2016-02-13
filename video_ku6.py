@@ -19,14 +19,14 @@ class Ku6Video(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '酷6'
         self.site = 'ku6'
-        self.album_url = 'http://so.56.com/so/q_key' #专辑的url
+        self.album_url = 'http://so.ku6.com/search/?q=key' #专辑的url
         self.general_url = 'http://so.ku6.com/search?q=key&videotime=tid&start=pid' #普通搜索的url
         self.filePath = 'ku_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_ku6(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_ku6(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_ku6(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_ku6(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -52,15 +52,17 @@ class Ku6Video(BaseVideo):
         items_all = []
 
         # 专辑
-        #album_url = self.album_url.replace('key',key)
-        #r = requests.get(album_url)
-        #r = self.get_requests(album_url)
-        #self.parse_data_album(r.text)
+        # album_url = self.album_url.replace('key',key)
+        # driver = webdriver.Firefox()
+        # driver.get(album_url)
+        # #r = self.get_requests(album_url)
+        # self.parse_data_album(driver.page_source)
+        # driver.quit()
 
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, '暂停10s', '*'*20
-        #print '\n'
-        #time.sleep(self.stop)
+        # self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        # print '*'*20, '暂停10s', '*'*20
+        # print '\n'
+        # time.sleep(self.stop)
 
 
         # 普通
@@ -93,18 +95,20 @@ class Ku6Video(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'html5lib')
 
             #视频链接-专辑
-            dramaList = soup.findAll('a', attrs={'class':'album_link'})
+            dramaList = soup.findAll('div', attrs={'class':'info-item title'})
             for drama in dramaList:
+
+                a = drama.find('a', title=re.compile('.+'))
+                if not a:
+                    continue
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
-                item.title = drama['title']
-                item.href = drama['href']
+                item.title = a['title']
+                item.href = a['href']
 
                 item.page = 1
                 item.durationType = '专辑'
@@ -137,7 +141,7 @@ class Ku6Video(BaseVideo):
                 item.title = area_a['title']
                 item.href = area_a['href']
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 durationTag = area_a.find('span', attrs={'class':'ckl_tim'})

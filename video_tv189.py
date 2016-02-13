@@ -25,8 +25,8 @@ class TV189Video(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30分钟-2小时'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_tv189(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_tv189(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_tv189(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_tv189(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -73,7 +73,6 @@ class TV189Video(BaseVideo):
             for i in range(self.pagecount):
                 url = self.general_url.replace('pid', str(i+1)).replace('keys',key)
 
-                #r = requests.get(soku_url)
                 r = self.get_requests(url)
                 items = self.parse_data(r.text, i+1, lengthtype, key)
 
@@ -99,8 +98,8 @@ class TV189Video(BaseVideo):
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
+                #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
                 item.title = drama['title']
                 item.href = drama['href']
 
@@ -118,14 +117,15 @@ class TV189Video(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'lxml')
 
         #视频链接-全部结果
-        tableArea = soup.find('div', {'class':'search_list'})
-        if not tableArea:
-            return []
-
-        dramaList = tableArea.findAll('div', attrs={'class':'item_content'})
+        # tableArea = soup.find('div', {'class':'search_list'})
+        # if not tableArea:
+        #     return []
+        #
+        # dramaList = tableArea.findAll('div', attrs={'class':'item_content'})
+        dramaList = soup.find_all('h4')
         for drama in dramaList:
 
             try:
@@ -136,7 +136,7 @@ class TV189Video(BaseVideo):
                 item.href = area_a['href']
                 item.title = area_a.get_text()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 # durationTag = area_a.find('span')

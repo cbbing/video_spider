@@ -26,8 +26,8 @@ class LetvVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_letv(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_letv(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_letv(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_letv(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -49,8 +49,8 @@ class LetvVideo(BaseVideo):
         letv_url = self.general_url
         letv_url = letv_url.replace('key',key)
 
-        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
-        self.infoLogger.logger.info(encode_wrap(letv_url))
+        #self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        #self.infoLogger.logger.info(encode_wrap(letv_url))
 
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -83,7 +83,8 @@ class LetvVideo(BaseVideo):
 
                 #driver.get_screenshot_as_file("show.png")
 
-                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -97,7 +98,7 @@ class LetvVideo(BaseVideo):
                         driver.find_element_by_link_text('下一页').click()
 
                         self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
-                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
 
@@ -107,7 +108,7 @@ class LetvVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
             except Exception,e:
@@ -115,7 +116,7 @@ class LetvVideo(BaseVideo):
 
 
         driver.quit()
-        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
+        #self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
         return items_all
 
@@ -125,68 +126,23 @@ class LetvVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
-
-            albumList = soup.findAll('ul', attrs={'class':'zongyi_ul j-play-list'})
+            soup = bs(text, 'lxml')
+            albumList = soup.findAll('h1')
             for album in albumList:
+                a = album.find('a')
+                if not a:
+                    continue
 
-                driver_each = webdriver.Firefox()
+                item = DataItem()
+                item.title = a['title']
+                item.href = a['href']
+                item.page = 1
+                item.durationType = '专辑'
 
-                #视频链接-专辑(样式一，如偶像来了等综艺节目）
-                try:
-                    titleAndLinkList = album.findAll('a')
-                    for titleAndLink in titleAndLinkList:
+                if 'http' not in item.href:
+                    continue
 
-                        item = DataItem()
-
-                        item.title = titleAndLink.get_text()
-                        item.href = titleAndLink['href']
-
-                        if not 'letv' in item.href:
-                            item.href = 'http://so.letv.com/' + item.href
-
-                        #链接转真实url
-                        driver_each.get(item.href)
-                        time.sleep(3)
-                        self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
-                        item.href = driver_each.current_url
-
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
-
-                        item.page = 1
-                        item.durationType = '专辑'
-
-                        items.append(item)
-                except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap( "专辑解析出错:%s" % str(e)))
-
-                driver_each.quit()
-
-            #视频链接-片花
-            albumList = soup.findAll('div', attrs={'class':'list j-play-list'})
-            for album in albumList:
-
-                try:
-                    dramaList = album.findAll('dd', attrs={'class':'d-t'})
-                    for drama in dramaList:
-
-                        titleAndLink = drama.find('a')
-                        item = DataItem()
-
-                        self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                        self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
-                        item.title = titleAndLink['title']
-                        item.href = titleAndLink['href']
-
-                        item.page = 1
-                        item.durationType = '花絮'
-
-                        items.append(item)
-
-                except Exception, e:
-                    self.errorLogger.logger.error(encode_wrap("片花解析出错" + str(e)))
-                    #print "片花解析出错", str(e)
+                items.append(item)
 
         except Exception, e:
                 print str(e)
@@ -215,22 +171,23 @@ class LetvVideo(BaseVideo):
 
                             item = DataItem()
 
-                            self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
+                            #self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+                            #self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
 
                             item.title = titleAndLink['title']
                             item.href = titleAndLink['href']
 
                             durationTag = titleAndLink.find('b', attrs={'class':'tmbg'})
                             if durationTag:
-                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
+                                #self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
                                 item.duration = durationTag.text
 
                             item.page = page
                             try:
                                 item.durationType = self.timelengthDict[int(lengthType)]
                             except Exception,e:
-                                self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                                None
+                                #self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
                             items.append(item)
 

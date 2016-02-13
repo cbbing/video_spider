@@ -12,7 +12,7 @@ class YoukuVideo(SokuVideo):
     def __init__(self):
         SokuVideo.__init__(self)
 
-        self.album_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_0?site=14' #专辑的url
+        self.album_url = 'http://www.soku.com/search_playlist/q_key' #专辑的url
         self.general_url = 'http://www.soku.com/search_video/q_key_orderby_1_lengthtype_tid?site=14&page=pid' #普通搜索的url
         self.filePath = 'youku_video'
 
@@ -27,7 +27,7 @@ if __name__=='__main__':
     keys = data['key'].get_values()
 
     youkuVideo = YoukuVideo()
-    youkuVideo.run(keys[:100])
+    youkuVideo.run(keys[:1])
     #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

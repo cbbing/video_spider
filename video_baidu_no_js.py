@@ -67,7 +67,7 @@ class BaiduVideo(BaseVideo):
 
 
 
-        self.infoLogger.logger.info('stop phantomjs')
+        #self.infoLogger.logger.info('stop phantomjs')
 
 
 
@@ -119,18 +119,18 @@ class BaiduVideo(BaseVideo):
                         #self.infoLogger.logger.info(encode_wrap(driver_each.current_url))
                         #item.href = driver_each.current_url
 
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
+                        #self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
+                        #self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
                         items.append(item)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap(str(e)))
+                    self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
 
             #driver_each.quit()
 
         except Exception, e:
-            self.errorLogger.logger.error(encode_wrap(str(e)))
+            self.errorLogger.logger.error(self.site + ":" + encode_wrap(str(e)))
 
         return items
 

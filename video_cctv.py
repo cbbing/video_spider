@@ -26,8 +26,8 @@ class CCTVVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'5分钟以内', 2:'5-30分钟', 3:'30-60分钟', 4:'大于1小时'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_cctv(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_cctv(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_cctv(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_cctv(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):

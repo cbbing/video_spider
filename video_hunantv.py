@@ -27,8 +27,8 @@ class HuNanTVVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_hunantv(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_hunantv(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_hunantv(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_hunantv(' + GetNowDate()+ ').log', logger='E')
 
 
     @fn_timer_
@@ -109,7 +109,8 @@ class HuNanTVVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页').click()
 
-                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
                         print '\n'
                         time.sleep(self.stop)
@@ -118,7 +119,7 @@ class HuNanTVVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
             except Exception,e:
@@ -159,8 +160,8 @@ class HuNanTVVideo(BaseVideo):
                             item.title = data_a.get_text()
                             item.href = data_a['href']
 
-                            self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
+                            #self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                            #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                             # durationTag = titleAndLink.find('span', attrs={'class':'rb'})
                             # if durationTag:

@@ -19,14 +19,14 @@ class V56Video(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '56'
         self.site = '56'
-        self.album_url = 'http://so.56.com/so/q_key' #专辑的url
+        self.album_url = 'http://so.56.com/all/key/?' #专辑的url
         self.general_url = 'http://so.56.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
         self.filePath = 'v56_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -52,15 +52,14 @@ class V56Video(BaseVideo):
         items_all = []
 
         # 专辑
-        #album_url = self.album_url.replace('key',key)
-        #r = requests.get(album_url)
-        #r = self.get_requests(album_url)
-        #self.parse_data_album(r.text)
+        album_url = self.album_url.replace('key',key)
+        r = self.get_requests(album_url)
+        self.parse_data_album(r.text)
 
         #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        #print '*'*20, '暂停10s', '*'*20
-        #print '\n'
-        #time.sleep(self.stop)
+        print '*'*20, '暂停10s', '*'*20
+        print '\n'
+        time.sleep(self.stop)
 
 
         # 普通
@@ -91,18 +90,22 @@ class V56Video(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
             #视频链接-专辑
-            dramaList = soup.findAll('a', attrs={'class':'album_link'})
+
+            dramaList = soup.findAll('h2')
             for drama in dramaList:
+
+                a = drama.find('a', title=re.compile('.+'))
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
-                item.title = drama['title']
-                item.href = drama['href']
+                item.title = a['title']
+                item.href = a['href']
+
+                if item.title == '查看详情':
+                    continue
 
                 item.page = 1
                 item.durationType = '专辑'
@@ -135,7 +138,7 @@ class V56Video(BaseVideo):
                 item.title = area_a['title']
                 item.href = area_a['href']
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 durationTag = area_a.find('span', attrs={'class':'maskTx'})

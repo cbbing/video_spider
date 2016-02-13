@@ -25,8 +25,8 @@ class BaomihuaVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30分钟-2小时'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_baomihua(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_baomihua(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_baomihua(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_baomihua(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -99,8 +99,8 @@ class BaomihuaVideo(BaseVideo):
 
                 item = DataItem()
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
+                #self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
                 item.title = drama['title']
                 item.href = drama['href']
 
@@ -137,7 +137,7 @@ class BaomihuaVideo(BaseVideo):
                 item.href = area_a['href']
                 item.title = area_img['alt']
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 durationTag = area_a.find('span')

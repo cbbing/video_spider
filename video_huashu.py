@@ -20,14 +20,14 @@ class HuashuVideo(BaseVideo):
         self.engine = '华数'
         self.site = 'huashu'
         self.pre_url = "http://www.wasu.cn"
-        self.album_url = 'http://www.wasu.cn/Search/show/k/key' #专辑的url
+        self.album_url = 'http://www.wasu.cn/Search/show/k/key/type/album' #专辑的url
         self.general_url = 'http://www.wasu.cn/Search/show/k/key/duration/tid?&p=pid#Top05' #普通搜索的url
         self.filePath = 'huashu_video'
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_huashu(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_huashu(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_huashu(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_huashu(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -52,9 +52,10 @@ class HuashuVideo(BaseVideo):
         items_all = []
 
         # 专辑
-        #album_url = self.album_url.replace('key',key)
-        #r = requests.get(album_url)
-        #self.parse_data_album(r.text)
+        album_url = self.album_url.replace('key',key)
+        r = requests.get(album_url)
+        items = self.parse_data_album(r.text, key)
+        items_all.extend(items)
 
         # 普通
         cf = ConfigParser.ConfigParser()
@@ -83,35 +84,31 @@ class HuashuVideo(BaseVideo):
         items = []
 
         try:
-            soup = bs(text)
+            soup = bs(text, 'lxml')
 
             #视频链接-专辑
-            sourceList = soup.findAll('div', attrs={'class':'juji_body'})
+            sourceList = soup.findAll('div', attrs={'class':'special_item'})
             for source in sourceList:
 
                 try:
-                    dramaList = source.findAll('a')
-                    for drama in dramaList:
+                    item = DataItem()
 
-                        item = DataItem()
+                    div_title = source.find('div',{'class':'s_item_head'})
+                    if div_title:
+                        item.title = div_title.get_text()
 
-                        self.infoLogger.logger.info(encode_wrap('标题:' + drama['title']))
-                        self.infoLogger.logger.info(encode_wrap('链接:' + drama['href']))
-                        item.title = drama['title']
-                        item.href = drama['href']
+                    a = source.find('a', {'class':'join'})
+                    if a:
+                        item.href = self.pre_url + a['href']
 
-                        if not "www" in item.href:
-                            item.href = self.pre_url + item.href
-
-                        item.page = 1
-                        item.durationType = '专辑'
-
-                        items.append(item)
+                    item.page = 1
+                    item.durationType = '专辑'
+                    items.append(item)
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
+                    self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
 
         except Exception, e:
-                self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
+            self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
 
         return items
 
@@ -120,35 +117,28 @@ class HuashuVideo(BaseVideo):
 
         items = []
 
-        soup = bs(text)
+        soup = bs(text, 'lxml')
 
         #视频链接-全部结果
-        dramaList = soup.findAll('div', attrs={'class':'col2 mb20'})
+        source = soup.find('div', {'class':'list_body'})
+        dramaList = soup.findAll('a', href=re.compile('^/Play/show/id/'), title=re.compile('.+'))
         for drama in dramaList:
+
+            if not drama.get_text():
+                continue
 
             item = DataItem()
 
-            titleAndLink = drama.find('a')
-            if titleAndLink:
-                self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
-                item.title = titleAndLink['title']
-                item.href = titleAndLink['href']
+            item.title = drama['title']
+            item.href = self.pre_url + drama['href']
 
-                if not "www" in item.href:
-                    item.href = self.pre_url + item.href
+            item.page = page
+            try:
+                item.durationType = self.timelengthDict[int(lengthType)]
+            except Exception,e:
+                print encode_wrap('未找到对应的时长类型!')
 
-                durationTag = drama.find('div', attrs={'class':'meta_tr'})
-                if durationTag:
-                    item.duration = durationTag.text
-
-                item.page = page
-                try:
-                    item.durationType = self.timelengthDict[int(lengthType)]
-                except Exception,e:
-                    print encode_wrap('未找到对应的时长类型!')
-
-                items.append(item)
+            items.append(item)
 
         return items
 

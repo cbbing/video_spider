@@ -26,8 +26,8 @@ class KankanVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_kankan(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_kankan(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_kankan(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_kankan(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -73,8 +73,8 @@ class KankanVideo(BaseVideo):
         fun_url = self.general_url
         fun_url = fun_url.replace('keys',key)
 
-        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
-        self.infoLogger.logger.info(encode_wrap(fun_url))
+        #self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        #self.infoLogger.logger.info(encode_wrap(fun_url))
 
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -107,7 +107,8 @@ class KankanVideo(BaseVideo):
                 # 模拟点击
                 driver.find_element_by_link_text(buttonText).click()
 
-                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -121,7 +122,7 @@ class KankanVideo(BaseVideo):
                         driver.find_element_by_link_text('下一页').click()
 
                         self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
-                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
 
@@ -129,7 +130,7 @@ class KankanVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
             except Exception,e:
@@ -138,9 +139,9 @@ class KankanVideo(BaseVideo):
 
 
         driver.quit()
-        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
+        #self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
-        return items_all
+        return items_all#
 
     # 专辑搜索
     def parse_data_album(self, text, key):
@@ -163,8 +164,8 @@ class KankanVideo(BaseVideo):
                         item.title = titleAndLink['title']
                         item.href = titleAndLink['href']
 
-                        self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
-                        self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
+                        #self.infoLogger.logger.info(encode_wrap('标题:%s' % item.title))
+                        #self.infoLogger.logger.info(encode_wrap('链接:%s' % item.href))
 
                         item.page = 1
                         item.durationType = '专辑'
@@ -202,12 +203,12 @@ class KankanVideo(BaseVideo):
                             item.title = titleAndLink['title']
                             item.href = titleAndLink['href']
 
-                            self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
+                            #self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                            #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                             durationTag = titleAndLink.find('span', attrs={'class':'masktxt'})
                             if durationTag:
-                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
+                                #self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
                                 #print '时长:',durationTag.text
                                 item.duration = durationTag.text
 

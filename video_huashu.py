@@ -26,8 +26,8 @@ class HuashuVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_huashu(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_huashu(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_huashu(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_huashu(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -105,10 +105,10 @@ class HuashuVideo(BaseVideo):
                     item.durationType = '专辑'
                     items.append(item)
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
+                    self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
 
         except Exception, e:
-                self.errorLogger.logger.error(encode_wrap('%s:专辑解析出错' % key))
+            self.errorLogger.logger.error(encode_wrap('%s:%s:专辑解析出错' % (self.site, key)))
 
         return items
 

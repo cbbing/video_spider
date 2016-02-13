@@ -27,7 +27,7 @@ if __name__=='__main__':
     keys = data['key'].get_values()
 
     youkuVideo = YoukuVideo()
-    youkuVideo.run(keys[:100])
+    youkuVideo.run(keys[:1])
     #youkuVideo.run(['明若晓溪','旋风少女','偶像来了'])
     #key = '快乐大本营'
     #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))

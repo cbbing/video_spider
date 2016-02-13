@@ -28,8 +28,8 @@ class SokuVideo(BaseVideo):
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
         self.site = '' # youku or tudou
 
-        self.infoLogger = Logger(logname=dir_log + 'info_soku(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+ 'error_soku(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log + 'info_soku(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+ 'error_soku(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -138,7 +138,7 @@ class SokuVideo(BaseVideo):
                 item.page = 1
                 item.durationType = '专辑'
 
-                self.infoLogger.logger.info(encode_wrap('标题:%s' % drama['title']))
+                #self.infoLogger.logger.info(encode_wrap('标题:%s' % drama['title']))
                 #self.infoLogger.logger.info(encode_wrap('链接:%s' % href))
                 # print '标题:'.decode('utf8'),drama['title'].decode('utf8')
                 # print '链接:'.decode('utf8'),href
@@ -165,7 +165,8 @@ class SokuVideo(BaseVideo):
             titleAndLink = drama.find('a')
 
             if titleAndLink:
-                self.infoLogger.logger.info(encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title'])))
+                #self.infoLogger.logger.info(encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title'])))
+                print encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title']))
                 #self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 #print '标题:'.decode('utf8'),titleAndLink['title'].decode('gb18030')
                 #print '链接:'.decode('utf8'),titleAndLink['href']
@@ -189,7 +190,8 @@ class SokuVideo(BaseVideo):
             titleAndImg = drama.findAll('img')
 
             if titleAndImg:
-                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndImg[0]['alt']))
+                #self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndImg[0]['alt']))
+                print encode_wrap('标题:%s' % titleAndImg[0]['alt'])
                 #print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
                 #print '图片链接:',titleAndImg[0]['src']
 
@@ -197,7 +199,7 @@ class SokuVideo(BaseVideo):
                     if item.title == titleAndImg[0]['alt']:
                         vTime = dramaList[0].findAll('div')
                         if len(vTime) > 3:
-                            self.infoLogger.logger.info(encode_wrap('时长:%s' % vTime[3].text))
+                            #self.infoLogger.logger.info(encode_wrap('时长:%s' % vTime[3].text))
                             #print '时长:'.decode('utf8'),vTime[3].text
                             item.duration = vTime[3].text
                             break

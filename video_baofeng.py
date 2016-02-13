@@ -26,8 +26,8 @@ class BaofengVideo(BaseVideo):
 
         #self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_baofeng(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_baofeng(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_baofeng(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_baofeng(' + GetNowDate()+ ').log', logger='E')
 
 
     @fn_timer_
@@ -61,7 +61,8 @@ class BaofengVideo(BaseVideo):
             for i in range(2, self.pagecount+1):
 
                 print '\n'
-                self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
+                #self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
+                print encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -73,7 +74,7 @@ class BaofengVideo(BaseVideo):
                 items_all.extend(items)
 
         except Exception,e:
-            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
         return items_all
@@ -98,7 +99,7 @@ class BaofengVideo(BaseVideo):
                 if not 'baofeng' in item.href:
                     item.href = 'http://www.baofeng.com' + item.href
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title + '  链接:' + item.href))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title + '  链接:' + item.href))
 
                 # durationTag = titleAndLink.find('span', attrs={'class':'search-video-time'})
                 # if durationTag:

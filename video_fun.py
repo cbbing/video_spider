@@ -27,8 +27,8 @@ class FunVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_fun(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_fun(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_fun(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_fun(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -80,7 +80,8 @@ class FunVideo(BaseVideo):
                 driver.find_element_by_link_text('%d' % (i+2)).click()
 
                 print '\n'
-                self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
+                #self.infoLogger.logger.info(encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop)))
+                print encode_wrap('下一页:%d, 暂停%ds' % ((i+2), self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -90,11 +91,11 @@ class FunVideo(BaseVideo):
                 items_all.extend(items)
 
         except Exception,e:
-            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+            self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
         driver.quit()
-        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
+        #self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
         return items_all
 
@@ -131,7 +132,7 @@ class FunVideo(BaseVideo):
 
 
         except Exception, e:
-                self.errorLogger.logger.error(encode_wrap( "%s 专辑解析出错:%s" % (key, str(e))))
+            self.errorLogger.logger.error(encode_wrap( "%s: %s 专辑解析出错:%s" % (self.site, key, str(e))))
 
         return items
 
@@ -158,8 +159,8 @@ class FunVideo(BaseVideo):
                 if not 'fun' in item.href:
                     item.href = 'http://www.fun.tv' + item.href
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
-                self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 item.page = page
                 try:
@@ -170,7 +171,7 @@ class FunVideo(BaseVideo):
                 items.append(item)
 
         except Exception, e:
-            self.errorLogger.logger.error(key + ":" + encode_wrap(str(e)))
+            self.errorLogger.logger.error(self.site + ":"+key + ":" + encode_wrap(str(e)))
 
         return items
 

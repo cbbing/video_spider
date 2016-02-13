@@ -22,8 +22,8 @@ class SouhuVideo(BaseVideo):
 
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_sohu(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_sohu(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_sohu(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_sohu(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -117,8 +117,8 @@ class SouhuVideo(BaseVideo):
 
             titleAndLink = drama.find('a')
             if titleAndLink:
-                self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
-                self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
+                #self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink['title']))
+                #self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 # print '标题:',titleAndLink['title']
                 # print '链接:',titleAndLink['href']
                 item.title = titleAndLink['title']

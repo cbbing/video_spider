@@ -25,8 +25,8 @@ class V56Video(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -56,7 +56,7 @@ class V56Video(BaseVideo):
         r = self.get_requests(album_url)
         self.parse_data_album(r.text)
 
-        self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
+        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
         print '*'*20, '暂停10s', '*'*20
         print '\n'
         time.sleep(self.stop)
@@ -138,7 +138,7 @@ class V56Video(BaseVideo):
                 item.title = area_a['title']
                 item.href = area_a['href']
 
-                self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
+                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
                 durationTag = area_a.find('span', attrs={'class':'maskTx'})

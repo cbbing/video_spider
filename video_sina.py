@@ -25,8 +25,8 @@ class SinaVideo(BaseVideo):
         self.filePath = 'sina_video'
         self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_sina(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_sina(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_sina(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_sina(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
@@ -47,8 +47,8 @@ class SinaVideo(BaseVideo):
         qq_url = self.general_url
         qq_url = qq_url.replace('key',key)
 
-        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
-        self.infoLogger.logger.info(encode_wrap(qq_url))
+        #self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        #self.infoLogger.logger.info(encode_wrap(qq_url))
 
         driver = webdriver.Firefox()
         driver.get(qq_url)
@@ -64,7 +64,8 @@ class SinaVideo(BaseVideo):
             driver.find_element_by_link_text("筛选").click()
             time.sleep(1)
         except Exception,e:
-            self.infoLogger.logger.info(encode_wrap('无筛选按钮（没找到相关视频:%s）' % key))
+            #self.infoLogger.logger.info(encode_wrap('无筛选按钮（没找到相关视频:%s）' % key))
+            print encode_wrap('无筛选按钮（没找到相关视频:%s）' % key)
             return
 
         for lengthtype in lengthtypes:
@@ -77,8 +78,8 @@ class SinaVideo(BaseVideo):
 
                 driver.get_screenshot_as_file("show.png")
 
-                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
-                #print '*'*20, '%s, 第一页,暂停3s' % buttonText, '*'*20
+                #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -91,8 +92,8 @@ class SinaVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页>').click()
 
-                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop))
-                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop))
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2)), self.stop)
                         print '\n'
                         time.sleep(self.stop)
 
@@ -101,7 +102,7 @@ class SinaVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.errorLogger.logger.error(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.errorLogger.logger.error(encode_wrap('未达到%d页，提前结束' % i))
                     #print '未达到%d页，提前结束' % self.pagecount
 
 
@@ -134,8 +135,8 @@ class SinaVideo(BaseVideo):
 
                     item = DataItem()
 
-                    self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink.get_text()))
-                    self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
+                    #self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndLink.get_text()))
+                    #self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                     #print '标题:',titleAndLink.get_text()
                     #print '链接:',titleAndLink['href']
                     item.title = titleAndLink.get_text()
@@ -143,7 +144,7 @@ class SinaVideo(BaseVideo):
 
                     durationTag = source.find('span', attrs={'class':'card_time'})
                     if durationTag:
-                        self.infoLogger.logger.info(encode_wrap('时长:%s' % durationTag.text))
+                        #self.infoLogger.logger.info(encode_wrap('时长:%s' % durationTag.text))
                         #print '时长:',durationTag.text
                         item.duration = durationTag.text
 
@@ -151,7 +152,8 @@ class SinaVideo(BaseVideo):
                     try:
                         item.durationType = self.timelengthDict[int(lengthType)]
                     except Exception,e:
-                        self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
+                        None
+                        #self.errorLogger.logger.error(encode_wrap('未找到对应的时长类型!'))
 
                     items.append(item)
 

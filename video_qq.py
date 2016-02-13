@@ -26,8 +26,8 @@ class QQVideo(BaseVideo):
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.infoLogger = Logger(logname=dir_log+'info_qq(' + GetNowDate()+ ').log', logger='I')
-        self.errorLogger = Logger(logname=dir_log+'error_qq(' + GetNowDate()+ ').log', logger='E')
+        #self.infoLogger = Logger(logname=dir_log+'info_qq(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_qq(' + GetNowDate()+ ').log', logger='E')
 
 
     @fn_timer_
@@ -52,8 +52,8 @@ class QQVideo(BaseVideo):
         qq_url = self.general_url
         qq_url = qq_url.replace('keys',key)
 
-        self.infoLogger.logger.info(encode_wrap('start phantomjs'))
-        self.infoLogger.logger.info(encode_wrap(qq_url))
+        #self.infoLogger.logger.info(encode_wrap('start phantomjs'))
+        #self.infoLogger.logger.info(encode_wrap(qq_url))
 
         #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
@@ -79,7 +79,8 @@ class QQVideo(BaseVideo):
                 # 模拟点击
                 driver.find_element_by_link_text(buttonText).click()
 
-                self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
                 print '\n'
                 time.sleep(self.stop)
 
@@ -92,8 +93,8 @@ class QQVideo(BaseVideo):
                     for i in range(self.pagecount-1):
                         driver.find_element_by_link_text('下一页').click()
 
-                        self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
-                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
 
@@ -101,7 +102,7 @@ class QQVideo(BaseVideo):
                         items_all.extend(items)
 
                 except Exception,e:
-                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % self.pagecount))
+                    self.infoLogger.logger.info(encode_wrap('未达到%d页，提前结束' % i))
 
 
             except Exception,e:
@@ -109,7 +110,7 @@ class QQVideo(BaseVideo):
 
 
         driver.quit()
-        self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
+        #self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
         return items_all
 
@@ -250,8 +251,8 @@ class QQVideo(BaseVideo):
 
                             item = DataItem()
 
-                            self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
-                            self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
+                            #self.infoLogger.logger.info(encode_wrap('标题:' + titleAndLink['title']))
+                            #self.infoLogger.logger.info(encode_wrap('链接:' + titleAndLink['href']))
                             # print '标题:',titleAndLink['title']
                             # print '链接:',titleAndLink['href']
                             item.title = titleAndLink['title']
@@ -259,7 +260,7 @@ class QQVideo(BaseVideo):
 
                             durationTag = titleAndLink.find('span', attrs={'class':'new_info'})
                             if durationTag:
-                                self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
+                                #self.infoLogger.logger.info(encode_wrap('时长:' + durationTag.text))
                                 #print '时长:',durationTag.text
                                 item.duration = durationTag.text
 

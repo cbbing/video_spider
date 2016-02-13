@@ -145,7 +145,7 @@ class BaseVideo:
             self.data_to_sql_by_key(key, df)
 
         except Exception,e:
-            self.errorLogger.logger.info(self.site +'_' +key+'_unfinish:' + str(e))
+            self.errorLogger.logger.info('unfinish:' + self.site +'_' + key + "_" + str(e))
             self.data_to_unfinish_file( key)
 
     # 运行未完成的key
@@ -216,13 +216,15 @@ class BaseVideo:
         #df['Title'] = df['Title'].apply(lambda x : str(x).decode('gbk','ignore').encode('utf8'))
         print df[:10]
 
-        self.infoLogger.logger.info(encode_wrap('%s:%s:去重前，总个数:%d' % (self.site, key, len(df))))
+        #self.infoLogger.logger.info(encode_wrap('%s:%s:去重前，总个数:%d' % (self.site, key, len(df))))
+        print encode_wrap('%s:%s:去重前，总个数:%d' % (self.site, key, len(df)))
         df = df.drop_duplicates(['Href'])
 
         #过滤无效的视频
         self.filter_involt_video(df)
 
-        self.infoLogger.logger.info(encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df))))
+        #self.infoLogger.logger.info(encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df))))
+        print encode_wrap('%s:%s:去重后，总个数:%d' % (self.site, key, len(df)))
         self.dfs.append((key, df))
         return df
 
@@ -296,7 +298,8 @@ class BaseVideo:
                     df.to_excel(writer, sheet_name=key)
                     #df.to_csv("./data/letv_video.csv")
                     #break
-            self.infoLogger.logger.info(encode_wrap('%s:写入excel完成' % self.site))
+            #self.infoLogger.logger.info(encode_wrap('%s:写入excel完成' % self.site))
+            print encode_wrap('%s:写入excel完成' % self.site)
         except:
             self.errorLogger.logger.info(encode_wrap('%s:写入excel fail' % self.site))
 
@@ -317,7 +320,8 @@ class BaseVideo:
                 print e
 
             if len(df)>0:
-                self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+                #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+                print encode_wrap('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
                 df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
     def data_to_sql_by_key(self, key, df):
@@ -334,7 +338,8 @@ class BaseVideo:
             print e
 
         if len(df)>0:
-            self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+            #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+            print encode_wrap('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
             df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
     def data_to_unfinish_file(self, key):

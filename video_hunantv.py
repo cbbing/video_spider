@@ -54,8 +54,13 @@ class HuNanTVVideo(BaseVideo):
 
         print 'start phantomjs', encode_wrap(url)
 
+        # profile = webdriver.FirefoxProfile()
+        # profile.set_preference("browser.startup.homepage", "about:blank")
+        # profile.set_preference("startup.homepage_welcome_url", "about:blank")
+        # profile.set_preference("startup.homepage_welcome_url.additional", "about:blank")
+
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         driver.get(url)
 
         driver.maximize_window()
@@ -128,7 +133,7 @@ class HuNanTVVideo(BaseVideo):
 
         driver.quit()
         print 'parse phantomjs success '
-
+        print 'item len:',len(items_all)
         return items_all
 
 

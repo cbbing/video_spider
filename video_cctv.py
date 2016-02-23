@@ -56,7 +56,7 @@ class CCTVVideo(BaseVideo):
         album_url = self.album_url.format(key=key)
         # r = self.get_requests(album_url)
         # r.encoding = 'utf8'
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         driver.get(album_url)
 
         items_album = self.parse_data_album(driver)

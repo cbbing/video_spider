@@ -50,7 +50,7 @@ class SinaVideo(BaseVideo):
         #self.infoLogger.logger.info(encode_wrap('start phantomjs'))
         #self.infoLogger.logger.info(encode_wrap(qq_url))
 
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         driver.get(qq_url)
 
         #普通

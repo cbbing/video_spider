@@ -113,12 +113,12 @@ def get_web_driver(url, has_proxy=True, simulator='Firefox'):
             if simulator == 'PhantomJS':
                 driver = webdriver.PhantomJS(proxy=proxy)
             else:
-                driver = webdriver.Firefox(proxy=proxy)
+                driver = webdriver.Chrome()(proxy=proxy)
         else:
             if simulator == 'PhantomJS':
                 driver = webdriver.PhantomJS()
             else:
-                driver = webdriver.Firefox()
+                driver = webdriver.Chrome()()
         return driver
 
     driver = _get_driver()
@@ -151,9 +151,9 @@ def get_web_driver_phantomjs(url, has_proxy=True):
             # 'noProxy':d ''
         })
         print encode_wrap("使用代理:"), myProxy
-        driver = webdriver.Firefox(proxy=proxy)
+        driver = webdriver.Chrome()(proxy=proxy)
     else:
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()()
 
     #driver.set_page_load_timeout(30)
     driver.get(url)

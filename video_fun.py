@@ -51,7 +51,7 @@ class FunVideo(BaseVideo):
         fun_url = fun_url.replace('key',key)
 
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         driver.get(fun_url)
 
         #driver.get_screenshot_as_file("show.png")

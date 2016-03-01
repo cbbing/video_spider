@@ -245,12 +245,12 @@ class Ui_Result_Dialog(object):
         currentIndex_source = self.comboBox_source.currentIndex()
         if currentIndex_source != 0:
             if 'where' in sql:
-                if currentIndex_source == 12 or currentIndex_source == 18:
+                if currentIndex_source == 12 or currentIndex_source == 18 or currentIndex_source == 11: #11,风行
                     sql = sql +  "and Engine='%s' " % self.comboBox_source.currentText()
                 else:
                     sql = sql +  "and Source='%s' " % self.comboBox_source.currentText()
             else:
-                if currentIndex_source == 12 or currentIndex_source == 18:
+                if currentIndex_source == 12 or currentIndex_source == 18 or currentIndex_source == 11: #11,风行
                     sql = sql +  "where Engine='%s' " % self.comboBox_source.currentText()
                 else:
                     sql = sql +  "where Source='%s' " % self.comboBox_source.currentText()

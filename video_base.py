@@ -379,7 +379,7 @@ class BaseVideo:
                       'baidu':'百度'}
 
         try:
-            m = re.search(r"\.(\w*?)\.[com|cn]", url)  #\w匹配[a-zA-z0-9]
+            m = re.search(r"\.(\w*?)\.[com|cn|tv]", url)  #\w匹配[a-zA-z0-9]
             key = m.group(1) #如hunantv
             return dictSource[key]
         except Exception, e:

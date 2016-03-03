@@ -175,10 +175,10 @@ class HuNanTVVideo(BaseVideo):
                             #     item.duration = durationTag.text
 
                             item.page = page
-                            try:
-                                item.durationType = self.timelengthDict[int(lengthType)]
-                            except Exception,e:
-                                errorLogger.logger.error('未找到对应的时长类型!')
+                            # try:
+                            #     item.durationType = self.timelengthDict[int(lengthType)]
+                            # except Exception,e:
+                            #     errorLogger.logger.error('未找到对应的时长类型!')
 
                             items.append(item)
 

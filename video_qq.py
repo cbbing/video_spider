@@ -56,7 +56,7 @@ class QQVideo(BaseVideo):
         #self.infoLogger.logger.info(encode_wrap(qq_url))
 
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Chrome()
+        driver = webdriver.Firefox()
         driver.get(qq_url)
 
         #专辑

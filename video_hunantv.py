@@ -60,7 +60,7 @@ class HuNanTVVideo(BaseVideo):
         # profile.set_preference("startup.homepage_welcome_url.additional", "about:blank")
 
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Chrome()
+        driver = webdriver.Firefox()
         driver.get(url)
 
         driver.maximize_window()

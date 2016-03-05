@@ -16,7 +16,7 @@ class SouhuVideo(BaseVideo):
         BaseVideo.__init__(self)
         self.engine = '搜狐'
         self.site = 'sohu'
-        self.album_url = 'http://so.tv.sohu.com/mts?flag=1&wd=key' #专辑的url
+        self.album_url = 'http://so.tv.sohu.com/mts?wd=key' #专辑的url
         self.general_url = 'http://so.tv.sohu.com/mts?wd=key&c=0&v=0&length=tid&limit=0&o=0&p=pid&st=' #普通搜索的url
         self.filePath = 'souhu_video'
 
@@ -82,19 +82,21 @@ class SouhuVideo(BaseVideo):
             soup = bs(text, 'lxml')
 
             #视频链接-专辑
-            dramaList = soup.find_all('a', href=re.compile("^http://my.tv.sohu.com/pl/"))
-            for drama in dramaList:
-                if drama.has_attr('title'):
-                    continue
+            h2s = soup.find_all('h2')
+            for h2 in h2s:
+                dramaList = h2.find_all('a')#href=re.compile("^http://my.tv.sohu.com/pl/")
+                for drama in dramaList:
+                    # if drama.has_attr('title'):
+                    #     continue
 
-                item = DataItem()
+                    item = DataItem()
 
-                item.title = drama.get_text()
-                item.href = drama['href']
-                item.page = 1
-                item.durationType = '专辑'
+                    item.title = drama.get_text()
+                    item.href = drama['href']
+                    item.page = 1
+                    item.durationType = '专辑'
 
-                items.append(item)
+                    items.append(item)
         except Exception, e:
             errorLogger.logger.error(str(e))
 

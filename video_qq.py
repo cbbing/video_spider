@@ -213,8 +213,14 @@ class QQVideo(BaseVideo):
             # get_album3()
 
             soup = bs(driver.page_source, 'html5lib')
-            dramaList = soup.findAll('a', href=re.compile("^http://m.v.qq.com/pgm/|/detail/\d+/"), title=re.compile(".+"))
-            for drama in dramaList:
+            h2s = soup.find_all('h2', {'class':'result_title'})
+            for h2 in h2s:
+
+                drama = h2.find('a') #href=re.compile("^http://m.v.qq.com/pgm/|/detail/\d+/"),
+                #for drama in dramaList:
+                if not drama:
+                    continue
+
                 item = DataItem()
                 item.title = drama['title']
                 item.href = drama['href']

@@ -11,7 +11,7 @@ from video_soku import SokuVideo
 class TudouVideo(SokuVideo):
     def __init__(self):
         SokuVideo.__init__(self)
-
+        self.engine = '土豆'
         self.album_url = 'http://www.soku.com/t/npsearch/key/' #专辑的url
         self.general_url = 'http://www.soku.com/t/nisearch/key/_cid__time_tid_sort_score_display_album?site=1&page=pid' #普通搜索的url
         self.filePath = 'tudou_video'

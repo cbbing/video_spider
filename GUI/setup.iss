@@ -22,7 +22,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\VideoSearch
 DefaultGroupName=VideoSearch
 OutputDir=D:\build
-OutputBaseFilename=VideoSearch(20160301)
+OutputBaseFilename=VideoSearch(20160308)
 Compression=lzma
 SolidCompression=yes
 

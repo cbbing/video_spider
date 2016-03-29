@@ -39,8 +39,8 @@ class TangDouVideo(BaseVideo):
             return
 
         start_time = GetNowTime()
-        self.run_keys(keys)
-        #self.run_keys_multithreading(keys)
+        #self.run_keys(keys)
+        self.run_keys_multithreading(keys)
 
         #重试运行三次
         # for _ in range(0, 3):

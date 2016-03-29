@@ -349,7 +349,7 @@ def run_each():
         indexs = raw.split(',')
         indexs = [int(index.strip()) for index in indexs]
         #可以并行的index
-        indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16,17]]
+        indexs_parallel = [index for index in set(indexs) if index in [1,2,4,6,8,10,12,13,14,15,16,17,19,21]]
         indexs_others = [index for index in set(indexs).difference(set(indexs_parallel))]
 
         #多线程

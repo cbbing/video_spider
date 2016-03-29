@@ -172,7 +172,7 @@ class Ui_Result_Dialog(object):
         self.pushButton_query.setText(_translate("Dialog", "查询", None))
         self.label_9.setText(_translate("Dialog", "结束时间", None))
         self.label_8.setText(_translate("Dialog", "开始时间", None))
-        self.label_6.setText(_translate("Dialog", "来源", None))
+        self.label_6.setText(_translate("Dialog", "搜索引擎", None))
         self.label_7.setText(_translate("Dialog", "匹配度", None))
         self.label_3.setText(_translate("Dialog", "关键词", None))
         #self.pushButton_pre.setText(_translate("Dialog", "上一页", None))

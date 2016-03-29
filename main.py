@@ -33,6 +33,12 @@ from video_baomihua import BaomihuaVideo
 from video_tv189 import TV189Video
 from video_cctv import CCTVVideo
 from video_hunantv import HuNanTVVideo
+from video_163 import V163Video
+from video_pipi import PiPiVideo
+from video_tangdou import TangDouVideo
+from video_bilibili import BilibiliVideo
+from video_acfun import AcFunVideo
+from video_weibo import WeiboVideo
 
 from util.code_convert import encode_wrap
 
@@ -75,6 +81,12 @@ def run(index):
                  16:'TV189',
                  17:'央视网',
                  18:'芒果TV',
+                 19:'网易视频',
+                 20:'pipi',
+                 21:'糖豆',
+                 22:'哗哩哗哩',
+                 23:'acfun',
+                 24:'新浪微博',
                  }
 
     cf = ConfigParser.ConfigParser()
@@ -210,6 +222,42 @@ def run(index):
             video = HuNanTVVideo()
             video.filePath = 'hunantv_video'
             video.run(keys)
+        elif index == 19:
+            #19
+            print 'begin 163'
+            video = V163Video()
+            video.filePath = '163_video'
+            video.run(keys)
+        elif index == 20:
+            #20
+            print 'begin pipi'
+            video = PiPiVideo()
+            video.filePath = 'pipi_video'
+            video.run(keys)
+        elif index == 21:
+            #21
+            print 'begin tangdou'
+            video = TangDouVideo()
+            video.filePath = 'tangdou_video'
+            video.run(keys)
+        elif index == 22:
+            #22
+            print 'begin bilibili'
+            video = BilibiliVideo()
+            video.filePath = 'bilibili_video'
+            video.run(keys)
+        elif index == 23:
+            #23
+            print 'begin acfun'
+            video = AcFunVideo()
+            video.filePath = 'acfun_video'
+            video.run(keys)
+        elif index == 24:
+            #24
+            print 'begin weibo'
+            video = WeiboVideo()
+            video.filePath = 'weibo_video'
+            video.run(keys)
 
 
 
@@ -288,6 +336,12 @@ def run_each():
              '16: TV189\n' \
              '17: 央视网\n'\
              '18: 芒果TV\n'\
+            '19: 网易视频\n'\
+            '20: pipi\n'\
+            '21: 糖豆\n'\
+            '22: 哗哩哗哩\n'\
+            '23: acfun\n'\
+            '24: 新浪微博\n'\
              '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:

@@ -376,7 +376,13 @@ class BaseVideo:
                       'baomihua':'爆米花',
                       'pptv':'PPTV',
                       'tv189':'TV189',
-                      'baidu':'百度'}
+                      'baidu':'百度',
+                      '163':'网易',
+                      'pipi':'皮皮',
+                      'tangdou':'糖豆',
+                      'bilibili':'哗哩哗哩',
+                      'weibo':'微博搜索'
+                      }
 
         try:
             m = re.search(r"\.(\w*?)\.[com|cn|tv]", url)  #\w匹配[a-zA-z0-9]

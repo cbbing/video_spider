@@ -14,16 +14,16 @@ import pandas as pd
 from pandas import Series, DataFrame
 from video_base import *
 
-class V163Video(BaseVideo):
+class TangDouVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
-        self.engine = '网易'
-        self.site = '163'
-        self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
-        self.general_url = 'http://so.v.163.com/search/000-0-tid-1-pid-0-key/' #普通搜索的url
-        self.filePath = 'v163_video'
+        self.engine = '糖豆'
+        self.site = 'tangdou'
+        #self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
+        self.general_url = 'http://www.tangdou.com/index.php?r=index/search&keyword={key}&page={pid}' #普通搜索的url
+        self.filePath = 'tangdou_video'
 
-        self.timelengthDict = {0:'全部', 10:'10分钟以下', 1030:'10-30分钟', 3060:'30-60分钟', 6000:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
         #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
         #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
@@ -39,8 +39,8 @@ class V163Video(BaseVideo):
             return
 
         start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
+        self.run_keys(keys)
+        #self.run_keys_multithreading(keys)
 
         #重试运行三次
         # for _ in range(0, 3):
@@ -70,8 +70,10 @@ class V163Video(BaseVideo):
         for lengthtype in lengthtypes:
 
             for i in range(self.pagecount):
-                url = self.general_url.replace('tid', lengthtype).replace('pid', str(i+1)).replace('key',key)
+                url = self.general_url.format(key=key, pid=i+1)
+                #url = self.general_url.replace('tid', lengthtype).replace('pid', str(i+1)).replace('key',key)
 
+                #r = requests.get(soku_url)
                 r = self.get_requests(url)
                 items = self.parse_data(r.text, i+1, lengthtype, key)
 
@@ -120,35 +122,39 @@ class V163Video(BaseVideo):
 
         items = []
 
-        soup = bs(text, 'lxml')
+        soup = bs(text, 'html5lib')
 
         #视频链接-全部结果
         # tableArea = soup.find('div', {'class':'ssList area'})
         # if not tableArea:
         #     return []
 
-        dramaList = soup.findAll('h3')
+        box = soup.find('div', {'class':'commend-daily'})
+        if not box:
+            return items
+
+        dramaList = box.findAll('li')
         for drama in dramaList:
 
             try:
                 item = DataItem()
 
-                area_a = drama.find('a')
+                area_a = drama.find('p',{'class':'dailytext'}).find('a')
                 item.title = area_a.text
                 item.href = area_a['href']
 
                 #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
-                # durationTag = area_a.find('span', attrs={'class':'maskTx'})
-                # if durationTag:
-                #     item.duration = durationTag.text.strip()
+                durationTag = drama.find('span', attrs={'class':'dailytime'})
+                if durationTag:
+                    item.duration = durationTag.text.strip()
 
                 item.page = page
-                try:
-                    item.durationType = self.timelengthDict[int(legth_type)]
-                except Exception,e:
-                    print encode_wrap('未找到对应的时长类型!')
+                # try:
+                #     item.durationType = self.timelengthDict[int(legth_type)]
+                # except Exception,e:
+                #     print encode_wrap('未找到对应的时长类型!')
 
                 items.append(item)
             except Exception,e:
@@ -162,7 +168,7 @@ if __name__=='__main__':
     data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
-    video = V163Video()
+    video = TangDouVideo()
     video.run(data['key'].get_values()[:100])
 
     #key = '快乐大本营'

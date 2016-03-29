@@ -1,42 +1,39 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-#抓取芒果TV搜索结果
+#抓取 pipi video搜索结果
 import sys
+import time
+import requests
+from pandas import Series, DataFrame
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-import time
-import urllib
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-import ConfigParser
 from pandas import Series, DataFrame
-from selenium import webdriver
 from video_base import *
-from selenium.webdriver.support.ui import WebDriverWait
 
-
-
-class HuNanTVVideo(BaseVideo):
+class PiPiVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
-        self.engine = '芒果TV'
-        self.site = 'hunantv'
-        self.general_url = 'http://so.hunantv.com/so/k-{key}#' #普通搜索的url
-        self.filePath = 'hunantv_video'
+        self.engine = 'pipi'
+        self.site = 'pipi'
+        #self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-{key}/' #专辑的url
+        self.general_url = 'http://www.pipi.cn/find.html?q={key}#' #普通搜索的url
+        self.filePath = 'pipi_video'
 
-        self.timelengthDict = {0:'不限', 1:'0-10分钟', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        #self.infoLogger = Logger(logname=dir_log+'info_hunantv(' + GetNowDate()+ ').log', logger='I')
-        #self.errorLogger = Logger(logname=dir_log+'error_hunantv(' + GetNowDate()+ ').log', logger='E')
-
+        #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
+        #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
 
     @fn_timer_
     def run(self, keys):
 
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get("hunantv","lengthtype")
+        lengthtypes = cf.get("cctv","lengthtype")
         if len(lengthtypes.strip('[').strip(']')) == 0:
             print encode_wrap('配置为不运行')
             return
@@ -54,29 +51,21 @@ class HuNanTVVideo(BaseVideo):
 
         print 'start phantomjs', encode_wrap(url)
 
-        # profile = webdriver.FirefoxProfile()
-        # profile.set_preference("browser.startup.homepage", "about:blank")
-        # profile.set_preference("startup.homepage_welcome_url", "about:blank")
-        # profile.set_preference("startup.homepage_welcome_url.additional", "about:blank")
-
-        #driver = webdriver.PhantomJS()
         driver = webdriver.Firefox()
         driver.get(url)
 
         driver.maximize_window()
-        # siz = driver.get_window_size()
-        # driver.set_window_size(siz['width'], siz['height']*2)
 
-        driver.get_screenshot_as_file("show.png")
-
-        f = open('./data/data.html','w')
-        f.write(driver.page_source)
-        f.close()
+        # driver.get_screenshot_as_file("show.png")
+        #
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
 
         #普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get("hunantv","lengthtype")
+        lengthtypes = cf.get("pipi","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
@@ -146,9 +135,9 @@ class HuNanTVVideo(BaseVideo):
 
             soup = bs(text, 'html5lib')
 
-            source = soup.find("div", attrs={'class':'search-resultlist'})
+            source = soup.find("ul", attrs={'class':'tab-content clearfix'})
             if source:
-                titleAndLinks = source.findAll('div', {'class':'result-box'})
+                titleAndLinks = source.findAll('li')
 
                 #视频链接
                 for titleAndLink in titleAndLinks:
@@ -162,8 +151,8 @@ class HuNanTVVideo(BaseVideo):
 
                             item = DataItem()
 
-                            item.title = data_a.get_text()
-                            item.href = data_a['href']
+                            item.title = data_a['title']
+                            item.href = 'http://www.pipi.cn' + data_a['href']
 
                             #self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
                             #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
@@ -197,6 +186,10 @@ if __name__=='__main__':
     data = pd.read_excel('keys.xlsx', 'Sheet1', index_col=None, na_values=['NA'])
     print data
 
-    video = HuNanTVVideo()
-    video.run(data['key'].get_values())
+    video = PiPiVideo()
+    video.run(data['key'].get_values()[:100])
+
+    #key = '快乐大本营'
+    #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
+
 

@@ -18,12 +18,12 @@ class BilibiliVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '哗哩哗哩'
-        self.site = '163'
-        self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
-        self.general_url = 'http://so.v.163.com/search/000-0-tid-1-pid-0-key/' #普通搜索的url
-        self.filePath = 'v163_video'
+        self.site = 'bilibili'
+        #self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-{key}/' #专辑的url
+        self.general_url = 'http://search.bilibili.com/all?keyword={key}' #普通搜索的url
+        self.filePath = 'bilibili_video'
 
-        self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
+        self.timelengthDict = {0:'全部时长', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
         #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
         #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
@@ -33,127 +33,134 @@ class BilibiliVideo(BaseVideo):
 
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get(self.site, "lengthtype")
+        lengthtypes = cf.get(self.site,"lengthtype")
         if len(lengthtypes.strip('[').strip(']')) == 0:
             print encode_wrap('配置为不运行')
             return
-        return
-        start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
 
-        #重试运行三次
-        # for _ in range(0, 3):
-        #     self.run_unfinished_keys(keys, start_time)
+        self.run_keys(keys)
 
 
     def search(self, key):
 
         items_all = []
 
-        # 专辑
-        album_url = self.album_url.replace('key',key)
-        r = self.get_requests(album_url)
-        self.parse_data_album(r.text)
+        #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        print '*'*20, '暂停10s', '*'*20
-        print '\n'
-        time.sleep(self.stop)
+        url = self.general_url.format(key=key)
 
+        print 'start phantomjs', encode_wrap(url)
 
-        # 普通
+        driver = webdriver.Firefox()
+        driver.get(url)
+
+        driver.maximize_window()
+
+        # driver.get_screenshot_as_file("show.png")
+        #
+        # f = open('./data/data.html','w')
+        # f.write(driver.page_source)
+        # f.close()
+
+        #普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get(self.site,"lengthtype")
+        lengthtypes = cf.get("bilibili","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
-                url = self.general_url.replace('tid', lengthtype).replace('pid', str(i+1)).replace('key',key)
+            try:
+                buttonText = self.timelengthDict[int(lengthtype)]
 
-                #r = requests.get(soku_url)
-                r = self.get_requests(url)
-                items = self.parse_data(r.text, i+1, lengthtype, key)
+                # 模拟点击
+                driver.find_element_by_link_text(buttonText).click()
 
-                if items:
-                    items_all.extend(items)
-                else:
-                    break
 
+                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+                print '\n'
+                time.sleep(self.stop)
+
+                #第一页
+                items = self.parse_data(driver.page_source, 1, lengthtype)
+                items_all.extend(items)
+
+                #获取下一页
+                try:
+                    for i in range(self.pagecount-1):
+                        driver.find_element_by_link_text('下一页').click()
+
+                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
+                        #print '*'*20, '%s, 下一页:%d, 暂停3s' % (buttonText,(i+2)), '*'*20
+                        print '\n'
+                        time.sleep(self.stop)
+
+                        items = self.parse_data(driver.page_source, i+2, lengthtype)
+                        items_all.extend(items)
+
+                except Exception,e:
+                    infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
+
+
+            except Exception,e:
+                errorLogger.logger.error(str(e))
+
+
+        driver.quit()
+        print 'parse phantomjs success '
+        print 'item len:',len(items_all)
         return items_all
 
 
-    # 专辑
-    def parse_data_album(self, text):
+    # 普通搜索
+    def parse_data(self, text, page, lengthType):
 
         items = []
 
         try:
-            soup = bs(text, 'lxml')
 
-            #视频链接-专辑
+            soup = bs(text, 'html5lib')
 
-            dramaList = soup.findAll('h2')
-            for drama in dramaList:
+            if soup:
+                titleAndLinks = soup.findAll('li', {'class':'video matrix '})
 
-                a = drama.find('a', title=re.compile('.+'))
+                #视频链接
+                for titleAndLink in titleAndLinks:
+                    try:
 
-                item = DataItem()
+                        if titleAndLink:
 
-                item.title = a['title']
-                item.href = a['href']
+                            data_a = titleAndLink.find('a', {'class':'title'})
+                            if not data_a:
+                                continue
 
-                if item.title == '查看详情':
-                    continue
+                            item = DataItem()
 
-                item.page = 1
-                item.durationType = '专辑'
+                            item.title = data_a['title']
+                            item.href = data_a['href']
 
-                items.append(item)
+                            #self.infoLogger.logger.info(encode_wrap('标题:' + item.title))
+                            #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
+
+                            durationTag = titleAndLink.find('span', attrs={'class':'so-imgTag_rb'})
+                            if durationTag:
+                                #print '时长:',durationTag.text
+                                item.duration = durationTag.text.strip()
+
+                            item.page = page
+                            try:
+                                item.durationType = self.timelengthDict[int(lengthType)]
+                            except Exception,e:
+                                errorLogger.logger.error('未找到对应的时长类型!')
+
+                            items.append(item)
+
+                    except Exception,e:
+                        errorLogger.logger.error(str(e))
+                        #print str(e)
+
         except Exception, e:
-            print str(e)
-
-        return items
-
-    # 普通
-    def parse_data(self, text, page, legth_type, key):
-
-        items = []
-
-        soup = bs(text, 'lxml')
-
-        #视频链接-全部结果
-        # tableArea = soup.find('div', {'class':'ssList area'})
-        # if not tableArea:
-        #     return []
-
-        dramaList = soup.findAll('h3')
-        for drama in dramaList:
-
-            try:
-                item = DataItem()
-
-                area_a = drama.find('a')
-                item.title = area_a.text
-                item.href = area_a['href']
-
-                #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
-                #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
-
-                durationTag = area_a.find('span', attrs={'class':'maskTx'})
-                if durationTag:
-                    item.duration = durationTag.text.strip()
-
-                item.page = page
-                try:
-                    item.durationType = self.timelengthDict[int(legth_type)]
-                except Exception,e:
-                    print encode_wrap('未找到对应的时长类型!')
-
-                items.append(item)
-            except Exception,e:
-                print e
+            errorLogger.logger.error(str(e))
 
         return items
 

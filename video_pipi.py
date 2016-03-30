@@ -33,7 +33,7 @@ class PiPiVideo(BaseVideo):
 
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get("cctv","lengthtype")
+        lengthtypes = cf.get(self.site,"lengthtype")
         if len(lengthtypes.strip('[').strip(']')) == 0:
             print encode_wrap('配置为不运行')
             return

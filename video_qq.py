@@ -224,6 +224,8 @@ class QQVideo(BaseVideo):
                 item = DataItem()
                 item.title = drama['title']
                 item.href = drama['href']
+                if not 'qq.com' in item.href:
+                    item.href = 'http://v.qq.com' + item.href
                 item.page = 1
                 item.durationType = '专辑'
 
@@ -263,6 +265,8 @@ class QQVideo(BaseVideo):
                             # print '链接:',titleAndLink['href']
                             item.title = titleAndLink['title']
                             item.href = titleAndLink['href']
+                            if not 'qq.com' in item.href:
+                                item.href = 'http://v.qq.com' + item.href
 
                             durationTag = titleAndLink.find('span', attrs={'class':'new_info'})
                             if durationTag:

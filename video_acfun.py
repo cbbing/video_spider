@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-#抓取163video搜索结果
+#抓取acfun video搜索结果
 import sys
 import time
 import requests
@@ -18,10 +18,10 @@ class AcFunVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = 'acfun'
-        self.site = '163'
-        self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
-        self.general_url = 'http://so.v.163.com/search/000-0-tid-1-pid-0-key/' #普通搜索的url
-        self.filePath = 'v163_video'
+        self.site = 'acfun'
+        #self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
+        self.general_url = 'http://www.acfun.tv/search/#query={key};page={pid}' #普通搜索的url
+        self.filePath = 'acfun_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
@@ -37,10 +37,10 @@ class AcFunVideo(BaseVideo):
         if len(lengthtypes.strip('[').strip(']')) == 0:
             print encode_wrap('配置为不运行')
             return
-        return
+
         start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
+        self.run_keys(keys)
+        #self.run_keys_multithreading(keys)
 
         #重试运行三次
         # for _ in range(0, 3):
@@ -51,36 +51,62 @@ class AcFunVideo(BaseVideo):
 
         items_all = []
 
-        # 专辑
-        album_url = self.album_url.replace('key',key)
-        r = self.get_requests(album_url)
-        self.parse_data_album(r.text)
+        #key = urllib.quote(key.decode(sys.stdin.encoding).encode('gbk'))
 
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        print '*'*20, '暂停10s', '*'*20
-        print '\n'
-        time.sleep(self.stop)
+        url = self.general_url.format(key=key, pid=1)
 
+        print 'start phantomjs', encode_wrap(url)
 
-        # 普通
+        driver = webdriver.Firefox()
+        driver.get(url)
+
+        driver.maximize_window()
+
+        #普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
-        lengthtypes = cf.get(self.site,"lengthtype")
+        lengthtypes = cf.get("acfun","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
         for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
-                url = self.general_url.replace('tid', lengthtype).replace('pid', str(i+1)).replace('key',key)
+            try:
+                # buttonText = self.timelengthDict[int(lengthtype)]
+                #
+                # # 模拟点击
+                # driver.find_element_by_link_text(buttonText).click()
 
-                #r = requests.get(soku_url)
-                r = self.get_requests(url)
-                items = self.parse_data(r.text, i+1, lengthtype, key)
 
-                if items:
-                    items_all.extend(items)
-                else:
-                    break
+                # print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+                # print '\n'
+                # time.sleep(self.stop)
 
+                #第一页
+                items = self.parse_data(driver.page_source, 1, lengthtype, key)
+                items_all.extend(items)
+
+                #获取下一页
+                try:
+                    for i in range(self.pagecount-1):
+
+                        url = self.general_url.format(key=key, pid=i+2)
+                        driver.get(url)
+
+                        time.sleep(self.stop)
+
+                        items = self.parse_data(driver.page_source, i+2, lengthtype, key)
+                        items_all.extend(items)
+
+                except Exception,e:
+                    print '未达到%d页，提前结束' % self.pagecount
+
+
+            except Exception,e:
+                print str(e)
+
+
+        driver.quit()
+        print 'parse phantomjs success '
+        print 'item len:',len(items_all)
         return items_all
 
 
@@ -128,28 +154,28 @@ class AcFunVideo(BaseVideo):
         # if not tableArea:
         #     return []
 
-        dramaList = soup.findAll('h3')
+        dramaList = soup.findAll('div', {'class':'item block'})
         for drama in dramaList:
 
             try:
                 item = DataItem()
 
-                area_a = drama.find('a')
-                item.title = area_a.text
-                item.href = area_a['href']
+                area_a = drama.find('a', {'class':'title','data-title':re.compile('.+')})
+                item.title = area_a['data-title']
+                item.href = 'http://www.acfun.tv' + area_a['href']
 
                 #self.infoLogger.logger.info(encode_wrap('标题:' + item.title ))
                 #self.infoLogger.logger.info(encode_wrap('链接:' + item.href))
 
-                durationTag = area_a.find('span', attrs={'class':'maskTx'})
-                if durationTag:
-                    item.duration = durationTag.text.strip()
+                # durationTag = area_a.find('span', attrs={'class':'maskTx'})
+                # if durationTag:
+                #     item.duration = durationTag.text.strip()
 
                 item.page = page
-                try:
-                    item.durationType = self.timelengthDict[int(legth_type)]
-                except Exception,e:
-                    print encode_wrap('未找到对应的时长类型!')
+                # try:
+                #     item.durationType = self.timelengthDict[int(legth_type)]
+                # except Exception,e:
+                #     print encode_wrap('未找到对应的时长类型!')
 
                 items.append(item)
             except Exception,e:

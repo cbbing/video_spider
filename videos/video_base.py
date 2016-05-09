@@ -8,7 +8,7 @@ sys.setdefaultencoding("utf-8")
 import time
 import re
 import ConfigParser
-from pandas import Series, DataFrame
+from pandas import DataFrame
 import random
 import requests
 
@@ -25,15 +25,21 @@ from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
+import redis
 from util.helper import fn_timer as fn_timer_
 from util.webHelper import get_ip_dataframe
 from Post.check_404 import check_404
+from init import redis_host, redis_port, redis_passwd
 
 engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
 conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
 
+r = redis.Redis(host=redis_host, port=redis_port, db=4, password=redis_passwd)
+r_video_key = 'errorlinks::videosearch'
+
 class BaseVideo:
+
     def __init__(self):
 
         cf = ConfigParser.ConfigParser()

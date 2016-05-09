@@ -10,14 +10,12 @@ sys.setdefaultencoding("utf-8")
 
 import web
 import os, time, hashlib
-from main import run_all, run_auto
+from main import run_auto
 from util.code_convert import GetTime
 from init import *
-from video_baidu_no_js import run_baidu
+from videos.video_baidu_no_js import run_baidu
 
-import sys, logging
 #from wsgilog import WsgiLog
-import ConfigParser
 
 from datetime import datetime; now = datetime.now()
 from web import form

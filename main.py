@@ -9,36 +9,34 @@ sse = sys.stdout.encoding
 from multiprocessing.dummy import Pool as ThreadPool
 
 import ConfigParser
-import time, os
-import shutil
 import pandas as pd
-from video_youku import YoukuVideo
-from video_tudou import TudouVideo
-from video_sina import SinaVideo
-from video_qq import QQVideo
-from video_sohu import SouhuVideo
-from video_iqiyi import IQiYiVideo
-from video_letv import LetvVideo
-from video_huashu import HuashuVideo
-from video_fun import FunVideo
+from videos.video_youku import YoukuVideo
+from videos.video_tudou import TudouVideo
+from videos.video_sina import SinaVideo
+from videos.video_qq import QQVideo
+from videos.video_sohu import SouhuVideo
+from videos.video_iqiyi import IQiYiVideo
+from videos.video_letv import LetvVideo
+from videos.video_huashu import HuashuVideo
+from videos.video_fun import FunVideo
 #from video_kankan import KankanVideo
-from video_kankan_no_js import KanKanVideo
-from video_baofeng import BaofengVideo
+from videos.video_kankan_no_js import KanKanVideo
+from videos.video_baofeng import BaofengVideo
 #from video_baidu import BaiduVideo
-from video_baidu_no_js import BaiduVideo
-from video_pptv import PPTVVideo
-from video_56 import V56Video
-from video_ku6 import Ku6Video
-from video_baomihua import BaomihuaVideo
-from video_tv189 import TV189Video
-from video_cctv import CCTVVideo
-from video_hunantv import HuNanTVVideo
-from video_163 import V163Video
-from video_pipi import PiPiVideo
-from video_tangdou import TangDouVideo
-from video_bilibili import BilibiliVideo
-from video_acfun import AcFunVideo
-from video_weibo import WeiboVideo
+from videos.video_pptv import PPTVVideo
+from videos.video_56 import V56Video
+from videos.video_ku6 import Ku6Video
+from videos.video_baomihua import BaomihuaVideo
+from videos.video_tv189 import TV189Video
+from videos.video_cctv import CCTVVideo
+from videos.video_hunantv import HuNanTVVideo
+from videos.video_163 import V163Video
+from videos.video_pipi import PiPiVideo
+from videos.video_tangdou import TangDouVideo
+from videos.video_bilibili import BilibiliVideo
+from videos.video_acfun import AcFunVideo
+from videos.video_weibo import WeiboVideo
+from videos.video_cztv import CZTVVideo
 
 from util.code_convert import encode_wrap
 
@@ -47,21 +45,6 @@ from util.helper import fn_timer as fn_timer_
 
 def run(index):
     index = int(index)
-
-    systemName = platform.system()
-
-    # if systemName == 'Windows':
-    #     dir_path = 'C:/Users/Administrator/Desktop/Data/Result/'
-    # else:
-    #     dir_path = './data/'
-    #
-    # key_path = 'keys.xlsx'
-    #
-    # if systemName == 'Windows':
-    #     key_path = 'C:\Users\Administrator\Desktop\Data\keys.xlsx'
-
-
-
 
     sheetDict = {1:'优酷网',
                  2:'土豆网',
@@ -87,6 +70,7 @@ def run(index):
                  22:'哗哩哗哩',
                  23:'acfun',
                  24:'新浪微博',
+                 25:"新蓝网",
                  }
 
     cf = ConfigParser.ConfigParser()
@@ -108,131 +92,131 @@ def run(index):
             #1
             print 'begin youku'
             video = YoukuVideo()
-            video.filePath = 'youku_video'
+            #video.filePath = 'youku_video'
             video.run(keys)
 
         elif index == 2:
             #2
             print 'begin tudou'
             video = TudouVideo()
-            video.filePath = 'tudou_video'
+            #video.filePath = 'tudou_video'
             video.run(keys)
 
         elif index == 3:
             #3
             print 'begin sina'
             video = SinaVideo()
-            video.filePath = 'sina_video'
+            #video.filePath = 'sina_video'
             video.run(keys)
 
         elif index == 4:
             #4
             print 'begin sohu'
             video = SouhuVideo()
-            video.filePath = 'sohu_video'
+            # video.filePath = 'sohu_video'
             video.run(keys)
 
         elif index == 5:
             #5
             print 'begin qq'
             video = QQVideo()
-            video.filePath = 'qq_video'
+            # video.filePath = 'qq_video'
             video.run(keys)
 
         elif index == 6:
             #6
             print 'begin iqiyi'
             video = IQiYiVideo()
-            video.filePath = 'iqiyi_video'
+            # video.filePath = 'iqiyi_video'
             video.run(keys)
 
         elif index == 7:
             #7
             print 'begin letv'
             video = LetvVideo()
-            video.filePath = 'letv_video'
+            # video.filePath = 'letv_video'
             video.run(keys)
 
         elif index == 8:
             #8
             print 'begin huashu'
             video = HuashuVideo()
-            video.filePath = 'huashu_video'
+            # video.filePath = 'huashu_video'
             video.run(keys)
 
         elif index == 9:
             #9
             print 'begin fun'
             video = FunVideo()
-            video.filePath = 'fun_video'
+            # video.filePath = 'fun_video'
             video.run(keys)
 
         elif index == 10:
             #10
             print 'begin kankan'
             video = KanKanVideo()
-            video.filePath = 'kankan_video'
+            # video.filePath = 'kankan_video'
             video.run(keys)
 
         elif index == 11:
             #11
             print 'begin baofeng'
             video = BaofengVideo()
-            video.filePath = 'baofeng_video'
+            # video.filePath = 'baofeng_video'
             video.run(keys)
         elif index == 12:
             #12
             print 'begin pptv'
             video = PPTVVideo()
-            video.filePath = 'pptv_video'
+            # video.filePath = 'pptv_video'
             video.run(keys)
         elif index == 13:
             #13
             print 'begin 56'
             video = V56Video()
-            video.filePath = 'v56_video'
+            # video.filePath = 'v56_video'
             video.run(keys)
         elif index == 14:
             #14
             print 'begin ku6'
             video = Ku6Video()
-            video.filePath = 'ku5_video'
+            # video.filePath = 'ku5_video'
             video.run(keys)
         elif index == 15:
             #15
             print 'begin baomihua'
             video = BaomihuaVideo()
-            video.filePath = 'baomihua_video'
+            # video.filePath = 'baomihua_video'
             video.run(keys)
         elif index == 16:
             #16
             print 'begin tv189'
             video = TV189Video()
-            video.filePath = 'tv189_video'
+            # video.filePath = 'tv189_video'
             video.run(keys)
         elif index == 17:
             #17
             print 'begin cctv'
             video = CCTVVideo()
-            video.filePath = 'cctv_video'
+            # video.filePath = 'cctv_video'
             video.run(keys)
         elif index == 18:
             #18
             print 'begin hunantv'
             video = HuNanTVVideo()
-            video.filePath = 'hunantv_video'
+            # video.filePath = 'hunantv_video'
             video.run(keys)
         elif index == 19:
             #19
             print 'begin 163'
             video = V163Video()
-            video.filePath = '163_video'
+            # video.filePath = '163_video'
             video.run(keys)
         elif index == 20:
             #20
             print 'begin pipi'
             video = PiPiVideo()
-            video.filePath = 'pipi_video'
+            # video.filePath = 'pipi_video'
             video.run(keys)
         elif index == 21:
             #21
@@ -250,7 +234,7 @@ def run(index):
             #23
             print 'begin acfun'
             video = AcFunVideo()
-            video.filePath = 'acfun_video'
+            # video.filePath = 'acfun_video'
             video.run(keys)
         elif index == 24:
             #24
@@ -258,8 +242,12 @@ def run(index):
             video = WeiboVideo()
             video.filePath = 'weibo_video'
             video.run(keys)
-
-
+        elif index == 25:
+            # 25
+            print 'begin cztv'
+            video = CZTVVideo()
+            # video.filePath = 'weibo_video'
+            video.run(keys)
 
     except Exception, e:
         print encode_wrap('编号:%d, 运行出错' % index), str(e)
@@ -342,6 +330,7 @@ def run_each():
             '22: 哗哩哗哩\n'\
             '23: acfun\n'\
             '24: 新浪微博\n'\
+            '25: 新蓝网\n'\
              '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:

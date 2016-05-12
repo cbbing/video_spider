@@ -181,13 +181,17 @@ class BaseVideo:
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
 
         #匹配度
-        def is_key_match(key, x):
+        # -1:不匹配, 0:模糊匹配, 1,完全匹配
+        def key_match(key, x):
+            if key in x:
+                return '完全匹配'
+
             for ch in key:
                 if not ch in x:
-                    return False
-            return True
-        f = lambda x : '完全匹配' if is_key_match(key, x) else '不匹配'
+                    return '不匹配'
+            return '模糊匹配'
 
+        f = lambda x : key_match(key, x)
         #f = lambda x : '完全匹配' if key in x else '不匹配'
 
         df['KeyMatch'] = df['Title'].apply(f)

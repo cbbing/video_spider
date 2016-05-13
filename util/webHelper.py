@@ -164,7 +164,7 @@ def get_web_driver_phantomjs(url, has_proxy=True):
 def get_ip_dataframe():
     host_mysql = 'rdsw5ilfm0dpf8lee609.mysql.rds.aliyuncs.com'
     port_mysql = '3306'
-    user_mysql = 'licj'
+    user_mysql = 'licj_read'
     pwd_mysql = 'AAaa1234'
     db_name_mysql = 'wealth_db'
 

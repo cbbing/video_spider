@@ -92,7 +92,7 @@ def run(index):
     cf = ConfigParser.ConfigParser()
     cf.read(config_file_path)
     excel_sheet = cf.get('general', 'excel_sheet')
-    if excel_sheet == 0:
+    if excel_sheet == '0':
         sheet = sheetDict.get(index, 'Sheet1')
     else:
         sheet = 'Sheet1'

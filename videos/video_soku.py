@@ -77,16 +77,17 @@ class SokuVideo(BaseVideo):
                 soku_url = self.general_url.replace('tid', lengthtype)
                 soku_url = soku_url.replace('pid', str(i+1))
                 soku_url = soku_url.replace('key',key)
-
+                print(soku_url)
                 #r = requests.get(soku_url)
                 r = self.get_requests(soku_url)
                 items = self.parse_data(r.text, i+1, lengthtype, key)
 
                 if items:
                     items_all.extend(items)
-                else:
-                    break
+                # else:
+                #     break
 
+                print 'len:{}'.format(len(items_all)),  '{}/{}'.format(i+1, self.pagecount)
                 #self.infoLogger.logger.info(encode_wrap('暂停%ds, key:%s, Page %d, 时长Type:%s' % (self.stop, key, i+1, lengthtype)))
                 #print '*'*20, '暂停10s, key:%s, Page %d, 时长Type:%s'.decode('utf8') % (key, i+1, lengthtype), '*'*20
                 #print '\n'
@@ -171,7 +172,7 @@ class SokuVideo(BaseVideo):
 
             if titleAndLink:
                 #self.infoLogger.logger.info(encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title'])))
-                print encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title']))
+                # print encode_wrap('Key:%s, Page:%d 标题:%s' % (key, page, titleAndLink['title']))
                 #self.infoLogger.logger.info(encode_wrap('链接:%s' % titleAndLink['href']))
                 #print '标题:'.decode('utf8'),titleAndLink['title'].decode('gb18030')
                 #print '链接:'.decode('utf8'),titleAndLink['href']

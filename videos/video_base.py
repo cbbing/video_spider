@@ -151,6 +151,7 @@ class BaseVideo:
             self.data_to_sql_by_key(key, df)
 
         except Exception,e:
+            print e
             errorLogger.logger.error('unfinish:' + self.site +'_' + key + "_" + str(e))
             self.data_to_unfinish_file( key)
 
@@ -319,15 +320,15 @@ class BaseVideo:
         for key, df in self.dfs:
             df['VideoKey'] = key
             print df[:10]
-            try:
-                sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
-                #sql = "select Href from %s" % mysql_result_table
-                df_exist = pd.read_sql_query(sql, engine_sql)
-                if len(df_exist) > 0:
-                    hrefs = df_exist['Href'].get_values()
-                    df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
-            except Exception, e:
-                print e
+            # try:
+            #     sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
+            #     #sql = "select Href from %s" % mysql_result_table
+            #     df_exist = pd.read_sql_query(sql, engine_sql)
+            #     if len(df_exist) > 0:
+            #         hrefs = df_exist['Href'].get_values()
+            #         df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
+            # except Exception, e:
+            #     print e
 
             if len(df)>0:
                 #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
@@ -337,15 +338,15 @@ class BaseVideo:
     def data_to_sql_by_key(self, key, df):
         df['VideoKey'] = key
         print df[:10]
-        try:
-            sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
-            #sql = "select Href from %s" % mysql_result_table
-            df_exist = pd.read_sql_query(sql, engine_sql)
-            if len(df_exist) > 0:
-                hrefs = df_exist['Href'].get_values()
-                df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
-        except Exception, e:
-            print e
+        # try:
+        #     sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
+        #     #sql = "select Href from %s" % mysql_result_table
+        #     df_exist = pd.read_sql_query(sql, engine_sql)
+        #     if len(df_exist) > 0:
+        #         hrefs = df_exist['Href'].get_values()
+        #         df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
+        # except Exception, e:
+        #     print e
 
         if len(df)>0:
             #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))

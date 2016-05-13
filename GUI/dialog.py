@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-
 import sys
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-import urllib, urllib2
+import urllib2
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
 import pandas as pd
@@ -31,7 +32,7 @@ class MyTable(QTableWidget):
         columns = ["Title", "Href", "Duration", "DurationType", "Page", "Time", "Engine", "Source", "KeyMatch", "VideoKey"]
         sql = "select %s from %s limit 20" % (",".join(columns), mysql_result_table)
 
-        from video_base import engine_sql
+        from videos.video_base import engine_sql
         df = pd.read_sql_query(sql, engine_sql)
 
         self.setRowCount(len(df))

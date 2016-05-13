@@ -12,12 +12,13 @@ class TudouVideo(SokuVideo):
     def __init__(self):
         SokuVideo.__init__(self)
         self.engine = '土豆'
+        self.site = 'tudou'
         self.album_url = 'http://www.soku.com/t/nisearch/key/' #专辑的url
         self.general_url = 'http://www.soku.com/t/nisearch/key/_cid__time_tid_sort_score_display_album?site=1&page=pid' #普通搜索的url
         self.filePath = 'tudou_video'
 
         self.timelengthDict = {0:'不限', 100:'0-10分钟', 110:'10-30分钟', 130:'30-60分钟', 160:'60分钟以上'} #时长类型对应网页中的按钮文字
-        self.site = 'tudou'
+
 
 
 if __name__=='__main__':

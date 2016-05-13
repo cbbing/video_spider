@@ -8,7 +8,7 @@ sys.setdefaultencoding("utf-8")
 import time
 import re
 import ConfigParser
-from pandas import Series, DataFrame
+from pandas import DataFrame
 import random
 import requests
 
@@ -25,15 +25,21 @@ from IPProxy.ip_proxy import IP_Proxy
 
 from sqlalchemy import create_engine
 import MySQLdb
+import redis
 from util.helper import fn_timer as fn_timer_
 from util.webHelper import get_ip_dataframe
 from Post.check_404 import check_404
+from init import redis_host, redis_port, redis_passwd
 
 engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql.rds.aliyuncs.com:3306/shipinjiankong',
                        connect_args={'charset':'utf8'})
 conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
 
+r = redis.Redis(host=redis_host, port=redis_port, db=4, password=redis_passwd)
+r_video_key = 'errorlinks::videosearch'
+
 class BaseVideo:
+
     def __init__(self):
 
         cf = ConfigParser.ConfigParser()
@@ -175,13 +181,17 @@ class BaseVideo:
         df['Source'] = df['Href'].apply(lambda x : self.get_video_source(x))
 
         #匹配度
-        def is_key_match(key, x):
+        # -1:不匹配, 0:模糊匹配, 1,完全匹配
+        def key_match(key, x):
+            if key in x:
+                return '完全匹配'
+
             for ch in key:
                 if not ch in x:
-                    return False
-            return True
-        f = lambda x : '完全匹配' if is_key_match(key, x) else '不匹配'
+                    return '不匹配'
+            return '模糊匹配'
 
+        f = lambda x : key_match(key, x)
         #f = lambda x : '完全匹配' if key in x else '不匹配'
 
         df['KeyMatch'] = df['Title'].apply(f)

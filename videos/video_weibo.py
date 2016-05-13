@@ -18,7 +18,7 @@ class WeiboVideo(BaseVideo):
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '新浪微博'
-        self.site = '163'
+        self.site = 'weibo'
         self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
         self.general_url = 'http://so.v.163.com/search/000-0-tid-1-pid-0-key/' #普通搜索的url
         self.filePath = 'v163_video'

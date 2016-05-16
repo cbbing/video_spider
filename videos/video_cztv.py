@@ -18,16 +18,26 @@ class CZTVVideo(BaseVideo):
 
         #self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
+        self.redis_video_key = 'errorlinks::videosearch::cztv'
+
     @fn_timer_
     def run(self, keys):
 
-        start_time = GetNowTime()
         self.run_keys(keys)
         #self.run_keys_multithreading(keys)
 
-        #重试运行三次
-        # for _ in range(0, 3):
-        #     self.run_unfinished_keys(keys, start_time)
+    @fn_timer_
+    def run_errorlink_in_redis(self):
+
+        while self.r.llen(self.redis_video_key):
+            url = self.r.rpop(self.redis_video_key)
+            f = re.search('.*key=(.+)&sort.*', url)
+            if f:
+                key = f.group(1)
+
+            items = self.parse_data(url)
+            df = self.create_data(key, items)
+            self.data_to_sql_by_key(key, df)
 
 
     def search(self, key):
@@ -40,10 +50,8 @@ class CZTVVideo(BaseVideo):
 
             for i in range(self.pagecount):
                 url = self.general_url.format(key=key, pid=i+1)
-                r = self.get_requests(url)
-                r.encoding = 'utf8'
 
-                items = self.parse_data(r.text, i+1, lengthtype, url)
+                items = self.parse_data(url)
 
                 if items:
                     items_all.extend(items)
@@ -53,12 +61,19 @@ class CZTVVideo(BaseVideo):
         return items_all
 
     # 普通
-    def parse_data(self, text, page, legth_type, url):
+    def parse_data(self, url):
+
+        r = self.get_requests(url)
+        r.encoding = 'utf8'
+
+        f = re.search('.*page=(\d+)', url)
+        if f:
+            page = f.group(1)
 
         items = []
 
         try:
-            soup = bs(text, 'lxml')
+            soup = bs(r.text, 'lxml')
 
             #视频链接-全部结果
             dramaList = soup.find_all('h1')
@@ -84,8 +99,8 @@ class CZTVVideo(BaseVideo):
 
                 items.append(item)
         except Exception,e:
-            r.lpushx(r_video_key, self.site+"||"+url)
-            print e
+            r.lpush(self.redis_video_key, url)
+            print 'fun: parse data, ', e
 
         return items
 

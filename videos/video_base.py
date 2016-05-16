@@ -36,7 +36,7 @@ engine_sql = create_engine('mysql+mysqldb://shipin:AAaa0924@shipinjiankong.mysql
 conn=MySQLdb.connect(host="shipinjiankong.mysql.rds.aliyuncs.com",user="shipin",passwd="AAaa0924",db="shipinjiankong",charset="utf8")
 
 r = redis.Redis(host=redis_host, port=redis_port, db=4, password=redis_passwd)
-r_video_key = 'errorlinks::videosearch'
+
 
 class BaseVideo:
 
@@ -315,25 +315,25 @@ class BaseVideo:
             errorLogger.logger.info('%s:写入excel fail' % self.site)
 
 
-    def data_to_sql(self):
-
-        for key, df in self.dfs:
-            df['VideoKey'] = key
-            print df[:10]
-            # try:
-            #     sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
-            #     #sql = "select Href from %s" % mysql_result_table
-            #     df_exist = pd.read_sql_query(sql, engine_sql)
-            #     if len(df_exist) > 0:
-            #         hrefs = df_exist['Href'].get_values()
-            #         df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
-            # except Exception, e:
-            #     print e
-
-            if len(df)>0:
-                #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
-                print encode_wrap('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
-                df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
+    # def data_to_sql(self):
+    #
+    #     for key, df in self.dfs:
+    #         df['VideoKey'] = key
+    #         print df[:10]
+    #         # try:
+    #         #     sql = "select Href from %s where VideoKey='%s' and Engine='%s'" % (mysql_result_table, key, self.engine)
+    #         #     #sql = "select Href from %s" % mysql_result_table
+    #         #     df_exist = pd.read_sql_query(sql, engine_sql)
+    #         #     if len(df_exist) > 0:
+    #         #         hrefs = df_exist['Href'].get_values()
+    #         #         df = df.drop([ix for ix, row in df.iterrows() if row['Href'] in hrefs])
+    #         # except Exception, e:
+    #         #     print e
+    #
+    #         if len(df)>0:
+    #             #self.infoLogger.logger.info('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+    #             print encode_wrap('写入mysql, %s:%s, 数量:%s' %(self.site, key, len(df)))
+    #             df.to_sql(mysql_result_table, engine_sql, if_exists='append', index=False)
 
     def data_to_sql_by_key(self, key, df):
         df['VideoKey'] = key

@@ -188,7 +188,7 @@ class Ui_Result_Dialog(object):
         self.comboBox_source.addItems(source_list_tr)
 
         #匹配度
-        source_list = ["不限","完全匹配", "不匹配"]
+        source_list = ["不限","完全匹配", "模糊匹配", "不匹配"]
         source_list_tr = [_translate("Dialog", x, None) for x in source_list]
         self.comboBox_match.addItems(source_list_tr)
 

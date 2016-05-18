@@ -67,8 +67,9 @@ def run(index):
                  19:'网易视频',
                  20:'pipi',
                  21:'糖豆',
-                 22:'哗哩哗哩',
+                 22:'bilibili',
                  23:'acfun',
+
                  24:'新浪微博',
                  25:"新蓝网",
                  }
@@ -83,7 +84,7 @@ def run(index):
 
     data = pd.read_excel(key_path, sheet, index_col=None, na_values=['NA'])
     keys = data['key'].get_values()
-    #print ','.join(keys)
+    # print ','.join(keys)
     if len(keys) == 0:
         return
 

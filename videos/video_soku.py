@@ -197,7 +197,7 @@ class SokuVideo(BaseVideo):
 
             if titleAndImg:
                 #self.infoLogger.logger.info(encode_wrap('标题:%s' % titleAndImg[0]['alt']))
-                print encode_wrap('标题:%s' % titleAndImg[0]['alt'])
+                #print encode_wrap('标题:%s' % titleAndImg[0]['alt'])
                 #print '标题:'.decode('utf8'),titleAndImg[0]['alt'].encode(sse, "replace").decode(sse)
                 #print '图片链接:',titleAndImg[0]['src']
 

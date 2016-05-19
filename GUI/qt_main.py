@@ -18,13 +18,13 @@ sys.setdefaultencoding("utf-8")
 import os
 import urllib, urllib2
 import pandas as pd
+from bs4 import BeautifulSoup as bs
 from selenium import webdriver
 
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
 
 from qt_result import Ui_Result_Dialog
-from Post.check_404 import check_404
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -304,6 +304,30 @@ class WorkThread(QtCore.QThread):
         response = urllib.urlopen('http://%s:8080/run_video_search' % self.ip)
         self.punched.emit()
         self.terminate()
+
+def check_404(url, driver):
+    """
+    检测是否有无效链接
+    :param date_start:
+    :param date_end:
+    :return:
+    """
+    #url = 'http://v.youku.com/v_show/id_XNjIyMzEwODU2.html?from=s1.8-1-1.2'
+    try:
+        # if driver == None:
+        #     driver = webdriver.PhantomJS()
+
+        driver.get(url)
+        soup = bs(driver.page_source, 'lxml')
+        # driver.close()
+        print soup.title.text
+        if '404' in soup.title.text:
+            return False
+
+    except Exception, e:
+        print e
+
+    return True
 
 if __name__ == "__main__":
     import sys

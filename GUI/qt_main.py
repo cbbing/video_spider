@@ -172,6 +172,7 @@ class Ui_Dialog(object):
                     # QThread.msleep(100)
                     if progressDialog.wasCanceled():
                         progressDialog.cancel()
+                        driver.quit()
                         return
 
                     # df['状态'] = df['Href'].apply(lambda x : '有效' if check404(x) else '失效')

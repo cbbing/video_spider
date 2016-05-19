@@ -152,7 +152,7 @@ class Ui_Dialog(object):
             if filename.endswith('.xlsx'):
 
                 df = pd.read_excel(filename)
-                df = df[:50]
+                # df = df[:50]
                 df['Status'] = '有效'
 
                 progressDialog = QProgressDialog(self.horizontalLayoutWidget_2)

@@ -17,10 +17,14 @@ sys.setdefaultencoding("utf-8")
 
 import os
 import urllib, urllib2
+import pandas as pd
+from selenium import webdriver
+
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
 
 from qt_result import Ui_Result_Dialog
+from Post.check_404 import check_404
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -108,9 +112,10 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "视频搜索", None))
         self.label.setText(_translate("Dialog", "视频搜索程序", None))
-        self.pushButton_key.setText(_translate("Dialog", "关键词", None))
+        self.pushButton_key.setText(_translate("Dialog", "失效视频排查", None))
         self.pushButton_run.setText(_translate("Dialog", "运行", None))
         self.pushButton_result.setText(_translate("Dialog", "结果", None))
+
 
         self.ip = "101.200.183.216"
 
@@ -124,6 +129,7 @@ class Ui_Dialog(object):
         if isfile(filename):
             filename = str(filename)
             print type(filename)
+
             #dir_f = os.path.dirname(str(filename))
 
             # ------ web post -----
@@ -138,6 +144,52 @@ class Ui_Dialog(object):
             # request = urllib2.Request("http://%s:8080/upload" % self.ip, datagen, headers)
             # # 实际执行请求并取得返回
             # print urllib2.urlopen(request).read()
+
+            driver = webdriver.PhantomJS()
+            def check404(url):
+                return check_404(url, driver)
+
+            if filename.endswith('.xlsx'):
+
+                df = pd.read_excel(filename)
+                df = df[:50]
+                df['Status'] = '有效'
+
+                progressDialog = QProgressDialog(self.horizontalLayoutWidget_2)
+                progressDialog.setWindowModality(Qt.WindowModal)
+                progressDialog.setMinimumDuration(5)
+                progressDialog.setWindowTitle(_translate("Dialog", "请等待", None))
+                progressDialog.setLabelText(_translate("Dialog", "排查总数:{}".format(len(df)), None))
+                progressDialog.setCancelButtonText(_translate("Dialog", "取消", None))
+                progressDialog.setRange(0, len(df))
+
+                for ix, row in df.iterrows():
+                    df.ix[ix, 'Status'] = '有效' if check404(row['Href']) else '失效'
+                    status = '排查:{}/{}'.format(ix+1, len(df))
+                    print status
+
+                    progressDialog.setValue(ix+1)
+                    # QThread.msleep(100)
+                    if progressDialog.wasCanceled():
+                        progressDialog.cancel()
+                        return
+
+                    # df['状态'] = df['Href'].apply(lambda x : '有效' if check404(x) else '失效')
+                df.to_excel(filename.replace('.xlsx','')+'_result.xlsx', index=False)
+                msgBox = QtGui.QMessageBox()
+                msgBox.setText(_fromUtf8("完成"))
+                msgBox.addButton(QtGui.QMessageBox.Ok)
+                msgBox.exec_()
+                print 'success'
+
+            else:
+                msgBox = QtGui.QMessageBox()
+                msgBox.setText(_fromUtf8("请上传excel文件(.xlsx)"))
+                msgBox.addButton(QtGui.QMessageBox.Ok)
+                msgBox.exec_()
+
+            driver.quit()
+            return
 
 
             # ------- ftp --------

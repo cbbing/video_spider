@@ -26,8 +26,8 @@ def check_404(url, driver):
         if '404' in soup.title.text:
             return False
 
-    except:
-        None
+    except Exception, e:
+        print e
 
     return True
 

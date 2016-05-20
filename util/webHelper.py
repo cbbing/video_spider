@@ -42,9 +42,10 @@ def get_requests(url, has_proxy=True, cookie=None):
     proxy = None
     if has_proxy:
         proxy = get_proxies()
-    cf = ConfigParser.ConfigParser()
-    cf.read('../config.ini')
-    timeout = int(cf.get('web', 'timeout'))
+    # cf = ConfigParser.ConfigParser()
+    # cf.read('../config.ini')
+    # timeout = int(cf.get('web', 'timeout'))
+    timeout = 5
 
     r = requests.get(url, proxies=proxy, headers=headers, cookies=cookie,timeout=timeout)
     output = 'Code:{1}  Proxy:{2}  Url:{0}  '.format(url, r.status_code, proxy)

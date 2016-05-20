@@ -38,6 +38,8 @@ from videos.video_acfun import AcFunVideo
 from videos.video_weibo import WeiboVideo
 from videos.video_cztv import CZTVVideo
 
+from Post.quchong import run_quchong
+
 from util.code_convert import encode_wrap
 
 from init import *
@@ -368,6 +370,8 @@ def run_auto(indexs):
     except Exception, e:
         print encode_wrap('请输入正确的序号')
 
+
+
 if __name__ == "__main__":
     # print "arg len:", len(sys.argv)
     # for arg in sys.argv:
@@ -380,5 +384,7 @@ if __name__ == "__main__":
     elif len(sys.argv) == 3:
         index = sys.argv[2]
         run_auto(index)
+    elif len(sys.argv) == 4:
+        run_quchong()
     else:
         run_all()

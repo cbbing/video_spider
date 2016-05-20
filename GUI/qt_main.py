@@ -19,7 +19,8 @@ import os
 import urllib, urllib2
 import pandas as pd
 from bs4 import BeautifulSoup as bs
-from selenium import webdriver
+# from selenium import webdriver
+import requests
 
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
@@ -128,7 +129,7 @@ class Ui_Dialog(object):
         from os.path import isfile
         if isfile(filename):
             filename = str(filename)
-            print type(filename)
+            print filename
 
             #dir_f = os.path.dirname(str(filename))
 
@@ -145,9 +146,9 @@ class Ui_Dialog(object):
             # # 实际执行请求并取得返回
             # print urllib2.urlopen(request).read()
 
-            driver = webdriver.PhantomJS()
+            # driver = webdriver.Firefox()
             def check404(url):
-                return check_404(url, driver)
+                return check_404(url)
 
             if filename.endswith('.xlsx'):
 
@@ -169,10 +170,10 @@ class Ui_Dialog(object):
                     print status
 
                     progressDialog.setValue(ix+1)
-                    # QThread.msleep(100)
+                    QThread.msleep(2000)
                     if progressDialog.wasCanceled():
                         progressDialog.cancel()
-                        driver.quit()
+                        # driver.quit()
                         return
 
                     # df['状态'] = df['Href'].apply(lambda x : '有效' if check404(x) else '失效')
@@ -189,7 +190,7 @@ class Ui_Dialog(object):
                 msgBox.addButton(QtGui.QMessageBox.Ok)
                 msgBox.exec_()
 
-            driver.quit()
+            # driver.quit()
             return
 
 
@@ -305,7 +306,7 @@ class WorkThread(QtCore.QThread):
         self.punched.emit()
         self.terminate()
 
-def check_404(url, driver):
+def check_404(url):
     """
     检测是否有无效链接
     :param date_start:
@@ -316,16 +317,19 @@ def check_404(url, driver):
     try:
         # if driver == None:
         #     driver = webdriver.PhantomJS()
-
-        driver.get(url)
-        soup = bs(driver.page_source, 'lxml')
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36'}
+        print url
+        r = requests.get(url, headers=headers, timeout=30)
+        # driver.get(url)
+        soup = bs(r.text, 'lxml')
         # driver.close()
-        print soup.title.text
+        #print soup.title.text
         if '404' in soup.title.text:
             return False
 
     except Exception, e:
-        print e
+        print "check404:",e
+        return False
 
     return True
 

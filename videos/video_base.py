@@ -67,6 +67,9 @@ class BaseVideo:
         #     self.update_ip_data()
 
 
+        self.task_id = '' # 监控任务id
+
+
     # 更新IP代理库
     def update_ip_data(self):
         ip_file = "./data/ip_proxy_%s.csv" % GetNowDate()
@@ -114,9 +117,15 @@ class BaseVideo:
         return r
 
     # 单线程运行keys
-    def run_keys(self, keys):
+    def run_keys(self, keys, is_monitor_task=False):
+        """
+        :param keys:
+        :param is_monitor_task: 是否是监控任务
+        :return:
+        """
+        func_run = self.run_key_auto if is_monitor_task else self.run_key
         for key in keys:
-            self.run_key(key)
+            func_run(key)
 
     # 多线程运行keys
     @fn_timer_
@@ -154,6 +163,34 @@ class BaseVideo:
             print e
             errorLogger.logger.error('unfinish:' + self.site +'_' + key + "_" + str(e))
             self.data_to_unfinish_file( key)
+
+
+    def run_key_auto(self, key):
+        """
+        运行单个key For 自动任务
+        :param key:
+        :return:
+        """
+
+        try:
+
+            # 搜索
+            items = self.search(key)
+
+            # 创建dataframe
+            df = self.create_data(key, items)
+            # df['monitor_video_id'] = ''
+            df['monitor_task_id'] = self.task_id
+            df['VideoKey'] = key
+            print df.head()
+
+            if len(df) > 0:
+                print encode_wrap('写入mysql, %s:%s, 数量:%s' % (self.site, key, len(df)))
+                df.to_sql('monitor_results', engine_sql, if_exists='append', index=False)
+
+        except Exception, e:
+            print e
+
 
     # 运行未完成的key
     def run_unfinished_keys(self, keys_total, start_time):

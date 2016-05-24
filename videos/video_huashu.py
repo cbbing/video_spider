@@ -121,7 +121,7 @@ class HuashuVideo(BaseVideo):
 
         #视频链接-全部结果
         source = soup.find('div', {'class':'list_body'})
-        dramaList = soup.findAll('a', href=re.compile('^/Play/show/id/'), title=re.compile('.+'))
+        dramaList = soup.findAll('a', href=re.compile('^/Play/show/id/'), text=re.compile('.+'))
         for drama in dramaList:
 
             if not drama.get_text():
@@ -129,7 +129,7 @@ class HuashuVideo(BaseVideo):
 
             item = DataItem()
 
-            item.title = drama['title']
+            item.title = drama.get_text()
             item.href = self.pre_url + drama['href']
 
             item.page = page

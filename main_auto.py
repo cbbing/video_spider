@@ -24,7 +24,7 @@ def run_task():
         platforms = row['monitor_platforms'].replace('，',',').split(',')
 
         keys = [key.strip() for key in keys]
-        platforms = [platform.strip() for platform in platforms]
+        platforms = [platform.strip() for platform in platforms if len(platform.strip())>0]
 
         for platform in platforms:
             video = VideoFactory.CreateVideo(platform)

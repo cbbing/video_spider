@@ -48,10 +48,11 @@ def check_404_by_requests(url):
         #print soup.title.text
         if '404' in soup.title.text:
             return False
+        elif 'error' in r.url or '404' in r.url:
+            return False
 
     except Exception, e:
         print "check404:",e
-        return False
 
     return True
 

@@ -4,6 +4,7 @@ import pandas as pd
 from check_404 import check_404_by_requests
 import os
 from util.code_convert import encode_wrap
+import time
 
 def quchong_youku(filename):
     try:
@@ -13,6 +14,7 @@ def quchong_youku(filename):
             df.ix[ix, 'Status'] = '有效' if check_404_by_requests(row['Href']) else '失效'
             status =encode_wrap( '排查:{}/{}'.format(ix+1, len(df)))
             print status
+            time.sleep(1)
 
         df.to_excel(filename.replace('.xlsx','')+'(checked).xlsx', index=False)
         print 'success'

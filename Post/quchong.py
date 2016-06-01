@@ -1,7 +1,7 @@
 #coding:utf-8
 
 import pandas as pd
-from check_404 import check_404_by_requests
+from check_404 import check_404
 import os
 from util.code_convert import encode_wrap
 import time
@@ -11,7 +11,7 @@ def quchong_youku(filename):
         df = pd.read_excel(filename)
         df['Status'] = '有效'
         for ix, row in df.iterrows():
-            df.ix[ix, 'Status'] = '有效' if check_404_by_requests(row['Href']) else '失效'
+            df.ix[ix, 'Status'] = '有效' if check_404(row['Href']) else '失效'
             status =encode_wrap( '排查:{}/{}'.format(ix+1, len(df)))
             print status
             time.sleep(1)
@@ -30,5 +30,11 @@ def run_quchong():
             if name.endswith('.xlsx') and 'checked' not in name:
                 quchong_youku(filename)
 
+def test():
+    url = 'http://www.wasu.cn/Play/show/id/6851953'
+    is404 = check_404(url)
+    print is404
+
 if __name__ == "__main__":
-    run_quchong()
+    # run_quchong()
+    test()

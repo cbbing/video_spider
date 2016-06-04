@@ -9,9 +9,9 @@ import time
 def quchong_youku(filename):
     try:
         df = pd.read_excel(filename)
-        df['Status'] = '有效'
+        df['Status'] = '跟进中'
         for ix, row in df.iterrows():
-            df.ix[ix, 'Status'] = '有效' if check_404(row['Href']) else '失效'
+            df.ix[ix, 'Status'] = '跟进中' if check_404(row['Href']) else '已删除'
             status =encode_wrap( '排查:{}/{}'.format(ix+1, len(df)))
             print status
             time.sleep(1)

@@ -38,6 +38,7 @@ from videos.video_acfun import AcFunVideo
 from videos.video_weibo import WeiboVideo
 from videos.video_cztv import CZTVVideo
 from videos.video_ifeng import IFengVideo
+from videos.video_yinyuetai import YinYueTaiVideo
 
 from Post.quchong import run_quchong
 
@@ -76,6 +77,7 @@ def run(index):
                  24:'新浪微博',
                  25:"新蓝网",
                  26:"凤凰视频",
+                 27: "音悦台",
                  }
 
     cf = ConfigParser.ConfigParser()
@@ -258,6 +260,11 @@ def run(index):
             print 'begin ifeng'
             video = IFengVideo()
             video.run_keys(keys)
+        elif index == 27:
+            # 27
+            print 'begin yinyuetai'
+            video = YinYueTaiVideo()
+            video.run_keys(keys)
 
     except Exception, e:
         print encode_wrap('编号:%d, 运行出错' % index), str(e)
@@ -342,6 +349,7 @@ def run_each():
             '24: 新浪微博\n'\
             '25: 新蓝网\n' \
             '26: 凤凰视频\n' \
+            '27: 音悦台\n' \
              '>>>(输入数字, 单个直接输入数字如1, 多个序号用逗号分隔如: 2,4):'
     raw = raw_input(encode_wrap(prompt))
     try:

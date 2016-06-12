@@ -429,7 +429,10 @@ class BaseVideo:
                       'pipi':'皮皮',
                       'tangdou':'糖豆',
                       'bilibili':'哗哩哗哩',
-                      'weibo':'微博搜索'
+                      'weibo':'微博搜索',
+                      'cztv':'新蓝网',
+                      'ifeng':'凤凰视频',
+                      'yinyuetai': '音悦台',
                       }
 
         try:
@@ -438,7 +441,7 @@ class BaseVideo:
             return dictSource[key]
         except Exception, e:
             #self.errorLogger.logger.error(encode_wrap(str(e)))
-            return ''
+            return key
 
 
 class DataItem:

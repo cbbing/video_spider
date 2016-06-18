@@ -89,7 +89,7 @@ class BaseVideo:
             port = self.df_ip.ix[index, 'Port']
             ip_proxy = "%s://%s:%s" % (http, ip, port)
             proxies = {http:ip_proxy}
-            print proxies
+            # print proxies
             return proxies
         else:
             return {}
@@ -106,6 +106,7 @@ class BaseVideo:
         r = requests.get(url, proxies=proxy, headers=headers, timeout=5)
         output = 'Code:{1}  Proxy:{2}  Url:{0}  '.format(url, r.status_code, proxy)
         output = encode_wrap(output)
+        print output
 
         #self.errorLogger.logger.error(output)
 

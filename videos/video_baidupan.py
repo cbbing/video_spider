@@ -13,12 +13,12 @@ class BaiduPanVideo(BaseVideo):
         self.engine = '音悦台'
         self.site = 'yinyuetai'
         self.album_url = '' #专辑的url
-        self.general_url = 'http://so.yinyuetai.com/new/mv?page={pid}&keyword={key}' #普通搜索的url
+        self.general_url = 'http://www.sobaidupan.com/search.asp?r=0&wd={key}&p=&page={pid}' #普通搜索的url
         #self.filePath = 'ku_video'
 
         #self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
-        self.redis_video_key = 'errorlinks::videosearch::yinyuetai'
+        self.redis_video_key = 'errorlinks::videosearch::baidupan'
 
     @fn_timer_
     def run(self, keys):
@@ -76,7 +76,7 @@ class BaiduPanVideo(BaseVideo):
             soup = bs(rq.text, 'lxml')
 
             #视频链接-全部结果
-            dramaList = soup.find_all('div', {'class':'info'})
+            dramaList = soup.find_all('td')
             for drama in dramaList:
 
                 area_a = drama.find('a')
@@ -85,7 +85,14 @@ class BaiduPanVideo(BaseVideo):
 
                 item = DataItem()
                 item.title = area_a.text
-                item.href = area_a['href']
+
+                #获取真实百度云地址
+                href = 'http://www.sobaidupan.com/' + area_a['href']
+                rq = self.get_requests(href)
+                soup1 = bs(rq.text, 'lxml')
+
+
+                item.href = 'http://www.sobaidupan.com/' + area_a['href']
 
                 # durationTag = area_a.find('span', attrs={'class':'ckl_tim'})
                 # if durationTag:

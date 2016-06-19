@@ -67,7 +67,8 @@ class BaseVideo:
         #     self.update_ip_data()
 
 
-        self.task_id = '' # 监控任务id
+        self.monitor_task_id = '' # 监控任务id
+        self.scrapy_task_id = ''  # 爬虫任务id
 
 
     # 更新IP代理库
@@ -172,6 +173,9 @@ class BaseVideo:
         :param key:
         :return:
         """
+        self.timelengthDict = {0: '不限', 1: '0-10分钟', 2: '10-30分钟', 3: '30-60分钟', 4: '60分钟以上'}  # 时长类型对应网页中的按钮文字
+
+        durtiontype_dict = {'不限':0, '0-10分钟':1, '10-30分钟':2, '30-60分钟':3, '60分钟以上':4}
 
         try:
 
@@ -180,9 +184,10 @@ class BaseVideo:
 
             # 创建dataframe
             df = self.create_data(key, items)
-            # df['monitor_video_id'] = ''
-            df['monitor_task_id'] = self.task_id
+            df['monitor_task_id'] = self.monitor_task_id
+            df['scrapy_task_id'] = self.scrapy_task_id
             df['VideoKey'] = key
+            df['DurationType'] = df['DurationType'].apply(lambda x : durtiontype_dict.get(x, 0))
             print df.head()
 
             if len(df) > 0:
@@ -434,6 +439,7 @@ class BaseVideo:
                       'cztv':'新蓝网',
                       'ifeng':'凤凰视频',
                       'yinyuetai': '音悦台',
+
                       }
 
         try:

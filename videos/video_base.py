@@ -186,8 +186,21 @@ class BaseVideo:
             df = self.create_data(key, items)
             df['monitor_task_id'] = self.monitor_task_id
             df['scrapy_task_id'] = self.scrapy_task_id
-            df['VideoKey'] = key
-            df['DurationType'] = df['DurationType'].apply(lambda x : durtiontype_dict.get(x, 0))
+            df['keyword'] = key
+            # df['DurationType'] = df['DurationType'].apply(lambda x : durtiontype_dict.get(x, 0))
+
+            df.rename(columns={"Title":'title', 'Href':'href', 'Source':'source', 'KeyMatch':'is_match', 'Time':'created_at'}, inplace=True)
+            df = df[['monitor_task_id', 'scrapy_task_id', 'title','href', 'source', 'keyword', 'is_match', 'created_at']]
+
+            def is_match(s):
+                if s == '完全匹配':
+                    return 1
+                elif s == '模糊匹配':
+                    return 0
+                else:
+                    return -1
+
+            df['is_match'] = df['is_match'].apply(lambda x : is_match(x))
             print df.head()
 
             if len(df) > 0:

@@ -192,7 +192,7 @@ class BaseVideo:
 
             if len(df) > 0:
                 print encode_wrap('写入mysql, %s:%s, 数量:%s' % (self.site, key, len(df)))
-                df.to_sql('monitor_results', engine_sql, if_exists='append', index=False)
+                df.to_sql('pl_monitor_results', engine_sql, if_exists='append', index=False)
 
         except Exception, e:
             print e

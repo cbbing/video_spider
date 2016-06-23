@@ -36,11 +36,11 @@ class VideoFactory():
             return YoukuVideo()
         elif platform == '土豆':
             return TudouVideo()
-        elif platform == '新浪':
+        elif platform == '新浪视频':
             return SinaVideo()
-        elif platform == '搜狐':
+        elif platform == '搜狐视频':
             return SouhuVideo()
-        elif platform == '腾讯网':
+        elif platform == '腾讯视频':
             return QQVideo()
         elif platform == '爱奇艺':
             return IQiYiVideo()
@@ -52,7 +52,7 @@ class VideoFactory():
             return FunVideo()
         elif platform == '响巢看看':
             return KanKanVideo()
-        elif platform == '暴风':
+        elif platform == '暴风影音':
             return BaofengVideo()
         elif platform == 'PPTV':
             return PPTVVideo()
@@ -74,7 +74,7 @@ class VideoFactory():
             return PiPiVideo()
         elif platform == '糖豆':
             return TangDouVideo()
-        elif platform == 'bilibili':
+        elif platform == '哔哩哔哩':
             return BilibiliVideo()
         elif platform == 'acfun':
             return AcFunVideo()

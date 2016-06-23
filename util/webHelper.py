@@ -162,11 +162,11 @@ def get_web_driver_phantomjs(url, has_proxy=True):
     return driver
 
 from db_config import engine_ip
-@wrapcache.wrapcache(timeout=60*60*8)  # 缓存8小时
+@wrapcache.wrapcache(timeout=60*60)  # 缓存1小时
 def get_ip_dataframe():
-    # mysql_table_ip = 'ip_proxy'
-    # sql = 'select * from {0} where Speed > 0 order by Speed limit {1}'.format(mysql_table_ip, 1000)
-    sql = 'select * from ip_proxy_pay'
+    mysql_table_ip = 'ip_proxy'
+    sql = 'select * from {0} where Speed > 0 order by Speed limit {1}'.format(mysql_table_ip, 1000)
+    # sql = 'select * from ip_proxy_pay'
     df_ip = pd.read_sql_query(sql, engine_ip)
     return df_ip
 

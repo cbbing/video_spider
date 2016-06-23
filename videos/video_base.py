@@ -190,11 +190,11 @@ class BaseVideo:
 
             def is_match(s):
                 if s == '完全匹配':
-                    return 1
+                    return 2
                 elif s == '模糊匹配':
-                    return 0
+                    return 1
                 else:
-                    return -1
+                    return 0
 
             df['is_match'] = df['is_match'].apply(lambda x : is_match(x))
             print df.head()

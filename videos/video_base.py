@@ -199,6 +199,11 @@ class BaseVideo:
             df['is_match'] = df['is_match'].apply(lambda x : is_match(x))
             print df.head()
 
+            # timelengthDict = {'不限':0, '0-10分钟':1, '10-30分钟':2, '30-60分钟':3, '60分钟以上':4}
+            # print df['DurationType']
+            # del df['DurationType']
+            # df['DurationType'] = 0
+
             if len(df) > 0:
                 print encode_wrap('写入mysql, %s:%s, 数量:%s' % (self.site, key, len(df)))
                 df.to_sql('pl_monitor_results', engine_sql, if_exists='append', index=False)

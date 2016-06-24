@@ -6,13 +6,15 @@ from videos.VideoFactory import VideoFactory
 from util.code_convert import GetNowTime
 import json
 from apscheduler.schedulers.blocking import BlockingScheduler
+from util.helper import fn_date
 
+@fn_date
 def run_task():
 
     table = 'pl_scrapy_tasks'
     sql = "select * from {} where status=1 and run_time<'{}'".format(table, GetNowTime())
     df = pd.read_sql(sql, engine_sql)
-    print "len:", len(df)
+    # print "len:", len(df)
 
     for ix, row in df.iterrows():
         print row
@@ -48,10 +50,11 @@ def run_task():
 
 if __name__ == "__main__":
 
-    run_task()
+    # run_task()
 
 
     sched = BlockingScheduler()
 
     # 抓取
     sched.add_job(run_task, 'cron', minute='*/10')  # hour=1,
+    sched.start()

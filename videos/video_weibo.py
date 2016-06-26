@@ -1,46 +1,137 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-#抓取163video搜索结果
+#抓取weibo video搜索结果
 import sys
-import time
-import requests
-from pandas import Series, DataFrame
-
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from bs4 import BeautifulSoup as bs
-import pandas as pd
-from pandas import Series, DataFrame
+import pickle
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 from video_base import *
+from util.webHelper import get_web_driver
 
 class WeiboVideo(BaseVideo):
+
+    dir_temp = 'data/cookie/'
+
     def __init__(self):
         BaseVideo.__init__(self)
         self.engine = '新浪微博'
         self.site = 'weibo'
-        self.album_url = 'http://so.v.163.com/search/000-0-0000-1-1-0-key/' #专辑的url
-        self.general_url = 'http://so.v.163.com/search/000-0-tid-1-pid-0-key/' #普通搜索的url
-        self.filePath = 'v163_video'
+        self.album_url = '' #专辑的url
+        self.general_url = 'http://s.weibo.com/' #普通搜索的url
+        self.filePath = 'weibo_video'
 
         self.timelengthDict = {0:'全部', 1:'10分钟以下', 2:'10-30分钟', 3:'30-60分钟', 4:'60分钟以上'} #时长类型对应网页中的按钮文字
 
         #self.infoLogger = Logger(logname=dir_log+'info_56(' + GetNowDate()+ ').log', logger='I')
         #self.errorLogger = Logger(logname=dir_log+'error_56(' + GetNowDate()+ ').log', logger='E')
 
+    def get_logined_webdriver(self):
+        """
+        获取登录后的driver
+        :return:
+        """
+
+        driver = get_web_driver(self.general_url, has_proxy=False)
+        WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.LINK_TEXT, '登录')))
+
+        driver.find_element_by_link_text('登录').click()
+        WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.LINK_TEXT, '账号登录')))
+
+        driver.find_element_by_link_text('账号登录').click()
+        WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, '//input[@name="username"]')))
+
+        driver.find_element_by_xpath('//input[@name="username"]').clear()
+        driver.find_element_by_xpath('//input[@name="password"]').clear()
+        driver.find_element_by_xpath('//input[@name="username"]').send_keys('18410182275')
+        driver.find_element_by_xpath('//input[@name="password"]').send_keys('12356789')
+
+        driver.find_element_by_xpath('//div[@class="item_btn"]').click()
+        time.sleep(3)
+        return driver
+
+    def get_cookie(self):
+        """
+        获取微博cookie
+        """
+
+        def get_cookie_from_network():
+
+            driver = get_web_driver(self.general_url, has_proxy=False)
+            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.LINK_TEXT, '登录')))
+
+            driver.find_element_by_link_text('登录').click()
+            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.LINK_TEXT, '账号登录')))
+
+            driver.find_element_by_link_text('账号登录').click()
+            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, '//input[@name="username"]')))
+
+            driver.find_element_by_xpath('//input[@name="username"]').clear()
+            driver.find_element_by_xpath('//input[@name="password"]').clear()
+            driver.find_element_by_xpath('//input[@name="username"]').send_keys('18410182275')
+            driver.find_element_by_xpath('//input[@name="password"]').send_keys('12356789')
+
+            driver.find_element_by_xpath('//div[@class="item_btn"]').click()
+            time.sleep(3)
+            # 获得 cookie信息
+            cookie_list = driver.get_cookies()
+            print cookie_list
+
+            # 写入文件 for webdriver
+            f = open(self.dir_temp + 'total_weibo.cookie', 'w')
+            pickle.dump(cookie_list, f)
+            f.close()
+
+            # 写入文件 for requests
+            cookie_dict = {}
+            for cookie in cookie_list:
+                # 写入文件
+                f = open(self.dir_temp + cookie['name'] + '.weibo', 'w')
+                pickle.dump(cookie, f)
+                f.close()
+
+                if cookie.has_key('name') and cookie.has_key('value'):
+                    cookie_dict[cookie['name']] = cookie['value']
+            driver.quit()
+            return cookie_dict
+
+        def get_cookie_from_cache():
+
+            cookie_dict = {}
+            for parent, dirnames, filenames in os.walk(self.dir_temp):
+                for filename in filenames:
+                    if filename.endswith('.weibo'):
+                        # print filename
+                        f = open(self.dir_temp + filename, 'r')
+                        d = pickle.load(f)
+                        f.close()
+
+                        if d.has_key('name') and d.has_key('value') and d.has_key('expiry'):
+                            cookie_dict[d['name']] = d['value']
+
+
+            return cookie_dict
+
+        cookie_dict = get_cookie_from_cache()
+        if not cookie_dict:
+            cookie_dict = get_cookie_from_network()
+
+        # print cookie_dict
+        return cookie_dict
+
     @fn_timer_
     def run(self, keys):
 
-        cf = ConfigParser.ConfigParser()
-        cf.read(config_file_path)
-        lengthtypes = cf.get(self.site, "lengthtype")
-        if len(lengthtypes.strip('[').strip(']')) == 0:
-            print encode_wrap('配置为不运行')
-            return
-        return
-        start_time = GetNowTime()
-        #self.run_keys(keys)
-        self.run_keys_multithreading(keys)
+
+        self.run_keys(keys)
+        # self.run_keys_multithreading(keys)
 
         #重试运行三次
         # for _ in range(0, 3):
@@ -51,35 +142,36 @@ class WeiboVideo(BaseVideo):
 
         items_all = []
 
-        # 专辑
-        album_url = self.album_url.replace('key',key)
-        r = self.get_requests(album_url)
-        self.parse_data_album(r.text)
-
-        #self.infoLogger.logger.info(encode_wrap('暂停%ds' % self.stop))
-        print '*'*20, '暂停10s', '*'*20
-        print '\n'
-        time.sleep(self.stop)
-
-
         # 普通
-        cf = ConfigParser.ConfigParser()
-        cf.read(config_file_path)
-        lengthtypes = cf.get(self.site,"lengthtype")
-        lengthtypes = lengthtypes.strip('[').strip(']').split(',')
-        for lengthtype in lengthtypes:
 
-            for i in range(self.pagecount):
-                url = self.general_url.replace('tid', lengthtype).replace('pid', str(i+1)).replace('key',key)
+        driver = self.get_logined_webdriver()
 
-                #r = requests.get(soku_url)
-                r = self.get_requests(url)
-                items = self.parse_data(r.text, i+1, lengthtype, key)
+        # f = open(self.dir_temp + 'total_weibo.cookie', 'r')
+        # cookie_list = pickle.load(f)
+        # f.close()
+        # for cookie in cookie_list:
+        #     print cookie
+        #     cookie.pop('domain')
+        #     #cookie.pop('expiry')
+        #
+        #     cookie_to = {}
+        #     cookie_to['name'] = cookie['name']
+        #     cookie_to['value'] = cookie['value']
+        #
+        #     driver.add_cookie(cookie_to)
+        #
+        # print driver.get_cookies()
 
-                if items:
-                    items_all.extend(items)
-                else:
-                    break
+        for page in range(1, self.pagecount+1):
+            url = '{}weibo/{}&page={}'.format(self.general_url, key, page)
+            driver.get(url)
+
+            items = self.parse_data(driver.page_source, i+1, 0, key)
+
+            if items:
+                items_all.extend(items)
+            else:
+                break
 
         return items_all
 
@@ -117,7 +209,7 @@ class WeiboVideo(BaseVideo):
         return items
 
     # 普通
-    def parse_data(self, text, page, legth_type, key):
+    def parse_data(self, text, page, key):
 
         items = []
 
@@ -164,6 +256,7 @@ if __name__=='__main__':
     print data
 
     video = WeiboVideo()
+    video.get_cookie()
     video.run(data['key'].get_values()[:100])
 
     #key = '快乐大本营'

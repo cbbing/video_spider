@@ -87,7 +87,7 @@ def get_session(url, has_proxy=True, cookie=None):
 
 
 @retry(stop_max_attempt_number=100)
-def get_web_driver(url, has_proxy=True, simulator='Firefox'):
+def get_web_driver(url=None, has_proxy=True, simulator='Firefox'):
     """
     Selenium 使用代理请求
     :param url:
@@ -111,20 +111,27 @@ def get_web_driver(url, has_proxy=True, simulator='Firefox'):
                 # 'noProxy':d ''
             })
             print encode_wrap("使用代理:"), myProxy
-            if simulator == 'PhantomJS':
-                driver = webdriver.PhantomJS(proxy=proxy)
-            else:
+            if simulator == 'Firefox':
+                driver = webdriver.Firefox(proxy=proxy)
+            elif simulator == 'Chrome':
                 driver = webdriver.Chrome()(proxy=proxy)
-        else:
-            if simulator == 'PhantomJS':
-                driver = webdriver.PhantomJS()
             else:
+                driver = webdriver.PhantomJS(proxy=proxy)
+        else:
+            if simulator == 'Firefox':
+                driver = webdriver.Firefox()
+            elif simulator == 'Chrome':
                 driver = webdriver.Chrome()()
+            else:
+                driver = webdriver.PhantomJS()
+
+
         return driver
 
     driver = _get_driver()
     #driver.set_page_load_timeout(30)
-    driver.get(url)
+    if url:
+        driver.get(url)
 
     return driver
 

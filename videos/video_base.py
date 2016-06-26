@@ -453,16 +453,17 @@ class BaseVideo:
                       'cztv':'新蓝网',
                       'ifeng':'凤凰视频',
                       'yinyuetai': '音悦台',
-
+                      'taobao': '淘宝',
+                      'tmall':'天猫'
                       }
 
         try:
             m = re.search(r"\.(\w*?)\.[com|cn|tv]", url)  #\w匹配[a-zA-z0-9]
             key = m.group(1) #如hunantv
-            return dictSource[key]
+            return dictSource.get(key, key)
         except Exception, e:
             #self.errorLogger.logger.error(encode_wrap(str(e)))
-            return key
+            return ''
 
 
 class DataItem:

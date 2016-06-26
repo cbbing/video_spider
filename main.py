@@ -40,6 +40,7 @@ from videos.video_cztv import CZTVVideo
 from videos.video_ifeng import IFengVideo
 from videos.video_yinyuetai import YinYueTaiVideo
 from videos.video_baidupan import BaiduPanVideo
+from videos.video_taobao import Taobao
 
 from Post.quchong import run_quchong
 
@@ -276,6 +277,8 @@ def run(index):
         elif index == 29:
             # 29
             print 'begin taobao'
+            video = Taobao()
+            video.run_keys(keys)
 
     except Exception, e:
         print encode_wrap('编号:%d, 运行出错' % index), str(e)

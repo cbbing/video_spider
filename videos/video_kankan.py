@@ -77,7 +77,7 @@ class KankanVideo(BaseVideo):
         #self.infoLogger.logger.info(encode_wrap(fun_url))
 
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Chrome()
+        driver = webdriver.Firefox()
         driver.get(fun_url)
 
         driver.get_screenshot_as_file("show.png")

@@ -7,6 +7,7 @@ from util.code_convert import GetNowTime
 import json
 from apscheduler.schedulers.blocking import BlockingScheduler
 from util.helper import fn_date
+from videos.video_base import AutoItem
 
 @fn_date
 def run_task():
@@ -38,19 +39,31 @@ def run_task():
         keys = [key.strip() for key in keys]
         platforms = [platform.strip() for platform in platforms if len(platform.strip())>0]
 
+        autoItem = AutoItem()
+        autoItem.scrapy_task_id = task_id
+        autoItem.monitor_id = row['monitor_task_id']
+        autoItem.df_keys = df
+
         for platform in platforms:
             video = VideoFactory.CreateVideo(platform)
-            video.scrapy_task_id = task_id
-            video.monitor_task_id = row['monitor_task_id']
+            video.autoItem = autoItem
+            # video.scrapy_task_id = task_id
+            # video.monitor_task_id = row['monitor_task_id']
             video.run_keys(keys, True)
 
         # 更新任务状态 - 任务完成
         sql = 'update {0} set finished_time="{1}", status={2} where id="{3}"'.format(table, GetNowTime(), 3, task_id)
         engine_sql.execute(sql)
 
+
+
+
+
+
 if __name__ == "__main__":
 
-    # run_task()
+    run_task()
+    exit(0)
 
 
     sched = BlockingScheduler()

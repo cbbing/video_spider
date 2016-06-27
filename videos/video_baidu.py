@@ -52,7 +52,7 @@ class BaiduVideo(BaseVideo):
         # self.infoLogger.logger.info(baidu_url)
         #print 'start phantomjs'
         #driver = webdriver.PhantomJS()
-        driver = webdriver.Chrome()()
+        driver = webdriver.Firefox()()
         driver.set_page_load_timeout(10)
         driver.get(baidu_url)
 

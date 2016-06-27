@@ -63,8 +63,9 @@ class BaseVideo:
         #     self.update_ip_data()
 
 
-        self.monitor_task_id = '' # 监控任务id
-        self.scrapy_task_id = ''  # 爬虫任务id
+        # self.monitor_task_id = '' # 监控任务id
+        # self.scrapy_task_id = ''  # 爬虫任务id
+        self.autoItem = AutoItem()
 
 
     # 更新IP代理库
@@ -180,8 +181,8 @@ class BaseVideo:
 
             # 创建dataframe
             df = self.create_data(key, items)
-            df['monitor_task_id'] = self.monitor_task_id
-            df['scrapy_task_id'] = self.scrapy_task_id
+            df['monitor_task_id'] = self.autoItem.monitor_id
+            df['scrapy_task_id'] = self.autoItem.scrapy_task_id
             df['keyword'] = key
             # df['DurationType'] = df['DurationType'].apply(lambda x : durtiontype_dict.get(x, 0))
 
@@ -197,6 +198,27 @@ class BaseVideo:
                     return 0
 
             df['is_match'] = df['is_match'].apply(lambda x : is_match(x))
+
+            # 过滤“排除关键词列表”
+            try:
+                print '排除关键词前：', len(df)
+                keys = self.autoItem.df_keys['excludeKey'].get_values()
+                keys = filter(lambda x : len(x)>0, keys)
+                print ','.join(keys)
+
+                def sub_f(x):
+                    for key in keys:
+                        if key.strip() in x:
+                            return False
+                    return True
+
+                f1 = lambda x: sub_f(x)
+                df = df[df['title'].apply(f1)]
+
+                print '排除关键词后：', len(df)
+            except Exception, e:
+                print e
+
             print df.head()
 
             # timelengthDict = {'不限':0, '0-10分钟':1, '10-30分钟':2, '30-60分钟':3, '60分钟以上':4}
@@ -473,6 +495,15 @@ class DataItem:
         self.duration = ''
         self.page = 0 #页码
         self.durationType = '' #时长类型
+
+class AutoItem():
+    """
+    自动运行类
+    """
+    def __init__(self):
+        self.scrapy_task_id = ''    # 爬虫任务id
+        self.monitor_id = '' # 监控任务id
+        self.df_keys = pd.DataFrame()
 
 
 if __name__=='__main__':

@@ -11,14 +11,17 @@ from selenium import webdriver
 from util.helper import fn_timer
 from util.webHelper import get_requests
 
-def check_404(url):
+def check_404(url, driver = None):
     """
     检测是否有无效链接
     """
-    if 'fun.tv' in url or 'iqiyi.com' in url or 'sohu.com' in url:
-        return check_404_by_selenium(url)
+    if 'fun.tv' in url \
+            or 'iqiyi.com' in url \
+            or 'sohu.com' in url \
+            or 'tudou.com' in url:
+        return check_404_by_selenium(url, driver)
     else:
-        return check_404_by_requests(url)
+        return check_404_by_requests(url, False)
 
 @fn_timer
 def check_404_by_selenium(url, driver = None):
@@ -38,12 +41,22 @@ def check_404_by_selenium(url, driver = None):
 
         driver.get(url)
         data = driver.page_source
-        driver.quit()
+
 
         soup = bs(data, 'lxml')
         # print soup.title.text
+        status = True
         if soup.title and '404' in soup.title.text:
-            return False
+            status = False
+        elif 'error' in driver.current_url \
+                or '404' in driver.current_url \
+                or '503' in driver.current_url:
+            status = False
+
+        # driver.quit()
+        if not status:
+            return status
+
 
         find = p.search(data)
         if find:
@@ -55,7 +68,7 @@ def check_404_by_selenium(url, driver = None):
 
     return True
 
-def check_404_by_requests(url):
+def check_404_by_requests(url, has_proxy=False):
     """
     检测是否有无效链接
     :param date_start:
@@ -75,7 +88,7 @@ def check_404_by_requests(url):
                        'http://v.qq.com/error.html')
 
         print url
-        r = get_requests(url, False)
+        r = get_requests(url, has_proxy)
         if 'charset=utf-8' in r.text:
             r.encoding='utf8'
         soup = bs(r.text, 'lxml')

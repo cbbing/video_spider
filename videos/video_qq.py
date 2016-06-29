@@ -109,7 +109,7 @@ class QQVideo(BaseVideo):
                 errorLogger.logger.error(str(e))
 
 
-        driver.quit()
+        driver.close()
         #self.infoLogger.logger.info(encode_wrap('parse phantomjs success '))
 
         return items_all

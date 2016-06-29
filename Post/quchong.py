@@ -6,6 +6,8 @@ import os
 from util.code_convert import encode_wrap
 import time
 
+from tomorrow import threads
+@threads(5)
 def quchong_youku(filename):
     try:
         df = pd.read_excel(filename)
@@ -23,12 +25,17 @@ def quchong_youku(filename):
 
 def run_quchong():
     dir = 'D:\Data\QuChong\\'
+
+    filenames = []
     for name in os.listdir(dir):
         if os.path.isfile(os.path.join(dir, name)):
             filename = os.path.join(dir,name)
             print filename
             if name.endswith('.xlsx') and 'checked' not in name:
-                quchong_youku(filename)
+                filenames.append(filename)
+                # quchong_youku(filename)
+
+    [quchong_youku(filename) for filename in filenames]
 
 def test():
     url = 'http://www.wasu.cn/Play/show/id/6851953'

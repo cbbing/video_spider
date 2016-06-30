@@ -43,6 +43,7 @@ from videos.video_baidupan import BaiduPanVideo
 from videos.video_taobao import Taobao
 
 from Post.quchong import run_quchong
+from videos.video_baidu_no_js import run_baidu
 
 from util.code_convert import encode_wrap
 
@@ -418,5 +419,7 @@ if __name__ == "__main__":
         run_auto(index)
     elif len(sys.argv) == 4:
         run_quchong()
+    elif len(sys.argv) == 5:
+        run_baidu()
     else:
         run_all()

@@ -15,6 +15,8 @@ from selenium import webdriver
 from video_base import *
 from selenium.webdriver.support.ui import WebDriverWait
 
+from util.webHelper import max_window
+
 
 class QQVideo(BaseVideo):
     def __init__(self):
@@ -59,30 +61,33 @@ class QQVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(qq_url)
 
+        max_window(driver, 1, 3)
+
         #专辑
         items = self.parse_data_album(driver)
         items_all.extend(items)
 
         #模拟点击"V",让时长按钮可见
-        element = driver.find_element_by_xpath('//a[@class="btn_arrow _cox_filter_btn"]')
-        element.click()
+        # element = driver.find_element_by_xpath('//a[@class="btn_arrow _cox_filter_btn"]')
+        # element.click()
 
         #普通
         cf = ConfigParser.ConfigParser()
         cf.read(config_file_path)
         lengthtypes = cf.get("qq","lengthtype")
         lengthtypes = lengthtypes.strip('[').strip(']').split(',')
+        lengthtypes = [0]
         for lengthtype in lengthtypes:
 
             try:
-                buttonText = self.timelengthDict[int(lengthtype)]
+                # buttonText = self.timelengthDict[int(lengthtype)]
                 # 模拟点击
-                driver.find_element_by_link_text(buttonText).click()
+                # driver.find_element_by_link_text(buttonText).click()
 
                 #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
-                print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
-                print '\n'
-                time.sleep(self.stop)
+                # print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+                # print '\n'
+                # time.sleep(self.stop)
 
                 #第一页
                 items = self.parse_data(driver.page_source, 1, lengthtype)
@@ -94,7 +99,7 @@ class QQVideo(BaseVideo):
                         driver.find_element_by_link_text('下一页').click()
 
                         #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
-                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop))
+                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % ('全部',(i+2), self.stop))
                         print '\n'
                         time.sleep(self.stop)
 
@@ -135,7 +140,7 @@ class QQVideo(BaseVideo):
                 if not 'qq.com' in item.href:
                     item.href = 'http://v.qq.com' + item.href
                 item.page = 1
-                item.durationType = '专辑'
+                item.durationType = ''
 
                 items.append(item)
 

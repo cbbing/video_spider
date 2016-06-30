@@ -61,57 +61,82 @@ class QQVideo(BaseVideo):
         driver = webdriver.Firefox()
         driver.get(qq_url)
 
-        max_window(driver, 1, 3)
+        driver.maximize_window()
+
+        for i in range(4):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            time.sleep(5)
 
         #专辑
         items = self.parse_data_album(driver)
         items_all.extend(items)
+
+        # 获取下一页
+        try:
+            for i in range(self.pagecount-1):
+                driver.find_element_by_link_text('下一页').click()
+
+                # self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+                print encode_wrap('{}/{}, 暂停%ds'.format(i + 2, self.pagecount, 5))
+                print '\n'
+                time.sleep(5)
+
+                for i in range(4):
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+                    time.sleep(5)
+
+                items = self.parse_data_album(driver)
+                items_all.extend(items)
+
+        except Exception, e:
+            infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
+
 
         #模拟点击"V",让时长按钮可见
         # element = driver.find_element_by_xpath('//a[@class="btn_arrow _cox_filter_btn"]')
         # element.click()
 
         #普通
-        cf = ConfigParser.ConfigParser()
-        cf.read(config_file_path)
-        lengthtypes = cf.get("qq","lengthtype")
-        lengthtypes = lengthtypes.strip('[').strip(']').split(',')
-        lengthtypes = [0]
-        for lengthtype in lengthtypes:
-
-            try:
-                # buttonText = self.timelengthDict[int(lengthtype)]
-                # 模拟点击
-                # driver.find_element_by_link_text(buttonText).click()
-
-                #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
-                # print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
-                # print '\n'
-                # time.sleep(self.stop)
-
-                #第一页
-                items = self.parse_data(driver.page_source, 1, lengthtype)
-                items_all.extend(items)
-
-                #获取下一页
-                try:
-                    for i in range(self.pagecount-1):
-                        driver.find_element_by_link_text('下一页').click()
-
-                        #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
-                        print encode_wrap('%s, 下一页:%d, 暂停%ds' % ('全部',(i+2), self.stop))
-                        print '\n'
-                        time.sleep(self.stop)
-
-                        items = self.parse_data(driver.page_source, i+2, lengthtype)
-                        items_all.extend(items)
-
-                except Exception,e:
-                    infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
-
-
-            except Exception,e:
-                errorLogger.logger.error(str(e))
+        # cf = ConfigParser.ConfigParser()
+        # cf.read(config_file_path)
+        # lengthtypes = cf.get("qq","lengthtype")
+        # lengthtypes = lengthtypes.strip('[').strip(']').split(',')
+        # lengthtypes = [0]
+        # for lengthtype in lengthtypes:
+        #
+        #     try:
+        #         # buttonText = self.timelengthDict[int(lengthtype)]
+        #         # 模拟点击
+        #         # driver.find_element_by_link_text(buttonText).click()
+        #
+        #         #self.infoLogger.logger.info(encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop)))
+        #         # print encode_wrap('%s, 第一页,暂停%ds' % (buttonText, self.stop))
+        #         # print '\n'
+        #         # time.sleep(self.stop)
+        #
+        #         #第一页
+        #         items = self.parse_data(driver.page_source, 1, lengthtype)
+        #         items_all.extend(items)
+        #
+        #         #获取下一页
+        #         try:
+        #             for i in range(self.pagecount-1):
+        #                 driver.find_element_by_link_text('下一页').click()
+        #
+        #                 #self.infoLogger.logger.info(encode_wrap('%s, 下一页:%d, 暂停%ds' % (buttonText,(i+2), self.stop)))
+        #                 print encode_wrap('%s, 下一页:%d, 暂停%ds' % ('全部',(i+2), self.stop))
+        #                 print '\n'
+        #                 time.sleep(self.stop)
+        #
+        #                 items = self.parse_data(driver.page_source, i+2, lengthtype)
+        #                 items_all.extend(items)
+        #
+        #         except Exception,e:
+        #             infoLogger.logger.info('未达到%d页，提前结束' % self.pagecount)
+        #
+        #
+        #     except Exception,e:
+        #         errorLogger.logger.error(str(e))
 
 
         driver.close()
